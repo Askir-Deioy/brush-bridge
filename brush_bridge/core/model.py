@@ -41,9 +41,14 @@ class Dynamic:
     jitter: float = 0.0
     # response curve for pen pressure as (input, output) points in 0..1; empty == linear
     pressure_curve: list[tuple[float, float]] = field(default_factory=list)
+    enabled_inputs: list[str] = field(default_factory=list)
+    response_curves: dict[str, list[tuple[float, float]]] = field(default_factory=dict)
+    output_range: tuple[float, float] = (0.0, 1.0)
+    interpolation: str = "linear"
+    combination: str = "multiply"
 
     def is_active(self) -> bool:
-        return any(v > 0 for v in (self.pressure, self.tilt, self.velocity, self.jitter))
+        return bool(self.enabled_inputs) or any(v != 0 for v in (self.pressure, self.tilt, self.velocity, self.jitter))
 
 
 @dataclass
@@ -148,6 +153,9 @@ class BrushSource:
     path: str = ""
     index: int = -1
     native: dict[str, Any] = field(default_factory=dict)  # codec-specific raw data for lossless round-trips
+    snapshots: dict[str, bytes] = field(default_factory=dict)
+    fingerprint: str = ""
+    parser_version: str = ""
 
 
 @dataclass
@@ -200,6 +208,8 @@ class Brush:
     group: str = ""
     source: BrushSource = field(default_factory=BrushSource)
     notes: list[str] = field(default_factory=list)  # conversion warnings shown to the user
+    extensions: dict[str, Any] = field(default_factory=dict)
+    resources: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def warn(self, msg: str) -> None:
         if msg not in self.notes:
@@ -235,4 +245,5 @@ class BrushRef:
     def load(self) -> Brush:
         if self.loader is None:
             raise RuntimeError(f"brush {self.name!r} has no loader")
-        return self.loader()
+        from .storage import seal_source
+        return seal_source(self.loader())

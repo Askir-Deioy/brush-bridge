@@ -335,6 +335,20 @@ def test_secondary_color_and_heavy_pressure_hue():
     assert pc._curve(q, "dynamicsPressureHueCurve") == []  # back to Procreate's identity curve
 
 
+def test_negative_sensor_directions_survive_roundtrip():
+    p = pc.template_params("反向动态")
+    p.update({"dynamicsPressureSize": -0.6, "dynamicsSpeedSize": -0.25,
+              "dynamicsPressureOpacityTransfer": -0.4, "dynamicsSpeedOpacity": -0.2,
+              "dynamicsPressureOpacity": -0.7})
+    b = pc.params_to_brush(p, shape=None, grain=None, thumb=None)
+    assert b.size_dynamic.response_curves["pressure"][-1][1] == pytest.approx(0.4)
+    assert b.opacity_dynamic.response_curves["velocity"][-1][1] == pytest.approx(0.8)
+    q = pc.brush_to_params(b, has_grain=False)
+    for key in ("dynamicsPressureSize", "dynamicsSpeedSize", "dynamicsPressureOpacityTransfer",
+                "dynamicsSpeedOpacity", "dynamicsPressureOpacity"):
+        assert q[key] == pytest.approx(p[key], abs=1e-6), key
+
+
 def test_combined_brush_becomes_dual_tip(tmp_path):
     main = pc.template_params("组合")
     main["dualBlendMode"] = 6  # difference
@@ -367,7 +381,8 @@ def test_builtin_asset_approximations():
     assert builtin_grain("Brush-Artery-Rust-1.jpg").tobytes() == builtin_grain("Brush-Artery-Rust-1.jpg").tobytes()
     leaf = builtin_shape("Simple-Leaf.png")
     assert leaf is not None and leaf.mode == "L" and 0 < np.asarray(leaf).mean() < 255
-    assert builtin_shape("Totally-Unknown.png") is None
+    unknown = builtin_shape("Totally-Unknown.png")
+    assert unknown is not None and unknown.mode == "L" and 0 < np.asarray(unknown).mean() < 255
     p = pc.template_params("内置")
     p["bundledShapePath"] = "Brush-Preset-Flat-Brush2.jpg"
     b = pc.params_to_brush(p, shape=None, grain=None, thumb=None)
@@ -423,7 +438,7 @@ def test_bundled_assets_reported(tmp_path):
     assert info is not None and info.format_id == "procreate"
     assert len(info.problems) == 2
     b = codec("procreate").read(p)[0]
-    assert b.tips == []  # unknown shape name -> computed round tip
+    assert b.tips and b.tips[0].mode == "L"  # unknown shape name -> deterministic procedural stamp
     assert b.texture is not None and b.texture.image.size == (512, 512)  # generic procedural grain
     assert len(b.notes) >= 2
     # a write without original files falls back to a synthesized round shape

@@ -16,16 +16,6 @@ def _out(s: str = "") -> None:
         print(s.encode(sys.stdout.encoding or "utf-8", "replace").decode(sys.stdout.encoding or "utf-8"))
 
 
-def cmd_apps(_a) -> int:
-    for d in convert.detect_all():
-        i = d.install
-        if i:
-            _out(f"[{d.adapter.id}] {i.label}{' (running)' if i.running else ''}\n    exe:  {i.exe}\n    data: {i.data_dir}")
-        else:
-            _out(f"[{d.adapter.id}] {d.adapter.name}: {d.note}")
-    return 0
-
-
 def cmd_formats(_a) -> int:
     for c in codecs():
         rw = ("R" if c.can_read else "-") + ("W" if c.can_write else "-")
@@ -84,36 +74,26 @@ def cmd_convert(a) -> int:
     brushes, errors = convert.load_brushes(refs)
     for e in errors:
         _out(e)
-    files = convert.export(brushes, a.to, Path(a.out))
-    for b in brushes:
-        for n in b.notes:
-            _out(f"  [{b.name}] {n}")
-    for f in files:
+    result = convert.export_detailed(brushes, a.to, Path(a.out),
+                                     ignore_missing_optional=a.ignore_missing_optional, load_errors=errors)
+    for row in result.entries:
+        for note in row["warnings"]:
+            _out(f"  [{row['name']}] {note}")
+        if row["error"]:
+            _out(f"  [{row['name']}] 失败：{row['error']}")
+    for f in result.files:
         _out(f"→ {f}")
-    return 0 if files else 1
-
-
-def cmd_install(a) -> int:
-    o = convert.open_file(Path(a.file))
-    if o.error:
-        _out(o.error)
-        return 1
-    targets = [d for d in convert.detect_all() if d.adapter.id == a.app and d.install]
-    if not targets:
-        _out(f"{a.app} not found")
-        return 1
-    refs = o.refs if not a.only else [o.refs[i] for i in _parse_indices(a.only, len(o.refs))]
-    brushes, _errors = convert.load_brushes(refs)
-    res = convert.install(targets[0], brushes)
-    _out(res.message)
-    return 0 if res.ok else 1
+    _out(result.summary())
+    _out(f"报告：{result.report_path}")
+    return 0 if result.ok and not errors else (2 if result.succeeded else 1)
 
 
 def main(argv=None) -> int:
+    if sys.stdout is not None and hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     load_plugins()
     p = argparse.ArgumentParser(prog="brush-bridge-cli", description="Convert brushes between painting apps.")
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("apps", help="detect installed painting apps").set_defaults(fn=cmd_apps)
     sub.add_parser("formats", help="list supported formats").set_defaults(fn=cmd_formats)
     s = sub.add_parser("list", help="list brushes in a file")
     s.add_argument("file")
@@ -128,12 +108,8 @@ def main(argv=None) -> int:
     s.add_argument("--to", required=True, help="target format id (see 'formats')")
     s.add_argument("-o", "--out", required=True, help="output file")
     s.add_argument("--only", help="brush indices, e.g. 0,3,5-8")
+    s.add_argument("--ignore-missing-optional", action="store_true", help="明确忽略缺少的可选颗粒并记录报告")
     s.set_defaults(fn=cmd_convert)
-    s = sub.add_parser("install", help="install brushes from a file into an app")
-    s.add_argument("file")
-    s.add_argument("--app", required=True, help="app id (see 'apps')")
-    s.add_argument("--only", help="brush indices, e.g. 0,3,5-8")
-    s.set_defaults(fn=cmd_install)
     a = p.parse_args(argv)
     return a.fn(a)
 

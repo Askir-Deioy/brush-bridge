@@ -26,6 +26,7 @@ import numpy as np
 from PIL import Image
 
 from ..core.model import Brush, BrushRef, BrushSource, ColorDynamics, DualTip, Dynamic, Texture, WetMix
+from ..core.imaging import tip_mask
 from ..core.plugin import FileInfo, Fix, FormatCodec, register_codec
 
 # ---------------------------------------------------------------------------------------------
@@ -721,6 +722,7 @@ def preset_to_brush(af: AbrFile, idx: int) -> Brush:
         if img is not None:
             br.tips = [img]
         else:
+            br.resources["tip"] = {"status": "missing", "name": str(sid), "required": True}
             br.warn("笔尖图像缺失（引用的样本不在此文件中），已用圆形笔尖代替。")
     elif tip_d.cls not in ("computedBrush", "sampledBrush", ""):
         br.warn(f"特殊笔尖类型「{tip_d.cls}」（如侵蚀/喷枪笔尖）只能近似转换。")
@@ -777,6 +779,7 @@ def preset_to_brush(af: AbrFile, idx: int) -> Brush:
                 depth_dynamic=_dyn(p.sub("textureDepthDynamics"), p.num("minimumDepth") / 100),
             )
         else:
+            br.resources["grain"] = {"status": "missing", "name": str(tx.get("Idnt", "")), "required": False}
             br.warn("纹理图案缺失（引用的图案不在此文件中），已忽略纹理。")
 
     dual = p.sub("dualBrush")
@@ -955,7 +958,7 @@ _PHRY_EMPTY = bytes.fromhex(
 
 
 def _sample_entry(img: Image.Image, uid: str) -> bytes:
-    img = img.convert("L")
+    img = tip_mask(img)
     w = _Writer()
     w.pstr(uid)
     vm = _Writer()

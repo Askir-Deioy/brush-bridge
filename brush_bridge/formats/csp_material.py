@@ -311,7 +311,24 @@ def _fit(im: Image.Image, side: int) -> Image.Image:
 
 def ink_from_image(im: Image.Image, kind: str) -> np.ndarray:
     """Neutral image -> CSP ink density. Tips: L 255 = paint. Textures: L 255 = white (no ink)."""
-    g = _fit(im.convert("L"), MAX_SIDE)
+    if kind == KIND_TEXTURE:
+        # A texture is a height map.  Transparent pixels mean the white/neutral
+        # background, so composite over white before dropping alpha.
+        rgba = im.convert("RGBA")
+        bg = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+        bg.alpha_composite(rgba)
+        g = _fit(bg.convert("L"), MAX_SIDE)
+    elif im.mode in ("RGBA", "LA", "PA") or (im.mode == "P" and "transparency" in im.info):
+        # Tips use coverage as their paint mask.  Converting RGBA directly to L
+        # ignores alpha and can turn a white-on-transparent stamp into a solid
+        # white square.
+        from ..core.imaging import to_mask
+
+        g = _fit(to_mask(im, invert_if_light_background=False), MAX_SIDE)
+    else:
+        # The neutral model already uses L=255 for paint; do not invert ordinary
+        # grayscale tips here.
+        g = _fit(im.convert("L"), MAX_SIDE)
     a = np.asarray(g, dtype=np.uint8)
     return a.copy() if kind == KIND_TIP else (255 - a).astype(np.uint8)
 

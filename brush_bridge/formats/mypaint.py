@@ -254,6 +254,8 @@ def brush_to_settings(b: Brush) -> Settings:
 def _warn_lossy(b: Brush) -> None:
     if b.source.format == "mypaint":
         return
+    if b.spacing < 1 / (2 * MAX_DABS_PER_RADIUS):
+        b.warn("MyPaint 的 dabs 密度有上限，过小的间距已按目标格式下限近似。")
     if b.tips:
         b.warn("MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。")
     lost = []
@@ -344,7 +346,7 @@ class MyPaintCodec(FormatCodec):
 
     def _load(self, path: Path) -> Brush:
         version, settings, meta = parse_myb(_read_text(path))
-        b = settings_to_brush(settings, path.stem, path, version)
+        b = settings_to_brush(settings, meta.get("description") or path.stem, path, version)
         if meta.get("group"):
             b.group = meta["group"]
         prev = preview_path(path)

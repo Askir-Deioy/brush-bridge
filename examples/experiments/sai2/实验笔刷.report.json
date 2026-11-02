@@ -1,0 +1,558 @@
+{
+  "schema_version": "0.1",
+  "target": "sai2",
+  "codec": "sai2",
+  "capabilities": "SAI2：输出工具与资源目录；单笔尖、尺寸等可转换，倾斜、双重笔刷和混合模式有限制。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "sai2 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "sai2 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "SAI2 不支持双重画笔，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "SAI2 不支持双重画笔，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。",
+        "SAI2 没有“边缘加深/湿边/灼边”效果，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        },
+        {
+          "kind": "ignored",
+          "message": "SAI2 没有“边缘加深/湿边/灼边”效果，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "SAI2 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "SAI2 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+      "sha256": "43f8c1683ff05f39e5725738b697d0cc086f495a451cca4b3f5d550f85da3e7a"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+      "sha256": "47372d05d096ac0adfbd93da315e97c87776d7f56c8dc85caac999ba1cdf4bbf"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+      "sha256": "4494c65aa3bf6b1efd14e8b2c0d471fd398e5b93161289eb6431a9f70ef0e244"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+      "sha256": "d1c6925fffb002e2de69dd9bcedaf7d46e87314b6fb7c98950b25c54c51ecdff"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+      "sha256": "09e9fe3e5cedd95bc6133eff84bf764d7f07bbd017fd5c2e8a0e8199321342f2"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+      "sha256": "e3431d0515da7024ae5c0be2b2a51a18720eaa9db5278bfc77e576f930d16ccf"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+      "sha256": "a9468735d4e56dbfc4e01c7922ad8e978169d629c19078c5f61775c40670ac21"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+      "sha256": "3100e04f496cd12075d790b857ce6e1711ab5a9125f7030ee99927aec13705d9"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+      "sha256": "cfd6d6a407ca9ba92f4f693c9c7b5f52ce8ae0a9c2490499ad06d3d18b682718"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+      "sha256": "3100e04f496cd12075d790b857ce6e1711ab5a9125f7030ee99927aec13705d9"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+      "sha256": "22805d620b92cea98160e83fc9e1fdf94b4293acca2c3955f2ee4ba9cad17802"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+      "sha256": "c534fb9701b5960281b8930ebb1ee0b887d8a92e29e5b9f5a3e5d52298f5db45"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+      "sha256": "e91b5532af23287b278da4dcfd9a1811c9344444a9d6aa76c0c69d50bcefa60a"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+      "sha256": "2960a3b65eda26628b37090ed384f5fc3f1916ebab3d93b3508344715acecb4f"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+      "sha256": "d1c6925fffb002e2de69dd9bcedaf7d46e87314b6fb7c98950b25c54c51ecdff"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+      "sha256": "bf81153bef924a12b6f890105eb6b8c50b65f30837a0be8f677144ab8a66d954"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+      "sha256": "64c1b7d5a07dff998a9ab6d52df1522a6a3fcd2cdf64486d4dd5aaa7370d673e"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+      "sha256": "5a7f66d301ab1e45d5ac4d6c699bdd7b13f99d52e4b929f85eb1ae0ade1c6128"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+      "sha256": "fc19bf03a5af810f4c48a0126014fdf5247b0b157bd6ef199d38fff093002e53"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+      "sha256": "dba4572c13ee786525d6fcac8c9b221e40de79c02fa2e4b8af27cc23a5b282f3"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+      "sha256": "a8dd63a28cb11b42de59760250207ea31f619d3197649d21ac7aab3905fe5522"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+      "sha256": "62f5f15deec80210ef99c8d612bde58619db2e3cc4e6f6e1e5611c6d0740d3e0"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+      "sha256": "eaac8466c4589de458d6a01807bb12dbc2c66f81285b27bf9168e300f3869d81"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+      "sha256": "6dba74947bf409b37966a4e7f7d1b81c845504046ca985b30850e88761dc55f4"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+      "sha256": "5d50dd452fdd2d4993ea5451af1eb0803255a27213dd99b101e99f522a85e338"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+      "sha256": "58520891dbd76910e997a82ca976b35ffc335ac8c5c9f36f4e84bbbfad2558e6"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+      "sha256": "b72f38eb71e986405e987c27fde9c8a702ca75bbde7b32e710599b03dc5b04ea"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+      "sha256": "1e5ea7556733007e9f645f5e75d60a8c69f8708cc918bd656ca902570069a254"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\sai2\\实验笔刷\\安装说明.txt",
+      "sha256": "7a89c7129ecf29072cc29ce458adcfb669eb39e1b94f70d2b51fcb93f3bd48ef"
+    }
+  ]
+}

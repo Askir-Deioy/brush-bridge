@@ -1,0 +1,182 @@
+{
+  "schema_version": "0.1",
+  "target": "procreate",
+  "codec": "procreate",
+  "capabilities": "Procreate：输出 brushset；部分混色、双重笔刷和动态可能近似，需要 iPad 验证。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "procreate 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "procreate 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "Procreate 的笔刷文件不支持双重画笔，已忽略双重画笔部分。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "Procreate 的笔刷文件不支持双重画笔，已忽略双重画笔部分。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\procreate\\实验笔刷.brushset",
+      "sha256": "6a2a58c65d8e5b9a262e309063bc4cb02f8c521e823f844445e3241a930c17d9"
+    }
+  ]
+}

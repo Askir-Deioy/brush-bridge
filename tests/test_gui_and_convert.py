@@ -91,7 +91,7 @@ def test_grid_checking_updates_count(qapp, win):
     gui, w = win
     t = w.transfer
     t._show_refs(_refs(20), "file", None)
-    assert t.count.text() == "已选 0 个" and t.go.text() == "开始导入"
+    assert t.count.text() == "已选 0 个" and t.go.text() == "开始转换"
 
     # through the model API (what the delegate/view use)
     assert t.proxy.setData(t.proxy.index(2, 0), Qt.Checked, Qt.CheckStateRole)
@@ -210,26 +210,45 @@ def test_thumbnail_loader_dedup_hold_and_retain(qapp):
     assert loader.wait()
 
 
-def test_targets_offer_csp(qapp, win):
-    from brush_bridge.core.convert import DetectedApp
-    from brush_bridge.core.plugin import AppInstall, app
-
+def test_targets_are_file_formats_only(qapp, win):
     gui, w = win
     t = w.transfer
-    csp = DetectedApp(app("csp"), AppInstall("csp", "Clip Studio Paint", "4.0.0"))
-    t.set_detected([csp])
+    t.set_detected([])
     items = [(t.target.itemText(i), t.target.itemData(i)) for i in range(t.target.count())]
     kinds = [(d[0], getattr(d[1], "id", None)) for _, d in items]
-    assert ("app", None) in kinds and ("app_direct", None) in kinds
-    assert ("codec", "csp") in kinds
-    assert "💾 导出为文件：Clip Studio Paint 笔刷 (.sut)" in [x for x, _ in items]
+    assert all(kind == "codec" for kind, _ in kinds)
+    assert "导出为 Clip Studio Paint 笔刷 (.sut)" in [x for x, _ in items]
     writable = {c.id for c in convert.writable_codecs()}
     assert {d[1].id for _, d in items if d[0] == "codec"} == writable
-    # the artist's choice survives a re-detection (e.g. the refresh after a transfer)
-    i = [x for x, _ in items].index("💾 导出为文件：Clip Studio Paint 笔刷 (.sut)")
+    assert "导出为 通用笔刷分享包 / 中间格式 (.brushpkg)" in [x for x, _ in items]
+    i = [x for x, _ in items].index("导出为 Clip Studio Paint 笔刷 (.sut)")
     t.target.setCurrentIndex(i)
-    t.set_detected([DetectedApp(app("csp"), AppInstall("csp", "Clip Studio Paint", "4.0.0"))])
+    t.set_detected([])
     assert t.target.currentData()[0] == "codec" and t.target.currentData()[1].id == "csp"
+
+
+def test_package_open_select_export_and_reopen(qapp, win, tmp_path):
+    from brush_bridge.core.plugin import codec
+    from brush_bridge.formats.brushpkg import write_package, read_package
+    gui, w = win
+    t = w.transfer
+    src = write_package([Brush(name="中文主存档", size_px=31), Brush(name="第二支", size_px=44)],
+                        tmp_path / "source.brushpkg")
+    t.add_files([src])
+    assert _wait(qapp, lambda: t.proxy.rowCount() == 2)
+    t._check_all(True)
+    brushes, errors = convert.load_brushes(t.checked_refs())
+    assert not errors and len(brushes) == 2
+    ok, message, files, _ = t._export(codec("brushpkg"), brushes, tmp_path / "saved.brushpkg")
+    assert ok and any(p.suffix == ".json" for p in files)
+    saved = next(p for p in files if p.suffix == ".brushpkg")
+    assert [b.name for b in read_package(saved)] == ["中文主存档", "第二支"]
+    t.set_detected([])
+    ids = {t.target.itemData(i)[1].id for i in range(t.target.count()) if t.target.itemData(i)[0] == "codec"}
+    assert {"brushpkg", "udongman", "csp", "abr", "procreate", "sai2"} <= ids
+    t.cancel_button.setEnabled(True)
+    t.cancel_button.click()
+    assert t.cancel_event.is_set()
 
 
 def test_group_tree_nested(qapp, win):

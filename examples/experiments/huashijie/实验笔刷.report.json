@@ -1,0 +1,207 @@
+{
+  "schema_version": "0.1",
+  "target": "huashijie",
+  "codec": "huashijie",
+  "capabilities": "画世界 Pro：输出 .bru；复杂参数保留在主存档，需在手机/平板导入并核对笔迹。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "画世界 Pro BRU 当前只写出基础尺寸/不透明度/流量字段，压力、倾斜、速度和抖动动态需在设备中实机核对；原始动态保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "画世界 Pro BRU 当前只写出基础尺寸/不透明度/流量字段，压力、倾斜、速度和抖动动态需在设备中实机核对；原始动态保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "画世界 Pro BRU 当前未完成散布/多点/跟线旋转动态映射；原始规则保留在主存档。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "画世界 Pro BRU 当前写出内嵌笔尖；通用纹理已保留在主存档，需在设备中实机核对。",
+        "huashijie 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "huashijie 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "画世界 Pro BRU 当前未完成散布/多点/跟线旋转动态映射；原始规则保留在主存档。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "画世界 Pro BRU 的双重笔刷暂按主笔尖写出；双重笔刷数据仍保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "画世界 Pro BRU 的双重笔刷暂按主笔尖写出；双重笔刷数据仍保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。",
+        "画世界 Pro 没有“边缘加深/湿边/灼边”效果，已忽略。",
+        "画世界 Pro BRU 的混色参数尚未完成字段级映射；原始混色数据保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        },
+        {
+          "kind": "ignored",
+          "message": "画世界 Pro 没有“边缘加深/湿边/灼边”效果，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "画世界 Pro 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "画世界 Pro 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\huashijie\\实验笔刷.bru",
+      "sha256": "3670c921184d7d9c3c34dc5ae3e734bfa6e6140ecd978904130272235ea46d2e"
+    }
+  ]
+}

@@ -205,6 +205,7 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
         if im is not None:
             b.tips.append(thumbnail_to_tip(im))
         else:
+            b.resources["tip"] = {"status": "missing", "name": r.name or r.path, "required": True}
             b.warn(f"笔尖素材“{r.name or r.path}”未找到，已使用圆形笔尖代替。")
     b.flip_x = bool(v.get("BrushPatternReverseHorizontal"))
     b.flip_y = bool(v.get("BrushPatternReverseVertical"))
@@ -253,8 +254,11 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
         else:
             b.warn(f"纹理素材“{tex_refs[0].name}”未找到，已忽略纹理。")
 
-    # Dual brush
-    if int(v.get("UseDualBrush") or 0):
+    # Dual brush.  Older CSP exports sometimes leave UseDualBrush at zero while
+    # DualUsePatternImage still carries the active setting.  Treat either field
+    # as an enable signal so a round-trip does not silently discard the effect.
+    dual_enabled = bool(int(v.get("UseDualBrush") or 0) or int(v.get("DualUsePatternImage") or 0))
+    if dual_enabled:
         drefs = decode_material_refs(v.get("DualPatternImageArray")) if int(v.get("DualUsePatternImage") or 0) else []
         dim = resolve(drefs[0]) if drefs else None
         dsize = to_px(v.get("DualSize"), v.get("DualSizeUnit"))
@@ -268,6 +272,8 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
             count=max(1, int(_num(v.get("DualSprayDensity"), 1))) if int(v.get("DualUseSpray") or 0) else 1,
             mode=COMPOSITE_TO_BLEND.get(int(v.get("DualBrushCompositeMode") or 0), "multiply"),
             name=drefs[0].name if drefs else "")
+        if not int(v.get("UseDualBrush") or 0):
+            b.warn("该 CSP 文件使用了旧版双重笔刷启用字段，已按 DualUsePatternImage 兼容读取。")
 
     # Colour jitter ("色の揺らぎ"); per-tip channels may also follow pressure / tilt
     if int(v.get("BrushChangePatternColor") or 0):
@@ -701,6 +707,28 @@ def build_variant(b: Brush) -> tuple[dict, list[tuple[str, str]], list[dict], di
         row["BrushUsePatternImage"] = 0
         row["BrushUseIn"] = 0
         row["BrushUseOut"] = 0
+        # Factory sub-tools contain useful UI defaults, but several of them are
+        # active or version-sensitive even when their visible switch is off.
+        # A newly generated brush must start from an explicit neutral row so a
+        # target CSP version cannot resurrect template taper/revision/blur or
+        # velocity behavior from hidden columns.
+        row.update({
+            "BrushAdjustVelocity": 0,
+            "BrushContinuousPlot": 0,
+            "BrushBlur": 0.0,
+            "BrushBlurKind": 0,
+            "BrushRevision": 0,
+            "BrushRevisionBySpeed": 0,
+            "BrushRevisionByViewScale": 0,
+            "BrushInOutBySpeed": 0,
+            "BrushInLength": 0.0,
+            "BrushInRatio": 0.0,
+            "BrushOutLength": 0.0,
+            "BrushOutRatio": 0.0,
+            "BrushSprayDensity": 1,
+            "BrushRotationRandomScale": 0,
+            "BrushRotationRandomInSpray": 0,
+        })
         cols = _default_cols()
         fp_old, mats = {}, []
     fp_new = _fingerprint(b)

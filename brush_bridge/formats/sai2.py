@@ -26,6 +26,7 @@ from typing import Any, Optional
 import numpy as np
 from PIL import Image
 
+from ..core.imaging import tip_mask
 from ..core.model import Brush, BrushRef, BrushSource, Texture, WetMix, join_group
 from ..core.plugin import FileInfo, Fix, FormatCodec, register_codec
 from ..core.system import backup, documents_dir, safe_filename, unique_path
@@ -374,7 +375,7 @@ def bristle_to_tip(img: Image.Image) -> Image.Image:
 
 
 def prepare_tip(img: Image.Image) -> Image.Image:
-    g = img.convert("L")
+    g = tip_mask(img)
     if max(g.size) > MAX_SHAPE_SIDE:
         g = g.copy()
         g.thumbnail((MAX_SHAPE_SIDE, MAX_SHAPE_SIDE), Image.LANCZOS)
@@ -629,6 +630,7 @@ def brush_from_tool(path: Path, sections: Optional[list[Section]] = None, roots:
             b.tips = [a.image]
         else:
             if fomnam:
+                b.resources["tip"] = {"status": "missing", "name": fomnam, "required": True}
                 b.warn(f"找不到{ASSET_LABELS[kind]}“{fomnam}”，已改用圆形笔尖。")
         shape = {ini: num(k) for k, ini in TOOL_TO_INI.items() if k in params}
         if "scatden" in params:
@@ -663,6 +665,7 @@ def brush_from_tool(path: Path, sections: Optional[list[Section]] = None, roots:
             b.texture = Texture(image=a.image, name=texnam, scale=max(0.01, num("texscl", 100) / 100),
                                 depth=_clamp(num("texval", 95) / 100, 0, 1), invert=bool(num("texinvf")))
         else:
+            b.resources["grain"] = {"status": "missing", "name": texnam, "required": False}
             b.warn(f"找不到笔刷纹理“{texnam}”，已忽略纹理。")
     if kind == "blotmap":
         a = asset("blotmap", fomnam)
@@ -696,6 +699,16 @@ def _tool_files(cat_dir: Path) -> list[Path]:
     return sorted(Path(cat_dir).glob("*.saitdat"), key=lambda f: (0, int(f.stem)) if f.stem.isdigit() else (1, 0))
 
 
+def _package_tool_files(root: Path) -> list[Path]:
+    """Tools in a portable SAI2 brush pack, where ``*.saitdat`` sits at pack root.
+
+    SAI2 users commonly share a folder/ZIP containing the tool files and their referenced
+    ``brushfom``/``brushtex`` assets without the installed ``custool/nrm`` wrapper. Treat that
+    layout as a read-only settings root so the assets remain associated with each tool.
+    """
+    return _tool_files(root)
+
+
 def read_settings(root: Path, categories: tuple[str, ...] = ("nrm", "ink")) -> list[Brush]:
     """All painting tools of a settings folder / package plus the shapes no tool refers to."""
     root = Path(root)
@@ -704,10 +717,11 @@ def read_settings(root: Path, categories: tuple[str, ...] = ("nrm", "ink")) -> l
     out: list[Brush] = []
     for cat in categories:
         d = root / "custool" / cat
-        if not d.is_dir():
+        files = _tool_files(d) if d.is_dir() else (_package_tool_files(root) if cat == categories[0] else [])
+        if not files:
             continue
-        groups = tool_group_names(d)
-        for f in _tool_files(d):
+        groups = tool_group_names(d) if d.is_dir() else {}
+        for f in files:
             try:
                 gid = int(f.stem) if f.stem.isdigit() else -1
                 b = brush_from_tool(f, roots=roots, group=groups.get(gid, ""), cache=cache)
@@ -737,11 +751,14 @@ def choose_mode(b: Brush) -> str:
     needs_scatter = (b.count > 1 or b.count_jitter > 0 or (b.scatter > 0.5 and not b.wet.enabled)
                      or b.spacing > 0.5 or (b.color.has_jitter() and not b.wet.enabled))
     if b.is_eraser:
-        return "brshape" if b.tips else "round"
+        # SAI2's round eraser has no shape-spacing field.  Keep a generated
+        # brush shape when the neutral model carries non-default spacing or
+        # scatter so those values survive the round trip.
+        return "brshape" if (b.tips or b.scatter >= 0.1 or abs(b.spacing - 0.1) > 0.005) else "round"
     if needs_scatter:
         return "scatter"
     # a round tip with scatter/angle jitter/visible spacing needs a real shape so SAI2 can apply them
-    if not b.tips and (b.scatter >= 0.1 or b.spacing > 0.15 or (b.angle_jitter > 0 and b.roundness < 0.95)):
+    if not b.tips and (b.scatter >= 0.1 or abs(b.spacing - 0.1) > 0.005 or (b.angle_jitter > 0 and b.roundness < 0.95)):
         return "brshape"
     return "brshape" if b.tips else "round"
 
@@ -1136,6 +1153,7 @@ class Sai2Codec(FormatCodec):
         if not is_settings_root(path):
             return None
         tools = sum(len(list((path / "custool" / c).glob("*.saitdat"))) for c in ("nrm", "ink"))
+        tools += len(list(path.glob("*.saitdat")))
         shapes = sum(len(list(d.glob("*.bmp"))) for k in ("scatter", "brshape") for d in asset_dirs(path, k)
                      if d.is_dir())
         if not tools and not shapes:
@@ -1275,12 +1293,13 @@ def list_settings(root: Path, include_textures: bool = True) -> list[BrushRef]:
     cache: dict = {}
     for cat, cat_label in TOOL_CATEGORIES.items():
         d = root / "custool" / cat
-        if not d.is_dir():
+        files = _tool_files(d) if d.is_dir() else (_package_tool_files(root) if cat == "nrm" else [])
+        if not files:
             continue
-        groups = tool_groups(d)
+        groups = tool_groups(d) if d.is_dir() else []
         order = {tid: (gi, slot) for gi, (_g, _n, slots) in enumerate(groups) for slot, tid in slots}
-        names = tool_group_names(d)
-        for f in sorted(_tool_files(d), key=lambda f: order.get(int(f.stem) if f.stem.isdigit() else -1, (999, 0))):
+        names = tool_group_names(d) if d.is_dir() else {}
+        for f in sorted(files, key=lambda f: order.get(int(f.stem) if f.stem.isdigit() else -1, (999, 0))):
             try:
                 secs = read_sait(f)
             except OSError:

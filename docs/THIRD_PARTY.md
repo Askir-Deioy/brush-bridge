@@ -37,6 +37,13 @@ distributed. Brushes that reference them use images the user places in their own
 `procreate_library` folder; otherwise they fall back to procedurally generated look-alikes
 (`brush_bridge/formats/procreate_builtin.py`) or a computed round tip.
 
+## 画世界 Pro BRU support (`brush_bridge/formats/huashijie.py`)
+
+The BRU reader/writer is an independent implementation based on the user-supplied
+`hsjbru` sample and structural inspection of its embedded PNG records. No code or
+proprietary SDK from 画世界 Pro is distributed. File-level round-trip checks pass;
+import and stroke fidelity still require the user's own mobile/tablet copy of the app.
+
 ## Clip Studio Paint support (`brush_bridge/formats/csp*.py`, `brush_bridge/apps/csp.py`)
 
 No third-party code was copied. The `.sut` / `EditImageTool.todb` schema, the effector and

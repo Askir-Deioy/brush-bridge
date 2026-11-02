@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "input": "examples\\experiments\\朋友实机测试记录.csv",
+  "total_rows": 81,
+  "filled_rows": 0,
+  "empty_rows": 81,
+  "imported_values": {
+    "": 81
+  },
+  "filled_result_columns": {},
+  "invalid_rows": [],
+  "incomplete_rows": [],
+  "status": "ready_for_review",
+  "note": "导入成功、重启保留和笔迹效果分别统计；空白不代表通过。"
+}

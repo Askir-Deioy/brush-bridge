@@ -1,0 +1,187 @@
+{
+  "schema_version": "0.1",
+  "target": "krita",
+  "codec": "krita",
+  "capabilities": "将尽量映射目标格式支持的属性，具体变化见逐支报告。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "Krita 普通笔刷没有“数量”选项，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "ignored",
+          "message": "Krita 普通笔刷没有“数量”选项，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。",
+        "Krita 没有“边缘加深/湿边/灼边”效果，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        },
+        {
+          "kind": "ignored",
+          "message": "Krita 没有“边缘加深/湿边/灼边”效果，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "Krita 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "Krita 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\krita\\实验笔刷.bundle",
+      "sha256": "3e81deac3414a31b5588674f1869c7042102648288625676effdf74bdeecf8cd"
+    }
+  ]
+}

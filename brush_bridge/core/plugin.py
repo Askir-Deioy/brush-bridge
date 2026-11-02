@@ -129,9 +129,12 @@ _APPS: dict[str, AppAdapter] = {}
 _loaded = False
 
 PLUGIN_MODULES = [
+    "brush_bridge.formats.brushpkg",
     "brush_bridge.formats.abr",
     "brush_bridge.formats.procreate",
+    "brush_bridge.formats.huashijie",
     "brush_bridge.formats.csp",
+    "brush_bridge.formats.udongman",
     "brush_bridge.formats.sai2",
     "brush_bridge.formats.krita",
     "brush_bridge.formats.gimp",
@@ -144,10 +147,27 @@ PLUGIN_MODULES = [
     "brush_bridge.apps.gimp",
     "brush_bridge.apps.mypaint",
     "brush_bridge.apps.procreate",
+    "brush_bridge.apps.huashijie",
 ]
 
 
 def register_codec(cls):
+    from functools import wraps
+    original_read = cls.read
+    @wraps(original_read)
+    def read_preserved(self, path):
+        from .storage import seal_source
+        return [seal_source(b) for b in original_read(self, path)]
+    cls.read = read_preserved
+    if cls.can_write and cls.id != "brushpkg":
+        original_write = cls.write
+        @wraps(original_write)
+        def write_preserved(self, brushes, out_path, **options):
+            from .storage import fingerprint, prepare_export
+            prepared = [prepare_export(b) if b.source.fingerprint and b.source.fingerprint != fingerprint(b) else b
+                        for b in brushes]
+            return original_write(self, prepared, out_path, **options)
+        cls.write = write_preserved
     _CODECS[cls.id] = cls()
     return cls
 

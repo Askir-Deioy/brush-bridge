@@ -1,0 +1,437 @@
+{
+  "schema_version": "0.1",
+  "target": "mypaint",
+  "codec": "mypaint",
+  "capabilities": "将尽量映射目标格式支持的属性，具体变化见逐支报告。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。",
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "mypaint 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。",
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。",
+        "MyPaint 笔刷不支持纹理，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "mypaint 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+        },
+        {
+          "kind": "unsupported",
+          "message": "MyPaint 笔刷不支持纹理，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。",
+        "MyPaint 笔刷不支持每次落笔多个笔尖，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "MyPaint 笔刷不支持每次落笔多个笔尖，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。",
+        "MyPaint 笔刷不支持双重画笔，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "MyPaint 笔刷不支持双重画笔，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。",
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。",
+        "MyPaint 没有“边缘加深/湿边/灼边”效果，已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        },
+        {
+          "kind": "ignored",
+          "message": "MyPaint 没有“边缘加深/湿边/灼边”效果，已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "MyPaint 笔刷只有圆形/椭圆笔尖，图像笔尖已改为同尺寸的圆形笔尖。",
+        "MyPaint 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+      ],
+      "losses": [
+        {
+          "kind": "unsupported",
+          "message": "MyPaint 不支持颜色随压力/倾斜变化（色相/饱和度/亮度/辅助颜色），已忽略。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础.myb",
+      "sha256": "64718a61304a76bdf5be3d986f755bd36f12118fe898f793631c8a9032be838e"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-01 硬圆基础_prev.png",
+      "sha256": "a81e89231477e93c6457765e45df6090102feaac77d80f8160c545831fb45028"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感.myb",
+      "sha256": "86151b27891a492c6750b435d6b047bdd43647900aa5e68f1b46c297bb4466c9"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-02 软边尺寸压感_prev.png",
+      "sha256": "3a3fca54d13a440d861a13186d0a5a60805c3cabc9dc6c1e3393dbee634b6716"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转.myb",
+      "sha256": "9664b9a95e541d0a76002c3f3d34fef17dc243e1344ba721c8c921854bbb693a"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-03 三角跟随旋转_prev.png",
+      "sha256": "f6e0ddd6ff36b4bd6f8104f757335ecb0b983c7a4f05b6414bc61bdd1519b780"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘.myb",
+      "sha256": "af396e5e793b182b845865f9d42863cf1b7a78bf0a493da0b979f1ef962187e8"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-04 透明边缘_prev.png",
+      "sha256": "8800bea34ebe83adb1ee5eeb7196c1cbcc4d386738403a87b2ab4ee7766ad00a"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距.myb",
+      "sha256": "8b7c352602342563e48534cfce77bb08c99c4456635005ce80c43a28b8e8f714"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-05 颗粒固定间距_prev.png",
+      "sha256": "9becd4de163f47788c5f84b22d37b7c2d23f809f89430bcdefae9fe8b49f3c84"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机.myb",
+      "sha256": "71a173d8ba576e8d5d319548d3e6a56bb700884444d3e002cb5b795c72771ccd"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-06 散布随机_prev.png",
+      "sha256": "a369a2b807f9c318c21137f8401f850d0542c5ac3f2c40c44400372ed2e116d7"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加.myb",
+      "sha256": "43478216f0514ad4a8af6cd584d81da9846062e9e614ef0510dba3901b86f6ba"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-07 双重叠加_prev.png",
+      "sha256": "2130d1b73d07e8f85a40f960dabe9a3b8ddf59481c2bc9b84194dd937a78521f"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色.myb",
+      "sha256": "45940280bfb80276ac111b5cc587c6c48d9d1f3644e7e1a8b78e24d6e69d019d"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-08 湿混色_prev.png",
+      "sha256": "be310505d2f591824ef3740ea9ac98a71a85330e9090cbb555c8c4b324ebdd43"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态.myb",
+      "sha256": "003ead528296ca54b001129927924f5282ce40b8b811836e80620ab425f77340"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\mypaint\\EXP-09 颜色压力动态_prev.png",
+      "sha256": "7829232b4c92a4cd14ba25012e216f0454f537c193066b96c1fd395235087d7c"
+    }
+  ]
+}

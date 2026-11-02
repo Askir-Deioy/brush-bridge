@@ -1,0 +1,272 @@
+{
+  "schema_version": "0.1",
+  "target": "csp",
+  "codec": "csp",
+  "capabilities": "CSP／优动漫：输出 SUT，支持内嵌笔尖与纹理；混色和部分动态可能近似，按版本验收。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-01 硬圆基础.sut",
+      "sha256": "72561c77e94dd24e61fe4466b2d157a98afa9f32fae7042d46ed6607777f2fa0"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-02 软边尺寸压感.sut",
+      "sha256": "5006314d8c12dcd2a6729ea42fbb5da9c7737912140595b3aefdfe482a3af080"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-03 三角跟随旋转.sut",
+      "sha256": "aa0a4a46b7bc65cc090ffeecea81c8c4374105abbd75f15fc050981574c4995b"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-04 透明边缘.sut",
+      "sha256": "9fe3cbe5e6479a3cdda02b03906312dfa881ad56e05403c2e9488330bdc33fea"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-05 颗粒固定间距.sut",
+      "sha256": "9bbbdf9b2930206a3473b0548a8e3fe8505fd6222df9a52d8a956f122e431577"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-06 散布随机.sut",
+      "sha256": "60e329e2e8da6015120317dfacebc32c2eb80f620906f57460f1c70cbd5354e4"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-07 双重叠加.sut",
+      "sha256": "2ead3a8d229e4c7831d9579aa505d1f1a2ff994d47ff985aba423384928c860f"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-08 湿混色.sut",
+      "sha256": "b8c420d508c049c095b16b995a59091d8ceaa419ff516dec5ff871515e5f7a6c"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\csp\\EXP-09 颜色压力动态.sut",
+      "sha256": "33e63efcb91aac88e9afc7cd8c521ae8992cf4c997a8d632f4cc595d3c356c33"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ from typing import Optional
 
 from .model import Brush, BrushRef
 from .plugin import AppAdapter, AppInstall, FileInfo, InstallResult, apps, codec, codecs, sniff
+from .system import export_dir, safe_filename
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +40,9 @@ def detect_all() -> list[DetectedApp]:
         elif not a.desktop:
             found.append(DetectedApp(a, None, "仅 iPad 版，电脑上无法检测版本；可直接导入或导出 .brush/.brushset 文件"))
         else:
-            missing.append(DetectedApp(a, None, "未在此电脑上找到"))
+            missing.append(DetectedApp(
+                a, None,
+                "未自动检测到安装位置；仍可导出对应格式，安装位置可以在其他磁盘或便携目录"))
     return found + missing
 
 
@@ -75,7 +78,11 @@ def expand_paths(paths: list[Path]) -> list[Path]:
     out: list[Path] = []
     for p in map(Path, paths):
         if p.is_dir():
-            out += sorted(f for f in p.rglob("*") if f.is_file() and f.suffix.lower() in exts)
+            info = sniff(p)
+            if info is not None:
+                out.append(p)
+            else:
+                out += sorted(f for f in p.rglob("*") if f.is_file() and f.suffix.lower() in exts)
         else:
             out.append(p)
     return out
@@ -114,17 +121,62 @@ def writable_codecs() -> list:
     return [c for c in codecs() if c.can_write]
 
 
+def app_export_codec(adapter: AppAdapter):
+    """Return the first writable file format that the app can import.
+
+    A file format remains useful when the application is on another drive, is a portable copy,
+    or is not installed on this PC, so this lookup deliberately ignores installation detection.
+    """
+    ids = []
+    for format_id in (adapter.native_format, *adapter.import_formats):
+        if format_id and format_id not in ids:
+            ids.append(format_id)
+    for format_id in ids:
+        try:
+            c = codec(format_id)
+        except KeyError:
+            continue
+        if c.can_write:
+            return c
+    return None
+
+
 def export(brushes: list[Brush], codec_id: str, out_path: Path, **options) -> list[Path]:
+    from .storage import prepare_export
     c = codec(codec_id)
     out_path = Path(out_path)
     if not out_path.suffix and c.extensions:
         out_path = out_path.with_suffix(c.extensions[0])
-    return c.write(brushes, out_path, **options)
+    import copy
+    return c.write([copy.deepcopy(b) if codec_id == "brushpkg" else prepare_export(b) for b in brushes], out_path, **options)
+
+
+from .reporting import export_detailed, capability_text
 
 
 def install(target: DetectedApp, brushes: list[Brush], **options) -> InstallResult:
     if target.install is None:
-        return InstallResult(False, f"未在此电脑上找到 {target.adapter.name}。")
+        # Missing detection must not make a file conversion impossible.  The GUI normally uses
+        # the explicit ``app_export`` route below, but keep the core operation safe for callers
+        # that still choose the app entry directly (portable or manually installed copies).
+        c = app_export_codec(target.adapter)
+        if c is None:
+            return InstallResult(False, f"没有可导出的 {target.adapter.name} 文件格式。")
+        out_path = options.get("out_path")
+        if out_path is None:
+            out_dir = Path(options.get("out_dir") or export_dir(f"{target.adapter.id}-手动导入"))
+            name = options.get("file_name") or (brushes[0].name if len(brushes) == 1
+                                                  else f"BrushBridge_{len(brushes)}笔刷")
+            out_path = out_dir / safe_filename(name)
+        ignored = {"direct", "out_dir", "out_path", "file_name"}
+        write_options = {k: v for k, v in options.items() if k not in ignored}
+        try:
+            files = export(brushes, c.id, Path(out_path), **write_options)
+        except Exception as e:
+            log.exception("fallback export for %s", target.adapter.id)
+            return InstallResult(False, f"导出 {target.adapter.name} 文件失败：{e}")
+        return InstallResult(True, f"未检测到 {target.adapter.name} 的安装位置，已导出文件。请在目标软件中手动导入。",
+                             files=files)
     try:
         return target.adapter.install(target.install, brushes, **options)
     except NotImplementedError:

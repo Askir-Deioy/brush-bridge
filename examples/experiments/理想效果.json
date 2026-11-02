@@ -1,0 +1,261 @@
+{
+  "title": "Brush Bridge 跨软件实验笔刷",
+  "version": "1",
+  "brushes": [
+    {
+      "id": "EXP-01",
+      "ideal_effect": "点按是完整圆形，连续直线没有明显断点或额外散布。",
+      "test_steps": "画 5 个单点，再画慢速直线和快速直线；观察圆形、间距和速度是否稳定。",
+      "features": [
+        "tip",
+        "spacing"
+      ],
+      "status": "not_verified",
+      "name": "EXP-01 硬圆基础"
+    },
+    {
+      "id": "EXP-02",
+      "ideal_effect": "轻压笔尖较小，重压笔尖变大；边缘始终是柔和渐变。",
+      "test_steps": "用轻、中、重三档压力画平行线；比较线宽变化和边缘灰度，不要只看缩略图。",
+      "features": [
+        "tip",
+        "size_pressure"
+      ],
+      "status": "not_verified",
+      "name": "EXP-02 软边尺寸压感"
+    },
+    {
+      "id": "EXP-03",
+      "ideal_effect": "三角笔尖沿笔画方向旋转，转弯处方向连续，不突然跳回固定角度。",
+      "test_steps": "画水平、垂直、顺时针圆弧和逆时针圆弧；记录尖角方向是否跟随笔画。",
+      "features": [
+        "tip",
+        "rotation"
+      ],
+      "status": "not_verified",
+      "name": "EXP-03 三角跟随旋转"
+    },
+    {
+      "id": "EXP-04",
+      "ideal_effect": "笔尖外圈逐渐透明，没有白色或黑色实心方框；叠画时中心逐渐变浓。",
+      "test_steps": "在白底、灰底、深色底各画点和短线；检查透明边缘、叠加次序和是否出现方形背景。",
+      "features": [
+        "rgba_tip",
+        "alpha"
+      ],
+      "status": "not_verified",
+      "name": "EXP-04 透明边缘"
+    },
+    {
+      "id": "EXP-05",
+      "ideal_effect": "笔尖轮廓保持稳定，颗粒在笔画中连续平铺；轻压时颗粒较淡，重压时更明显。",
+      "test_steps": "画慢速直线、快速直线、交叉线；分别观察颗粒是否平铺、是否随压力改变深度。",
+      "features": [
+        "tip",
+        "texture",
+        "texture_pressure"
+      ],
+      "status": "not_verified",
+      "name": "EXP-05 颗粒固定间距"
+    },
+    {
+      "id": "EXP-06",
+      "ideal_effect": "主路径仍可辨认，但笔点在两侧随机散开，点数和角度有轻微变化。",
+      "test_steps": "画慢速直线和曲线；记录散布范围、点数、随机性以及重启后是否仍是同一规则。",
+      "features": [
+        "scatter",
+        "count",
+        "random"
+      ],
+      "status": "not_verified",
+      "name": "EXP-06 散布随机"
+    },
+    {
+      "id": "EXP-07",
+      "ideal_effect": "主笔尖形成柔和圆形，双重十字只在叠加处改变密度，不应替换主笔尖。",
+      "test_steps": "画单点、慢线和快速线；比较关闭/开启双重笔刷时的轮廓、密度和双重间距。",
+      "features": [
+        "dual_tip",
+        "multiply"
+      ],
+      "status": "not_verified",
+      "name": "EXP-07 双重叠加"
+    },
+    {
+      "id": "EXP-08",
+      "ideal_effect": "在已有蓝色和黄色底色上拖动时拾取画布颜色，交叠处产生连续混色；边缘略有聚色。",
+      "test_steps": "先铺蓝色和黄色，再用同一支笔跨过两色交界；记录是否拾色、混色方向、载荷衰减和边缘聚色。",
+      "features": [
+        "wet_mix",
+        "edge"
+      ],
+      "status": "not_verified",
+      "name": "EXP-08 湿混色"
+    },
+    {
+      "id": "EXP-09",
+      "ideal_effect": "轻压与重压的色相、饱和度或亮度出现可重复变化；没有颜色动态的目标应明确报告忽略。",
+      "test_steps": "选固定前景色，用轻、中、重压力画三条线；记录颜色是否变化、变化方向和重启后是否一致。",
+      "features": [
+        "color_pressure"
+      ],
+      "status": "not_verified",
+      "name": "EXP-09 颜色压力动态"
+    }
+  ],
+  "source": "original-procedural",
+  "app_status": "not_verified",
+  "exports": {
+    "photoshop": {
+      "ok": true,
+      "files": [
+        "photoshop\\实验笔刷.abr"
+      ],
+      "report": "photoshop\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "csp": {
+      "ok": true,
+      "files": [
+        "csp\\EXP-01 硬圆基础.sut",
+        "csp\\EXP-02 软边尺寸压感.sut",
+        "csp\\EXP-03 三角跟随旋转.sut",
+        "csp\\EXP-04 透明边缘.sut",
+        "csp\\EXP-05 颗粒固定间距.sut",
+        "csp\\EXP-06 散布随机.sut",
+        "csp\\EXP-07 双重叠加.sut",
+        "csp\\EXP-08 湿混色.sut",
+        "csp\\EXP-09 颜色压力动态.sut"
+      ],
+      "report": "csp\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "udongman": {
+      "ok": true,
+      "files": [
+        "udongman\\EXP-01 硬圆基础.sut",
+        "udongman\\EXP-02 软边尺寸压感.sut",
+        "udongman\\EXP-03 三角跟随旋转.sut",
+        "udongman\\EXP-04 透明边缘.sut",
+        "udongman\\EXP-05 颗粒固定间距.sut",
+        "udongman\\EXP-06 散布随机.sut",
+        "udongman\\EXP-07 双重叠加.sut",
+        "udongman\\EXP-08 湿混色.sut",
+        "udongman\\EXP-09 颜色压力动态.sut"
+      ],
+      "report": "udongman\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "procreate": {
+      "ok": true,
+      "files": [
+        "procreate\\实验笔刷.brushset"
+      ],
+      "report": "procreate\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "sai2": {
+      "ok": true,
+      "files": [
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-01 硬圆基础.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-02 软边尺寸压感.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-03 三角跟随旋转.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-04 透明边缘.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-05 颗粒固定间距.ini",
+        "sai2\\实验笔刷\\brushtex\\实验波纹颗粒.bmp",
+        "sai2\\实验笔刷\\scatter\\EXP-06 散布随机.bmp",
+        "sai2\\实验笔刷\\scatter\\EXP-06 散布随机.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-07 双重叠加.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-08 湿混色.ini",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.bmp",
+        "sai2\\实验笔刷\\brushfom\\brshape\\EXP-09 颜色压力动态.ini",
+        "sai2\\实验笔刷\\custool\\nrm\\1.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\2.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\3.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\4.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\5.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\6.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\7.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\8.saitdat",
+        "sai2\\实验笔刷\\custool\\nrm\\9.saitdat",
+        "sai2\\实验笔刷\\安装说明.txt"
+      ],
+      "report": "sai2\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "huashijie": {
+      "ok": true,
+      "files": [
+        "huashijie\\实验笔刷.bru"
+      ],
+      "report": "huashijie\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "krita": {
+      "ok": true,
+      "files": [
+        "krita\\实验笔刷.bundle"
+      ],
+      "report": "krita\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "gimp": {
+      "ok": true,
+      "files": [
+        "gimp\\EXP-01 硬圆基础.gbr",
+        "gimp\\EXP-02 软边尺寸压感.gbr",
+        "gimp\\EXP-03 三角跟随旋转.gbr",
+        "gimp\\EXP-04 透明边缘.gbr",
+        "gimp\\EXP-05 颗粒固定间距.gbr",
+        "gimp\\EXP-06 散布随机.gbr",
+        "gimp\\EXP-07 双重叠加.gbr",
+        "gimp\\EXP-08 湿混色.gbr",
+        "gimp\\EXP-09 颜色压力动态.gbr"
+      ],
+      "report": "gimp\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    },
+    "mypaint": {
+      "ok": true,
+      "files": [
+        "mypaint\\EXP-01 硬圆基础.myb",
+        "mypaint\\EXP-01 硬圆基础_prev.png",
+        "mypaint\\EXP-02 软边尺寸压感.myb",
+        "mypaint\\EXP-02 软边尺寸压感_prev.png",
+        "mypaint\\EXP-03 三角跟随旋转.myb",
+        "mypaint\\EXP-03 三角跟随旋转_prev.png",
+        "mypaint\\EXP-04 透明边缘.myb",
+        "mypaint\\EXP-04 透明边缘_prev.png",
+        "mypaint\\EXP-05 颗粒固定间距.myb",
+        "mypaint\\EXP-05 颗粒固定间距_prev.png",
+        "mypaint\\EXP-06 散布随机.myb",
+        "mypaint\\EXP-06 散布随机_prev.png",
+        "mypaint\\EXP-07 双重叠加.myb",
+        "mypaint\\EXP-07 双重叠加_prev.png",
+        "mypaint\\EXP-08 湿混色.myb",
+        "mypaint\\EXP-08 湿混色_prev.png",
+        "mypaint\\EXP-09 颜色压力动态.myb",
+        "mypaint\\EXP-09 颜色压力动态_prev.png"
+      ],
+      "report": "mypaint\\实验笔刷.report.json",
+      "succeeded": 9,
+      "total": 9
+    }
+  },
+  "package_sha256": "c48f1682bd2c185f714b2c871acd7e7221f1cfffa0ab4541b56d63712fae1db9"
+}

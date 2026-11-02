@@ -1,0 +1,3067 @@
+{
+  "app_version": "0.5.0",
+  "sample_origin": "original-generated-controls",
+  "routes": [
+    {
+      "source": "photoshop",
+      "target": "csp",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\photoshop-to-csp\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "photoshop",
+      "target": "udongman",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\photoshop-to-udongman\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "photoshop",
+      "target": "procreate",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\photoshop-to-procreate\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "photoshop",
+      "target": "sai2",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\photoshop-to-sai2\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "photoshop",
+      "target": "huashijie",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\photoshop-to-huashijie\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.20000000298023224,
+              "relative_error": 1.4901161138336505e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15000000596046448,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.30000001192092896,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.800000011920929,
+              "relative_error": 1.4901161138336505e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "csp",
+      "target": "photoshop",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\csp-to-photoshop\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "csp",
+      "target": "udongman",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\csp-to-udongman\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "csp",
+      "target": "procreate",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\csp-to-procreate\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "csp",
+      "target": "sai2",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\csp-to-sai2\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "csp",
+      "target": "huashijie",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\csp-to-huashijie\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.20000000298023224,
+              "relative_error": 1.4901161138336505e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15000000596046448,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.30000001192092896,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.800000011920929,
+              "relative_error": 1.4901161138336505e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "udongman",
+      "target": "photoshop",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\udongman-to-photoshop\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "udongman",
+      "target": "csp",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\udongman-to-csp\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": false,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "udongman",
+      "target": "procreate",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\udongman-to-procreate\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "udongman",
+      "target": "sai2",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\udongman-to-sai2\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "udongman",
+      "target": "huashijie",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\udongman-to-huashijie\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.20000000298023224,
+              "relative_error": 1.4901161138336505e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15000000596046448,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.30000001192092896,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.800000011920929,
+              "relative_error": 1.4901161138336505e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "procreate",
+      "target": "photoshop",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\procreate-to-photoshop\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "procreate",
+      "target": "csp",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\procreate-to-csp\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "procreate",
+      "target": "udongman",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\procreate-to-udongman\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "procreate",
+      "target": "sai2",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\procreate-to-sai2\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "procreate",
+      "target": "huashijie",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\procreate-to-huashijie\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.20000000298023224,
+              "relative_error": 1.4901161138336505e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15000000596046448,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.30000001192092896,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.800000011920929,
+              "relative_error": 1.4901161138336505e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "sai2",
+      "target": "photoshop",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\sai2-to-photoshop\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "sai2",
+      "target": "csp",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\sai2-to-csp\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "sai2",
+      "target": "udongman",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\sai2-to-udongman\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "sai2",
+      "target": "procreate",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\sai2-to-procreate\\brushes.report_10.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.2,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.3,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.8,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": true,
+          "size_pressure": 0.7
+        }
+      ]
+    },
+    {
+      "source": "sai2",
+      "target": "huashijie",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\sai2-to-huashijie\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.2,
+              "output": 0.20000000298023224,
+              "relative_error": 1.4901161138336505e-08
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15,
+              "output": 0.15000000596046448,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.3,
+              "output": 0.30000001192092896,
+              "relative_error": 3.973642988726785e-08
+            },
+            "opacity": {
+              "source": 1,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.8,
+              "output": 0.800000011920929,
+              "relative_error": 1.4901161138336505e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "huashijie",
+      "target": "photoshop",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\huashijie-to-photoshop\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.20000000298023224,
+              "output": 0.20000000298023224,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15000000596046448,
+              "output": 0.15000000596046448,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.30000001192092896,
+              "output": 0.30000001192092896,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.800000011920929,
+              "output": 0.8,
+              "relative_error": 1.4901160916291903e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "huashijie",
+      "target": "csp",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\huashijie-to-csp\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.20000000298023224,
+              "output": 0.2,
+              "relative_error": 1.4901160916291903e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15000000596046448,
+              "output": 0.15,
+              "relative_error": 3.973642830828406e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.30000001192092896,
+              "output": 0.3,
+              "relative_error": 3.973642830828406e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.800000011920929,
+              "output": 0.8,
+              "relative_error": 1.4901160916291903e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "huashijie",
+      "target": "udongman",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\huashijie-to-udongman\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.20000000298023224,
+              "output": 0.2,
+              "relative_error": 1.4901160916291903e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15000000596046448,
+              "output": 0.15,
+              "relative_error": 3.973642830828406e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.30000001192092896,
+              "output": 0.3,
+              "relative_error": 3.973642830828406e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.800000011920929,
+              "output": 0.8,
+              "relative_error": 1.4901160916291903e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "huashijie",
+      "target": "procreate",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\huashijie-to-procreate\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.20000000298023224,
+              "output": 0.20000000298023224,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15000000596046448,
+              "output": 0.15000000596046448,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.30000001192092896,
+              "output": 0.30000001192092896,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1.0,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.800000011920929,
+              "output": 0.800000011920929,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    },
+    {
+      "source": "huashijie",
+      "target": "sai2",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "report": "routes\\huashijie-to-sai2\\brushes.report_9.json",
+      "checks": [
+        {
+          "name": "硬圆",
+          "parameters": {
+            "size_px": {
+              "source": 24.0,
+              "output": 24.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.20000000298023224,
+              "output": 0.2,
+              "relative_error": 1.4901160916291903e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "软圆",
+          "parameters": {
+            "size_px": {
+              "source": 40.0,
+              "output": 40.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.15000000596046448,
+              "output": 0.15,
+              "relative_error": 3.973642830828406e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "非对称印章",
+          "parameters": {
+            "size_px": {
+              "source": 64.0,
+              "output": 64.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.30000001192092896,
+              "output": 0.3,
+              "relative_error": 3.973642830828406e-08
+            },
+            "opacity": {
+              "source": 1.0,
+              "output": 1,
+              "relative_error": 0.0
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        },
+        {
+          "name": "纹理压感",
+          "parameters": {
+            "size_px": {
+              "source": 48.0,
+              "output": 48.0,
+              "relative_error": 0.0
+            },
+            "spacing": {
+              "source": 0.25,
+              "output": 0.25,
+              "relative_error": 0.0
+            },
+            "opacity": {
+              "source": 0.800000011920929,
+              "output": 0.8,
+              "relative_error": 1.4901160916291903e-08
+            }
+          },
+          "tip_preserved": true,
+          "texture_preserved": false,
+          "size_pressure": 0.0
+        }
+      ]
+    }
+  ],
+  "note": "文件回读和控制参数检查；没有执行目标绘画软件的导入、重启或笔迹检查。"
+}

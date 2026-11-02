@@ -29,7 +29,7 @@ from typing import Optional
 import numpy as np
 from PIL import Image
 
-from ..core.imaging import round_tip
+from ..core.imaging import round_tip, tip_mask
 from ..core.model import Brush, BrushSource
 from ..core.plugin import FileInfo, FormatCodec, Fix, register_codec
 from ..core.system import safe_filename, unique_path
@@ -374,7 +374,7 @@ def brush_from_bytes(data: bytes, filename: str) -> list[Brush]:
 
 
 def _prepare_tip(img: Image.Image, size_px: float, resample: bool = True) -> Image.Image:
-    img = img.convert("L")
+    img = tip_mask(img)
     target = int(round(max(1.0, min(float(GBR_MAX_SIZE), size_px))))
     side = max(img.size)
     if side > GBR_MAX_SIZE or (resample and side != target and target > 0):

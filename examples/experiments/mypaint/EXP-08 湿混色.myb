@@ -1,0 +1,71 @@
+{
+    "comment": "MyPaint brush file",
+    "version": 3,
+    "description": "EXP-08 湿混色",
+    "settings": {
+        "anti_aliasing": {
+            "base_value": 1.0,
+            "inputs": {}
+        },
+        "dabs_per_actual_radius": {
+            "base_value": 3.571429,
+            "inputs": {}
+        },
+        "dabs_per_basic_radius": {
+            "base_value": 0.0,
+            "inputs": {}
+        },
+        "dabs_per_second": {
+            "base_value": 0.0,
+            "inputs": {}
+        },
+        "elliptical_dab_angle": {
+            "base_value": 0.0,
+            "inputs": {}
+        },
+        "elliptical_dab_ratio": {
+            "base_value": 1.0,
+            "inputs": {}
+        },
+        "eraser": {
+            "base_value": 0.0,
+            "inputs": {}
+        },
+        "hardness": {
+            "base_value": 1.0,
+            "inputs": {}
+        },
+        "offset_by_random": {
+            "base_value": 0.0,
+            "inputs": {}
+        },
+        "opaque": {
+            "base_value": 1.0,
+            "inputs": {}
+        },
+        "opaque_linearize": {
+            "base_value": 0.9,
+            "inputs": {}
+        },
+        "opaque_multiply": {
+            "base_value": 1.0,
+            "inputs": {}
+        },
+        "radius_logarithmic": {
+            "base_value": 3.178054,
+            "inputs": {}
+        },
+        "slow_tracking": {
+            "base_value": 0.0,
+            "inputs": {}
+        },
+        "smudge": {
+            "base_value": 0.6,
+            "inputs": {}
+        },
+        "smudge_length": {
+            "base_value": 0.4,
+            "inputs": {}
+        }
+    }
+}

@@ -42,7 +42,7 @@ from PIL import Image, ImageOps, PngImagePlugin
 PngImagePlugin.MAX_TEXT_CHUNK = max(PngImagePlugin.MAX_TEXT_CHUNK, 256 * 1024 * 1024)
 PngImagePlugin.MAX_TEXT_MEMORY = max(PngImagePlugin.MAX_TEXT_MEMORY, 512 * 1024 * 1024)
 
-from ..core.imaging import fit, round_tip, stroke_preview
+from ..core.imaging import fit, round_tip, stroke_preview, tip_mask
 from ..core.model import Brush, BrushRef, BrushSource, ColorDynamics, DualTip, Dynamic, Texture
 from ..core.plugin import FileInfo, FormatCodec, Fix, register_codec
 from ..core.system import safe_filename, unique_path
@@ -957,7 +957,7 @@ def _limit(img: Image.Image, side: int = MAX_TIP_SIDE) -> Image.Image:
 
 def _tip_resource(b: Brush, tips: list[Image.Image], stem: str, prefix: str) -> tuple[_Res, str, float]:
     """Encode tips as Krita brush file; returns (resource, brush type, native side)."""
-    tips = [_limit(t.convert("L")) for t in tips]
+    tips = [_limit(tip_mask(t)) for t in tips]
     if len(tips) == 1:
         img = ImageOps.invert(tips[0])  # Krita gray PNG: black = paint, white = background
         data = _png_bytes(img, {"brush_spacing": _num(b.spacing), "brush_name": b.name})
@@ -1158,7 +1158,7 @@ def _preset_preview(b: Brush, size: int = 200) -> Image.Image:
         stroke = stroke_preview(b, size, size)
         canvas.alpha_composite(stroke)
     except Exception:  # noqa: BLE001 - preview is cosmetic
-        tip = fit(b.main_tip().convert("L"), int(size * 0.8))
+        tip = fit(tip_mask(b.main_tip()), int(size * 0.8))
         dark = Image.new("RGBA", tip.size, (20, 20, 20, 255))
         dark.putalpha(tip)
         canvas.alpha_composite(dark, ((size - tip.width) // 2, (size - tip.height) // 2))
@@ -1173,7 +1173,7 @@ def _bundle_preview(brushes: list[Brush], size: int = 256) -> Image.Image:
     n = 1 if len(shown) == 1 else 2
     cell = size // n
     for i, b in enumerate(shown):
-        tip = fit(b.main_tip().convert("L"), int(cell * 0.8))
+        tip = fit(tip_mask(b.main_tip()), int(cell * 0.8))
         dark = Image.new("RGBA", tip.size, (20, 20, 20, 255))
         dark.putalpha(tip)
         x = (i % n) * cell + (cell - tip.width) // 2

@@ -5,16 +5,18 @@ import logging
 import os
 import sys
 import traceback
+import threading
+import json
 from pathlib import Path
 from typing import Any, Callable, Optional
 
 from PIL import Image
 from PySide6.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, Signal
-from PySide6.QtGui import QColor, QFont, QIcon, QPixmap
+from PySide6.QtGui import QColor, QFont, QFontDatabase, QIcon, QPixmap
 from PySide6.QtWidgets import (
-    QAbstractItemView, QApplication, QComboBox, QFileDialog, QFrame, QHBoxLayout,     QHeaderView, QInputDialog, QLabel,
-    QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton, QSplitter, QTableWidget,
-    QTableWidgetItem, QTabWidget, QTextBrowser, QVBoxLayout, QWidget,
+    QApplication, QComboBox, QFileDialog, QFrame, QHBoxLayout, QInputDialog, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton, QSplitter, QCheckBox,
+    QTabWidget, QTextBrowser, QVBoxLayout, QWidget,
 )
 
 from .. import __version__
@@ -33,6 +35,8 @@ ROLE_SRC = Qt.UserRole + 2
 # Friendlier names for export targets (codec names come from the format plugins).
 CODEC_LABELS = {
     "csp": "Clip Studio Paint 笔刷 (.sut)",
+    "brushpkg": "通用笔刷分享包 / 中间格式 (.brushpkg)",
+    "huashijie": "画世界 Pro 笔刷 (.bru)",
 }
 
 
@@ -144,6 +148,8 @@ def result_dialog(parent, ok: bool, message: str, files: list[Path]):
 # Page 1: move brushes
 # ---------------------------------------------------------------------------------------------
 class TransferPage(QWidget):
+    export_progress = Signal(int, int)
+
     def __init__(self, win: "MainWindow"):
         super().__init__()
         self.win = win
@@ -163,7 +169,7 @@ class TransferPage(QWidget):
         left = QWidget()
         lv = QVBoxLayout(left)
         lv.setContentsMargins(0, 0, 0, 0)
-        t = QLabel("① 选择笔刷来源")
+        t = QLabel("① 选择笔刷文件")
         t.setObjectName("title")
         lv.addWidget(t)
         self.sources = QListWidget()
@@ -173,7 +179,7 @@ class TransferPage(QWidget):
         add = QPushButton("＋ 打开笔刷文件…")
         add.clicked.connect(self._open_dialog)
         lv.addWidget(add)
-        h = QLabel("提示：也可以把笔刷文件或文件夹\n直接拖进这个窗口（比如从 iPad\n传过来的 Procreate 笔刷）。")
+        h = QLabel("提示：也可以把笔刷文件或文件夹\n直接拖进这个窗口（比如从 iPad\n传过来的 Procreate 笔刷）。\n无需安装目标软件即可转换。")
         h.setObjectName("hint")
         lv.addWidget(h)
         split.addWidget(left)
@@ -183,7 +189,7 @@ class TransferPage(QWidget):
         rv = QVBoxLayout(right)
         rv.setContentsMargins(0, 0, 0, 0)
         head = QHBoxLayout()
-        self.title = QLabel("② 勾选要搬运的笔刷")
+        self.title = QLabel("② 勾选要转换的笔刷")
         self.title.setObjectName("title")
         head.addWidget(self.title, 1)
         self.search = QLineEdit()
@@ -210,6 +216,7 @@ class TransferPage(QWidget):
         self.status = QLabel("")
         self.status.setObjectName("hint")
         rv.addWidget(self.status)
+        self.export_progress.connect(lambda done, total: self.status.setText(f"已处理 {done}/{total} 支笔刷…"))
 
         sel = QHBoxLayout()
         for text, fn, tip in (("全选", lambda: self._check_all(True), "勾选当前显示的全部笔刷"),
@@ -220,6 +227,9 @@ class TransferPage(QWidget):
             b.clicked.connect(fn)
             sel.addWidget(b)
         sel.addStretch(1)
+        inspect = QPushButton("查看所选笔刷数据")
+        inspect.clicked.connect(self._inspect_brush)
+        sel.addWidget(inspect)
         self.count = QLabel("已选 0 个")
         sel.addWidget(self.count)
         rv.addLayout(sel)
@@ -228,18 +238,31 @@ class TransferPage(QWidget):
         line.setFrameShape(QFrame.HLine)
         rv.addWidget(line)
         tgt = QHBoxLayout()
-        t3 = QLabel("③ 导入到")
+        t3 = QLabel("③ 选择目标格式")
         t3.setObjectName("title")
         tgt.addWidget(t3)
         self.target = QComboBox()
         self.target.setMinimumWidth(320)
         self.target.setMinimumHeight(34)
         tgt.addWidget(self.target, 1)
-        self.go = QPushButton("开始导入")
+        self.go = QPushButton("开始转换")
         self.go.setObjectName("primary")
+        self.go.setMinimumWidth(180)
         self.go.clicked.connect(self._go)
         tgt.addWidget(self.go)
+        self.cancel_event = threading.Event()
+        self.cancel_button = QPushButton("取消")
+        self.cancel_button.setEnabled(False)
+        self.cancel_button.clicked.connect(self.cancel_event.set)
+        tgt.addWidget(self.cancel_button)
         rv.addLayout(tgt)
+        self.capabilities = QLabel("")
+        self.capabilities.setWordWrap(True)
+        self.capabilities.setObjectName("hint")
+        rv.addWidget(self.capabilities)
+        self.ignore_optional = QCheckBox("允许忽略缺失颗粒（在报告中记录）")
+        rv.addWidget(self.ignore_optional)
+        self.target.currentIndexChanged.connect(self._target_changed)
         split.addWidget(right)
         split.setSizes([260, 900])
 
@@ -262,18 +285,8 @@ class TransferPage(QWidget):
         cur = self.sources.currentItem().data(ROLE_SRC) if self.sources.currentItem() else None
         self.sources.blockSignals(True)
         self.sources.clear()
-        self._header("电脑上的绘画软件")
-        for d in self.detected:
-            if d.install is None:
-                continue
-            status = "（运行中）" if d.install.running else ""
-            label = d.install.label if d.adapter.desktop else f"{d.adapter.name}（电脑里找到的 iPad 笔刷文件）"
-            it = QListWidgetItem(f"{label}{status}")
-            it.setData(ROLE_SRC, ("app", d))
-            it.setToolTip(str(d.install.data_dir or d.install.exe or ""))
-            self.sources.addItem(it)
+        self._header("已打开的笔刷文件")
         if self.files:
-            self._header("打开的文件")
             for f in self.files:
                 n = f.info.brush_count if f.info else 0
                 it = QListWidgetItem(f"📄 {f.path.name}" + (f"（{n}）" if n >= 0 else ""))
@@ -294,29 +307,53 @@ class TransferPage(QWidget):
         kind, obj = data
         if kind == "codec":
             return kind, obj.id
+        if kind == "app_export":
+            app_target, export_codec = obj
+            return kind, app_target.adapter.id, export_codec.id
         return kind, obj.adapter.id, obj.label
 
     def _rebuild_targets(self):
         prev = self._target_key(self.target.currentData())
         self.target.blockSignals(True)
         self.target.clear()
-        for d in self.detected:
-            if not d.adapter.desktop:
-                self.target.addItem(f"→ {d.adapter.name}（生成文件，传到 iPad 上点开）", ("app", d))
-            elif d.install is not None and d.adapter.id == "csp":
-                self.target.addItem(f"→ {d.install.label}（生成文件，拖进「子工具」面板）", ("app", d))
-                self.target.addItem(f"→ {d.install.label}（实验：直接写入，需先关闭 CSP，会自动备份）", ("app_direct", d))
-            elif d.install is not None:
-                self.target.addItem(f"→ {d.install.label}（自动导入）", ("app", d))
         for c in codecs():
             if c.can_write:
-                self.target.addItem(f"💾 导出为文件：{codec_label(c)}", ("codec", c))
-        if prev is not None:  # keep the artist's choice across re-detection (e.g. after a transfer)
+                self.target.addItem(f"导出为 {codec_label(c)}", ("codec", c))
+        if prev is not None:  # keep the artist's choice if the format list is rebuilt
             for i in range(self.target.count()):
                 if self._target_key(self.target.itemData(i)) == prev:
                     self.target.setCurrentIndex(i)
                     break
         self.target.blockSignals(False)
+        self._target_changed()
+
+    def _target_changed(self, *_):
+        data = self.target.currentData()
+        if data and data[0] == "codec":
+            self.capabilities.setText(convert.capability_text(data[1].id))
+        else:
+            self.capabilities.setText("选择目标格式并导出文件；也可以选择 .brushpkg 作为通用分享/中间格式。")
+
+    def _inspect_brush(self):
+        refs = self.checked_refs()
+        if not refs:
+            QMessageBox.information(self, "选择笔刷", "请先勾选一支笔刷。")
+            return
+        def work():
+            from ..core.storage import encode
+            b = refs[0].load()
+            # Display the persistent public model without printing raw source bytes.
+            values = {k: getattr(b, k) for k in ("name", "group", "size_px", "spacing", "opacity", "flow",
+                      "tips", "texture", "dual", "size_dynamic", "opacity_dynamic", "flow_dynamic", "wet", "resources", "notes")}
+            return json.dumps(encode(values, lambda data, suffix: f"已保存资源（{len(data)} 字节，{suffix}）"),
+                              ensure_ascii=False, indent=2)
+        def done(text):
+            box = QMessageBox(self)
+            box.setWindowTitle("笔刷数据")
+            box.setText("公共参数、素材与动态规则；预览不代表目标软件的实际笔迹。")
+            box.setDetailedText(text)
+            box.exec()
+        run_bg(work, done)
 
     def add_files(self, paths: list[Path]):
         paths = convert.expand_paths(paths)
@@ -358,7 +395,7 @@ class TransferPage(QWidget):
         self.source_token += 1
         token = self.source_token
         self.model.set_refs([], None)
-        self.title.setText(f"② 勾选要搬运的笔刷 — {cur.text()}")
+        self.title.setText(f"② 勾选要转换的笔刷 — {cur.text()}")
         self.status.setText("正在读取笔刷列表…")
 
         def work():
@@ -427,13 +464,13 @@ class TransferPage(QWidget):
     def _update_count(self, *_):
         n = len(self.model.checked)
         self.count.setText(f"已选 {n} 个")
-        self.go.setText(f"开始导入（{n}）" if n else "开始导入")
+        self.go.setText(f"开始转换（{n}）" if n else "开始转换")
 
     # go --------------------------------------------------------------------------------------
     def _go(self):
         refs = self.checked_refs()
         if not refs:
-            QMessageBox.information(self, "还没选笔刷", "请先在中间勾选要搬运的笔刷。")
+            QMessageBox.information(self, "还没选笔刷", "请先在中间勾选要转换的笔刷。")
             return
         data = self.target.currentData()
         if not data:
@@ -442,10 +479,12 @@ class TransferPage(QWidget):
         if kind == "codec":
             ext = obj.extensions[0] if obj.extensions else ""
             default = export_dir("导出") / (refs[0].name if len(refs) == 1 else f"BrushBridge_{len(refs)}笔刷")
-            path, _ = QFileDialog.getSaveFileName(self, "导出为", str(default) + ext, f"{codec_label(obj)} (*{ext})")
+            path, _ = QFileDialog.getSaveFileName(self, "选择导出位置", str(default) + ext,
+                                                  f"{codec_label(obj)} (*{ext})")
             if not path:
                 return
             opts = {}
+            opts["ignore_missing_optional"] = self.ignore_optional.isChecked()
             if obj.id in EXPORT_VERSIONS:
                 app_name, key, choices = EXPORT_VERSIONS[obj.id]
                 label, ok = QInputDialog.getItem(self, "目标软件版本", f"要在哪个版本的 {app_name} 里使用？",
@@ -455,43 +494,37 @@ class TransferPage(QWidget):
                 value = dict(choices)[label]
                 if value:
                     opts[key] = value
-            self._run_transfer(refs, lambda brushes: self._export(obj, brushes, Path(path), **opts))
-        else:
-            target: DetectedApp = obj
-            if target.install and target.adapter.is_running(target.install) and \
-                    getattr(target.adapter, "requires_closed", False):
-                QMessageBox.information(self, "请先关闭软件",
-                                        f"导入 {target.label} 需要先关闭它。\n请保存作品并关闭 {target.adapter.name}，然后再点「开始导入」。")
-                return
-            opts = {"direct": True} if kind == "app_direct" else {}
-            if opts and QMessageBox.question(
-                    self, "实验功能",
-                    f"将直接修改 {target.label} 的工具设置（会先自动备份）。\n请确认已经保存作品并关闭了软件。继续吗？"
-            ) != QMessageBox.Yes:
-                return
-            self._run_transfer(refs, lambda brushes: self._install(target, brushes, **opts))
+            self._run_transfer(refs, lambda brushes, errors: self._export(obj, brushes, Path(path), load_errors=errors, **opts),
+                               report_empty=True)
 
     def _export(self, c, brushes, path: Path, **opts):
-        files = convert.export(brushes, c.id, path, **opts)
-        notes = sorted({n for b in brushes for n in b.notes})
-        msg = f"已导出 {len(brushes)} 个笔刷。"
+        result = convert.export_detailed(brushes, c.id, path, cancel_event=self.cancel_event,
+                                         progress=self.export_progress.emit, **opts)
+        notes = sorted({n for row in result.entries for n in row["warnings"]})
+        msg = result.summary()
+        for row in result.entries:
+            if row["error"]:
+                msg += f"\n{row['name']}：{row['error']}"
         if notes:
             msg += "\n\n转换提示：\n· " + "\n· ".join(notes)
-        return True, msg, files, False
+        files = result.files + ([result.report_path] if result.report_path else [])
+        return result.ok, msg, files, False
 
     def _install(self, target: DetectedApp, brushes, **opts):
         res = convert.install(target, brushes, **opts)
         return res.ok, res.message, res.files, res.needs_app_closed
 
-    def _run_transfer(self, refs, action):
-        self.win.busy(f"正在搬运 {len(refs)} 个笔刷…")
+    def _run_transfer(self, refs, action, report_empty=False):
+        self.win.busy(f"正在转换 {len(refs)} 个笔刷…")
         self.go.setEnabled(False)
+        self.cancel_event.clear()
+        self.cancel_button.setEnabled(True)
 
         def work():
             brushes, errors = convert.load_brushes(refs)
-            if not brushes:
+            if not brushes and not report_empty:
                 return False, "所选笔刷都读取失败：\n" + "\n".join(errors), [], False
-            ok, msg, files, needs_closed = action(brushes)
+            ok, msg, files, needs_closed = action(brushes, errors)
             if errors:
                 msg += "\n\n以下笔刷读取失败：\n" + "\n".join(errors)
             return ok, msg, files, needs_closed
@@ -499,79 +532,24 @@ class TransferPage(QWidget):
         def done(res):
             self.win.idle()
             self.go.setEnabled(True)
+            self.cancel_button.setEnabled(False)
             ok, msg, files, needs_closed = res
             if needs_closed:
                 QMessageBox.information(self, "请先关闭软件", msg)
                 return
             result_dialog(self, ok, msg, [Path(f) for f in files])
-            self.win.refresh_apps(quiet=True)
 
         def fail(m):
             self.win.idle()
             self.go.setEnabled(True)
+            self.cancel_button.setEnabled(False)
             QMessageBox.warning(self, "出错了", m)
 
         run_bg(work, done, fail)
 
 
 # ---------------------------------------------------------------------------------------------
-# Page 2: installed software
-# ---------------------------------------------------------------------------------------------
-class AppsPage(QWidget):
-    def __init__(self, win: "MainWindow"):
-        super().__init__()
-        self.win = win
-        v = QVBoxLayout(self)
-        head = QHBoxLayout()
-        t = QLabel("电脑上的绘画软件")
-        t.setObjectName("title")
-        head.addWidget(t, 1)
-        b = QPushButton("重新检测")
-        b.clicked.connect(lambda: win.refresh_apps())
-        head.addWidget(b)
-        v.addLayout(head)
-        self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["软件", "版本", "状态", "笔刷保存位置 / 说明"])
-        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.table.verticalHeader().setVisible(False)
-        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table.cellDoubleClicked.connect(self._open)
-        v.addWidget(self.table, 1)
-        h = QLabel("双击一行可以打开该软件的笔刷文件夹。")
-        h.setObjectName("hint")
-        v.addWidget(h)
-        self.rows: list[DetectedApp] = []
-
-    def set_detected(self, detected: list[DetectedApp]):
-        self.rows = detected
-        self.table.setRowCount(len(detected))
-        for r, d in enumerate(detected):
-            i = d.install
-            name = i.name if i else d.adapter.name
-            ver = (i.version or "未知") if i else "—"
-            if not d.adapter.desktop:
-                status = "📱 iPad"
-            elif i:
-                status = "🟢 运行中" if i.running else "已安装"
-            else:
-                status = "未安装"
-            where = str(i.data_dir) if i and i.data_dir else d.note
-            for c, text in enumerate((name, ver, status, where)):
-                item = QTableWidgetItem(text)
-                if not i and d.adapter.desktop:
-                    item.setForeground(QColor("#999"))
-                self.table.setItem(r, c, item)
-
-    def _open(self, row: int, _col: int):
-        d = self.rows[row]
-        if d.install and d.install.data_dir and Path(d.install.data_dir).exists():
-            os.startfile(str(d.install.data_dir))  # noqa: S606
-
-
-# ---------------------------------------------------------------------------------------------
-# Page 3: diagnose & fix
+# Page 2: diagnose & fix
 # ---------------------------------------------------------------------------------------------
 class DropZone(QFrame):
     dropped = Signal(list)
@@ -676,20 +654,18 @@ class DiagnosePage(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"Brush Bridge 笔刷桥 {__version__} — 在绘画软件之间搬运笔刷")
+        self.setWindowTitle(f"Brush Bridge 笔刷格式转换 {__version__}")
         self.resize(1200, 760)
         self.setAcceptDrops(True)
         self.detected: list[DetectedApp] = []
         self.tabs = QTabWidget()
         self.transfer = TransferPage(self)
-        self.apps_page = AppsPage(self)
         self.diag = DiagnosePage(self)
-        self.tabs.addTab(self.transfer, "🖌 笔刷搬家")
-        self.tabs.addTab(self.apps_page, "💻 我的软件")
+        self.tabs.addTab(self.transfer, "🖌 笔刷转换")
         self.tabs.addTab(self.diag, "🔧 修复导入问题")
         self.setCentralWidget(self.tabs)
-        self.statusBar().showMessage("正在检测电脑上的绘画软件…")
-        QTimer.singleShot(50, self.refresh_apps)
+        self.transfer.set_detected([])
+        self.statusBar().showMessage("请选择笔刷文件，然后选择目标格式导出　　作者：askir · 本软件完全免费")
 
     def busy(self, text: str):
         self.statusBar().showMessage(text)
@@ -699,24 +675,6 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(text)
         while QApplication.overrideCursor() is not None:
             QApplication.restoreOverrideCursor()
-
-    def refresh_apps(self, quiet: bool = False):
-        if not quiet:
-            self.statusBar().showMessage("正在检测电脑上的绘画软件…")
-
-        def done(detected):
-            self.detected = detected
-            self.transfer.set_detected(detected)
-            self.apps_page.set_detected(detected)
-            n = sum(1 for d in detected if d.install)
-            self.statusBar().showMessage(f"找到 {n} 个绘画软件。")
-            if not quiet and self.transfer.sources.currentRow() < 0:
-                for i in range(self.transfer.sources.count()):
-                    if self.transfer.sources.item(i).data(ROLE_SRC):
-                        self.transfer.sources.setCurrentRow(i)
-                        break
-
-        run_bg(convert.detect_all, done)
 
     def closeEvent(self, e):
         self.transfer.thumb_loader.shutdown()  # don't make the app wait for queued thumbnails
@@ -741,8 +699,14 @@ class MainWindow(QMainWindow):
 def _setup_logging():
     base = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "BrushBridge"
     base.mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(filename=base / "brush-bridge.log", level=logging.INFO, encoding="utf-8",
-                        format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    try:
+        logging.basicConfig(filename=base / "brush-bridge.log", level=logging.INFO, encoding="utf-8",
+                            format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    except PermissionError:
+        # A previous GUI instance can still hold the shared log on Windows.
+        # Logging must never prevent opening a brush file or running smoke mode.
+        logging.basicConfig(level=logging.INFO,
+                            format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -751,8 +715,19 @@ def main(argv: Optional[list[str]] = None) -> int:
     # GIL switch interval keeps painting/scrolling responsive while they work (default is 5 ms).
     sys.setswitchinterval(0.0005)
     argv = sys.argv if argv is None else argv
+    smoke_dir = smoke_input = None
+    if "--smoke-test" in argv:
+        pos = argv.index("--smoke-test")
+        smoke_dir = Path(argv[pos + 1]).resolve()
+        smoke_input = Path(argv[pos + 2]).resolve() if len(argv) > pos + 2 else None
+        argv = argv[:pos]
     app = QApplication(argv)
     app.setApplicationName("Brush Bridge")
+    if smoke_dir and not QFontDatabase.families():
+        # The offscreen Qt backend does not discover Windows system fonts.
+        font_file = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts/msyh.ttc"
+        if font_file.is_file():
+            QFontDatabase.addApplicationFont(str(font_file))
     f = QFont("Microsoft YaHei UI")
     f.setPointSize(10)
     app.setFont(f)
@@ -763,6 +738,31 @@ def main(argv: Optional[list[str]] = None) -> int:
     load_plugins()
     w = MainWindow()
     w.show()
+    if smoke_dir:
+        smoke_dir.mkdir(parents=True, exist_ok=True)
+        attempts = [0]
+        def smoke_finish():
+            attempts[0] += 1
+            ready = not smoke_input or w.transfer.proxy.rowCount() > 0
+            if not ready and attempts[0] < 100:
+                QTimer.singleShot(100, smoke_finish)
+                return
+            evidence = {"window_visible": w.isVisible(), "brush_count": w.transfer.proxy.rowCount(),
+                        "version": __version__, "input_loaded": ready}
+            if ready and smoke_input:
+                t = w.transfer
+                t._check_all(True)
+                brushes, errors = convert.load_brushes(t.checked_refs())
+                from ..core.plugin import codec
+                ok, message, files, _ = t._export(codec("brushpkg"), brushes, smoke_dir / "gui-roundtrip.brushpkg")
+                evidence.update(export_ok=ok, errors=errors, message=message, files=[str(p) for p in files])
+            w.grab().save(str(smoke_dir / "window.png"))
+            (smoke_dir / "gui-smoke.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
+            w.close()
+            app.exit(0 if ready and evidence.get("export_ok", True) else 1)
+        if smoke_input:
+            QTimer.singleShot(100, lambda: w.transfer.add_files([smoke_input]))
+        QTimer.singleShot(500, smoke_finish)
     files = [Path(a) for a in argv[1:] if Path(a).exists()]
     if files:
         QTimer.singleShot(300, lambda: w.transfer.add_files(files))

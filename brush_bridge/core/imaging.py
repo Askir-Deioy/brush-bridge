@@ -36,14 +36,28 @@ def to_mask(img: Image.Image, *, invert_if_light_background: bool = True) -> Ima
     if img.mode in ("RGBA", "LA", "PA") or (img.mode == "P" and "transparency" in img.info):
         rgba = img.convert("RGBA")
         alpha = np.asarray(rgba.getchannel("A"))
-        if alpha.min() < 250:
-            lum = np.asarray(rgba.convert("L"), dtype=np.float32)
-            # dark pixels on transparent background: paint = alpha; light pixels keep alpha too
-            return Image.fromarray(alpha, "L") if lum.mean() < 250 else Image.fromarray(alpha, "L")
+        # Any non-opaque alpha channel is meaningful.  Treating values such as
+        # 251..254 as opaque flattens a nearly-transparent white background
+        # into a solid tip, which is especially visible after CSP/SAI export.
+        if alpha.min() < 255:
+            # Both dark-on-transparent and white-on-transparent sources use
+            # alpha as coverage; RGB is not allowed to fill the background.
+            return Image.fromarray(alpha, "L")
     g = img.convert("L")
     if invert_if_light_background and background_is_light(g):
         g = ImageOps.invert(g)
     return g
+
+
+def tip_mask(img: Image.Image) -> Image.Image:
+    """Return a brush-tip coverage mask (L, 255 = paint).
+
+    Tip images may be RGBA even though most target formats only accept an
+    8-bit grayscale mask.  When alpha carries information, it is the paint
+    coverage and must win over the RGB channels; otherwise the neutral image
+    already follows the model's 255=paint convention.
+    """
+    return to_mask(img, invert_if_light_background=False)
 
 
 def background_is_light(g: Image.Image) -> bool:

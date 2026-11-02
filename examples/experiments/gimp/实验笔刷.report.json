@@ -1,0 +1,291 @@
+{
+  "schema_version": "0.1",
+  "target": "gimp",
+  "codec": "gimp",
+  "capabilities": "将尽量映射目标格式支持的属性，具体变化见逐支报告。",
+  "cancelled": false,
+  "summary": {
+    "succeeded": 9,
+    "total": 9
+  },
+  "brushes": [
+    {
+      "index": 0,
+      "name": "EXP-01 硬圆基础",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "EXP-02 软边尺寸压感",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "GIMP 笔刷文件只保存笔尖形状和间距，压感/动态需要在 GIMP 的“绘画动态”中自行设置。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "EXP-03 三角跟随旋转",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "GIMP 位图笔刷不保存角度，请在 GIMP 工具选项的“角度”中调整。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "EXP-04 透明边缘",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "当前目标适配主要使用灰度笔尖，彩色或透明度通道可能被近似；原图保留在主存档。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "EXP-05 颗粒固定间距",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "gimp 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。",
+        "GIMP 笔刷文件只保存笔尖形状和间距，纹理需要在 GIMP 的“绘画动态”中自行设置。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "gimp 不完整支持纹理深度随压力/倾斜/速度变化，已保留基础纹理并在主存档保存原始动态。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "EXP-06 散布随机",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "GIMP 笔刷文件只保存笔尖形状和间距，散布/角度抖动需要在 GIMP 的“绘画动态”中自行设置。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "EXP-07 双重叠加",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "GIMP 笔刷文件只保存笔尖形状和间距，双重笔刷需要在 GIMP 的“绘画动态”中自行设置。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "EXP-08 湿混色",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。",
+        "GIMP 笔刷文件只保存笔尖形状和间距，边缘加深/湿边需要在 GIMP 的“绘画动态”中自行设置。"
+      ],
+      "losses": [
+        {
+          "kind": "approximation",
+          "message": "跨引擎混色使用目标格式参数近似，尚未验证实际混色笔迹。"
+        }
+      ],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "EXP-09 颜色压力动态",
+      "source_format": "",
+      "status": "success",
+      "file_validation": "passed",
+      "app_import": "not_verified",
+      "stroke_fidelity": "not_verified",
+      "warnings": [
+        "GIMP 笔刷文件只保存笔尖形状和间距，颜色动态需要在 GIMP 的“绘画动态”中自行设置。"
+      ],
+      "losses": [],
+      "error": "",
+      "files": [
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+        "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-01 硬圆基础.gbr",
+      "sha256": "15e7ecd11b7db0dc8d619ed1a2fd1e43cea969e6f4784355f5d037a4ee22afc5"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-02 软边尺寸压感.gbr",
+      "sha256": "e8408f30d5745e5c5868f12ebe332cddd40cdcdd3f1bd5dc3e9341cb1974fc5c"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-03 三角跟随旋转.gbr",
+      "sha256": "eece5ce34b191eacea472686790327f21ec35b0af5b2d56154e11a9cb05d9e2e"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-04 透明边缘.gbr",
+      "sha256": "22ca98f7baaab8dc32956ff118e0463536bd91ece01c33d968a2871ddcf7773f"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-05 颗粒固定间距.gbr",
+      "sha256": "2ac4229b86fa6366d528d45cbff241b4dc0402e7965436273c67acb2cec05ed4"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-06 散布随机.gbr",
+      "sha256": "7f32a8a58f32d63e9477988e5438c2a55338f7729e59003238c329abd2bbc36f"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-07 双重叠加.gbr",
+      "sha256": "6f65fc128d99e26fdf27e8324e75b1ea8d1741288e43ada335f40b3c1eee0802"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-08 湿混色.gbr",
+      "sha256": "8e7a2e29142bf0e94d0f79f885eab9a933f032d3ee0ada2345a23cc54b9c08bd"
+    },
+    {
+      "path": "D:\\AAAINPROVE\\brush-bridge\\examples\\experiments\\gimp\\EXP-09 颜色压力动态.gbr",
+      "sha256": "6d031bbd63b209f2d829328c551033fb81f17fab4e29a739a10bd9e526ce7d6e"
+    }
+  ]
+}

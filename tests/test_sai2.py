@@ -422,6 +422,26 @@ def test_detect_runs():
         assert inst.exe.name.lower() == "sai2.exe" and inst.data_dir is not None
 
 
+def test_loose_shared_sai2_package_reads_tools_and_assets(tmp_path):
+    """Shared SAI2 packs often put .saitdat beside brushfom/brushtex, without custool/nrm."""
+    source = tmp_path / "normal"
+    codec("sai2").write(_brushes()[:2], source)
+    root = tmp_path / "loose"
+    shutil.copytree(source, root)
+    for f in (root / "custool" / "nrm").glob("*.saitdat"):
+        shutil.move(str(f), str(root / f.name))
+    shutil.rmtree(root / "custool")
+    info = sniff(root)
+    assert info and info.format_id == "sai2"
+    refs = codec("sai2").list_refs(root)
+    assert len(refs) >= 2
+    brushes, errors = __import__("brush_bridge.core.convert", fromlist=["load_brushes"]).load_brushes(refs[:2])
+    assert not errors and len(brushes) == 2
+    result = __import__("brush_bridge.core.convert", fromlist=["export_detailed"]).export_detailed(
+        brushes, "csp", tmp_path / "csp.sut")
+    assert result.ok
+
+
 @pytest.mark.skipif(not (Path.home() / "Documents" / "SYSTEMAX Software Development" / "SAIv2" / "settings").is_dir(),
                     reason="no local SAI2 settings")
 def test_real_settings_copy(tmp_path, monkeypatch):

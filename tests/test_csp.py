@@ -244,6 +244,13 @@ def test_write_read_synthetic(tmp_path):
     assert b.color.hue_jitter == pytest.approx(0.5, abs=0.01) and b.color.brightness_jitter == pytest.approx(0.2)
     assert b.wet.enabled and b.wet.load == pytest.approx(0.7) and b.wet.wetness == pytest.approx(0.4)
 
+    # A new brush must not inherit hidden factory taper/revision/blur defaults.
+    v = _variant(out[0])
+    assert v["BrushAdjustVelocity"] == 0
+    assert v["BrushRevision"] == 0 and v["BrushRevisionBySpeed"] == 0 and v["BrushRevisionByViewScale"] == 0
+    assert v["BrushInOutBySpeed"] == 0 and v["BrushInRatio"] == 0 and v["BrushOutRatio"] == 0
+    assert v["BrushBlur"] == pytest.approx(0)
+
     # Writing an unmodified read brush again is lossless
     again = codec.write([b], tmp_path / "again.sut")[0]
     v1, v2 = _variant(out[0]), _variant(again)
@@ -276,6 +283,45 @@ def test_eraser_and_custom_tip(tmp_path):
     lcon = sqlite3.connect(db)
     assert lcon.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
     lcon.close()
+
+
+def test_rgba_tip_keeps_transparent_background(tmp_path):
+    """CSP material generation must use RGBA coverage instead of flattening RGB."""
+    rgba = Image.new("RGBA", (32, 32), (255, 255, 255, 0))
+    alpha = Image.new("L", (32, 32), 0)
+    alpha.paste(192, (8, 8, 24, 24))
+    rgba.putalpha(alpha)
+    out = CspCodec().write([Brush(name="透明笔尖", tips=[rgba])], tmp_path / "rgba.sut")[0]
+    result = CspCodec().read(out)[0]
+    assert np.array_equal(np.asarray(result.tips[0].convert("L")), np.asarray(alpha))
+
+
+def test_near_opaque_rgba_tip_keeps_alpha_coverage(tmp_path):
+    """Alpha values below 255 must remain coverage, even when nearly opaque."""
+    rgba = Image.new("RGBA", (16, 16), (255, 255, 255, 254))
+    alpha = Image.new("L", (16, 16), 254)
+    alpha.paste(0, (0, 0, 8, 8))
+    rgba.putalpha(alpha)
+    out = CspCodec().write([Brush(name="近透明笔尖", tips=[rgba])], tmp_path / "near-opaque.sut")[0]
+    result = CspCodec().read(out)[0]
+    assert np.array_equal(np.asarray(result.tips[0].convert("L")), np.asarray(alpha))
+
+
+def test_old_csp_dual_enable_flag_is_read(tmp_path):
+    """Some CSP exports set DualUsePatternImage without UseDualBrush."""
+    tip = Image.new("L", (24, 24), 0)
+    tip.paste(255, (4, 4, 20, 20))
+    out = CspCodec().write([Brush(name="旧版双重", tips=[tip], dual=DualTip(image=tip))], tmp_path / "dual.sut")[0]
+    con = sqlite3.connect(out)
+    try:
+        con.execute("UPDATE Variant SET UseDualBrush=0 WHERE VariantID=1")
+        con.execute("UPDATE Variant SET UseDualBrush=0 WHERE VariantID=2")
+        con.commit()
+    finally:
+        con.close()
+    result = CspCodec().read(out)[0]
+    assert result.dual is not None
+    assert any("旧版双重笔刷" in note for note in result.notes)
 
 
 def test_generated_texture_and_dual(tmp_path):

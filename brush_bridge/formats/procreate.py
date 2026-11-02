@@ -37,7 +37,7 @@ from typing import Any, Optional
 import numpy as np
 from PIL import Image, ImageOps
 
-from ..core.imaging import pad_square, round_tip, stroke_preview
+from ..core.imaging import pad_square, round_tip, stroke_preview, tip_mask
 from ..core.model import (Brush, BrushRef, BrushSource, ColorDynamics, DualTip, Dynamic, EdgeEffect, Texture,
                           WetMix)
 from ..core.plugin import FileInfo, FormatCodec, register_codec
@@ -567,7 +567,9 @@ def _preview_to_thumb(img: Image.Image) -> Image.Image:
     """Any preview (dark paint or RGBA) -> Procreate's white-on-transparent 1060x324 thumbnail."""
     rgba = img.convert("RGBA")
     a = np.asarray(rgba.getchannel("A"), dtype=np.float32)
-    if a.min() >= 250:  # opaque preview: use darkness on a light background as coverage
+    # Only a truly opaque preview can safely fall back to luminance.  Near-
+    # opaque alpha (251..254) still carries coverage and must not be flattened.
+    if a.min() >= 255:  # opaque preview: use darkness on a light background as coverage
         g = rgba.convert("L")
         from ..core.imaging import background_is_light
 
@@ -609,12 +611,18 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
                     thumb: Optional[Image.Image]) -> Brush:
     name = p.get("name") if isinstance(p.get("name"), str) else ""
     br = Brush(name=(name or "Procreate Brush").strip() or "Procreate Brush")
+    br.extensions["procreate"] = {"parameters": dict(p)}
 
     # --- tip ----------------------------------------------------------------------------------
     bundled_shape = p.get("bundledShapePath") if isinstance(p.get("bundledShapePath"), str) else ""
     hint = _bundled_shape_hint(bundled_shape) if bundled_shape else None
     if shape is None and bundled_shape:
         shape = library_image(bundled_shape)
+    if bundled_shape and shape is None:
+        br.resources["tip"] = {"status": "missing", "name": bundled_shape, "required": True,
+                                "source": "procreate-builtin"}
+    else:
+        br.resources["tip"] = {"status": "embedded" if shape is not None else "procedural", "required": True}
     if shape is not None:
         tip = _gray_white_paint(shape)
         if p.get("shapeInverted"):
@@ -669,7 +677,7 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
     def signed(key: str, label: str) -> float:
         v = _f(p, key)
         if v < -0.01:
-            br.warn(f"Procreate 的“{label}”为负值（反向作用），已按正向近似。")
+            br.warn(f"Procreate 的“{label}”为负值，兼容参数采用正向近似；原始规则保存在主存档扩展中。")
         return _clamp(abs(v))
 
     br.size_dynamic = Dynamic(pressure=signed("dynamicsPressureSize", "压力-大小"),
@@ -677,12 +685,19 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
                               velocity=signed("dynamicsSpeedSize", "速度-大小"),
                               jitter=_clamp(_f(p, "dynamicsJitterSize")),
                               pressure_curve=_curve(p, "dynamicsPressureSizeCurve"))
-    br.opacity_dynamic = Dynamic(pressure=_clamp(_f(p, "dynamicsPressureOpacityTransfer")),
+    br.opacity_dynamic = Dynamic(pressure=signed("dynamicsPressureOpacityTransfer", "压力-不透明度转移"),
                                  tilt=_clamp(_f(p, "dynamicsTiltOpacity")),
                                  velocity=signed("dynamicsSpeedOpacity", "速度-不透明度"),
                                  jitter=_clamp(_f(p, "dynamicsJitterOpacity")))
     br.flow_dynamic = Dynamic(pressure=signed("dynamicsPressureOpacity", "压力-流量"),
                               pressure_curve=_curve(p, "dynamicsPressureOpacityCurve"))
+    for dyn, mapping in ((br.size_dynamic, {"pressure": "dynamicsPressureSize", "velocity": "dynamicsSpeedSize"}),
+                         (br.opacity_dynamic, {"pressure": "dynamicsPressureOpacityTransfer", "velocity": "dynamicsSpeedOpacity"}),
+                         (br.flow_dynamic, {"pressure": "dynamicsPressureOpacity"})):
+        dyn.enabled_inputs = [key for key in ("pressure", "tilt", "velocity", "jitter") if getattr(dyn, key) != 0]
+        for driver, key in mapping.items():
+            if _f(p, key) < 0:
+                dyn.response_curves[driver] = [(0.0, 1.0), (1.0, 1.0 - _clamp(abs(_f(p, key))))]
 
     # Bleed thins the paint (lighter, broken edges) at low pressure / when tilted; gradation fades the
     # stamp when tilted. Both become paint density (flow) responding to pressure / tilt.
@@ -706,8 +721,8 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
     # --- paint --------------------------------------------------------------------------------
     max_o = _clamp(_f(p, "maxOpacity", 1.0))
     min_o = _clamp(_f(p, "minOpacity", 0.0), 0.0, max_o)
-    br.opacity = _clamp(min_o + _clamp(_f(p, "paintOpacity", 1.0)) * (max_o - min_o), 0.01, 1.0)
-    br.flow = _clamp(_f(p, "dynamicsGlazedFlow", 1.0), 0.01, 1.0)
+    br.opacity = _clamp(min_o + _clamp(_f(p, "paintOpacity", 1.0)) * (max_o - min_o), 0.0, 1.0)
+    br.flow = _clamp(_f(p, "dynamicsGlazedFlow", 1.0), 0.0, 1.0)
     br.blend_mode = _blend_from_codes(p.get("blendMode"), p.get("extendedBlend"))
     br.stabilization = _clamp(max(_f(p, "plotSmoothing"), _f(p, "plotMovingAverageStabilization")))
 
@@ -722,6 +737,8 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
     if grain is None and bundled_grain and bundled_grain != BLANK_GRAIN:
         grain = library_image(bundled_grain)
         if grain is None:
+            br.resources["grain"] = {"status": "missing", "name": bundled_grain, "required": False,
+                                     "source": "procreate-builtin"}
             grain = builtin_grain(bundled_grain)
             br.warn(f"该笔刷使用了 Procreate 内置纹理「{bundled_grain}」，文件中不包含该图像，"
                     f"已用程序生成的同类近似纹理代替。{_LIBRARY_TIP}")
@@ -815,6 +832,19 @@ def _set(p: dict[str, Any], key: str, value: Any) -> None:
         p[key] = value
 
 
+def _dynamic_value(dyn: Dynamic, driver: str) -> float:
+    """Write a Procreate dynamic, retaining the sign captured in the public model.
+
+    Procreate uses negative sensor values for the inverse response direction.
+    ``params_to_brush`` stores the magnitude in the neutral field and keeps the
+    direction in ``response_curves`` so other targets can still use the rule.
+    Re-emitting only the magnitude silently flips that direction on a native
+    Procreate round-trip.
+    """
+    value = _clamp(getattr(dyn, driver, 0.0))
+    return -value if value > 0 and driver in dyn.response_curves else value
+
+
 def brush_to_params(br: Brush, *, has_grain: bool) -> dict[str, Any]:
     p = template_params(br.name or "Brush")
 
@@ -844,15 +874,15 @@ def brush_to_params(br: Brush, *, has_grain: bool) -> dict[str, Any]:
     _set(p, "shapeFlipXJitter", br.flip_x)
     _set(p, "shapeFlipYJitter", br.flip_y)
 
-    _set(p, "dynamicsPressureSize", _clamp(br.size_dynamic.pressure))
+    _set(p, "dynamicsPressureSize", _dynamic_value(br.size_dynamic, "pressure"))
     _set(p, "dynamicsTiltSize", _clamp(br.size_dynamic.tilt))
-    _set(p, "dynamicsSpeedSize", _clamp(br.size_dynamic.velocity))
+    _set(p, "dynamicsSpeedSize", _dynamic_value(br.size_dynamic, "velocity"))
     _set(p, "dynamicsJitterSize", _clamp(br.size_dynamic.jitter))
-    _set(p, "dynamicsPressureOpacityTransfer", _clamp(br.opacity_dynamic.pressure))
+    _set(p, "dynamicsPressureOpacityTransfer", _dynamic_value(br.opacity_dynamic, "pressure"))
     _set(p, "dynamicsTiltOpacity", _clamp(br.opacity_dynamic.tilt))
-    _set(p, "dynamicsSpeedOpacity", _clamp(br.opacity_dynamic.velocity))
+    _set(p, "dynamicsSpeedOpacity", _dynamic_value(br.opacity_dynamic, "velocity"))
     _set(p, "dynamicsJitterOpacity", _clamp(br.opacity_dynamic.jitter))
-    _set(p, "dynamicsPressureOpacity", _clamp(br.flow_dynamic.pressure))
+    _set(p, "dynamicsPressureOpacity", _dynamic_value(br.flow_dynamic, "pressure"))
     _set_curve(p, "dynamicsPressureSizeCurve", br.size_dynamic.pressure_curve)
     _set_curve(p, "dynamicsPressureOpacityCurve", br.flow_dynamic.pressure_curve)
     if br.size_dynamic.tilt > 0 or br.opacity_dynamic.tilt > 0:
@@ -961,7 +991,7 @@ def _pow2(n: int, lo: int, hi: int) -> int:
 
 def make_shape_png(tip: Image.Image) -> Image.Image:
     """Square, power-of-two, white-on-black L image as Procreate expects for Shape.png."""
-    g = tip.convert("L")
+    g = tip_mask(tip)
     g = pad_square(g, 0)
     side = _pow2(g.width, 64, MAX_SHAPE_SIDE)
     if g.width != side:

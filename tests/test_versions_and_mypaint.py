@@ -112,6 +112,22 @@ def test_mypaint_from_foreign_brush(tmp_path):
     assert r.size_dynamic.pressure > 0.5 and r.wet.enabled and r.scatter > 0
 
 
+def test_mypaint_description_preserves_brush_name(tmp_path):
+    b = Brush("公开样本名称", size_px=30)
+    out = codec("mypaint").write([b], tmp_path / "converted.myb")[0]
+    assert codec("mypaint").read(out)[0].name == "公开样本名称"
+
+
+def test_mypaint_detailed_export_ignores_preview_files(tmp_path):
+    from brush_bridge.core.reporting import export_detailed
+
+    brushes = [Brush("实验一", size_px=24), Brush("实验二", size_px=36, spacing=.2)]
+    result = export_detailed(brushes, "mypaint", tmp_path / "实验笔刷.myb")
+    assert result.ok and result.succeeded == 2
+    assert len([p for p in result.files if p.suffix == ".myb"]) == 2
+    assert len([p for p in result.files if p.name.endswith("_prev.png")]) == 2
+
+
 # ---------------------------------------------------------------------------------------------
 # CSP: Manager.Version / column set follows the target release
 # ---------------------------------------------------------------------------------------------
@@ -177,6 +193,14 @@ def test_sai2_scattered_round_brush_uses_brshape(tmp_path):
     assert sai2.choose_mode(b) == "brshape"
     res = sai2.export_brushes([b], tmp_path)
     assert ("brshape", "Spray") in res.assets and any(tmp_path.rglob("*.bmp"))
+
+
+def test_sai2_eraser_spacing_uses_brshape(tmp_path):
+    b = Brush("间距橡皮", size_px=40, is_eraser=True, spacing=0.3)
+    assert sai2.choose_mode(b) == "brshape"
+    codec("sai2").write([b], tmp_path / "pkg.saitdat")
+    [back] = [x for x in codec("sai2").read(tmp_path / "pkg") if x.name == "间距橡皮"]
+    assert back.is_eraser and back.spacing == pytest.approx(0.3)
 
 
 # ---------------------------------------------------------------------------------------------

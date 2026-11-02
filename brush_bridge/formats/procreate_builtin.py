@@ -8,8 +8,11 @@ All images are white = paint (``L`` mode); grains tile seamlessly.
 
 Users who have the original images (e.g. exported from their own Procreate) can drop them into a
 "Procreate library" folder; :func:`library_image` finds them by file name and they are used instead.
-Searched folders: ``$BRUSH_BRIDGE_PROCREATE_LIBRARY`` (``os.pathsep``-separated),
-``%LOCALAPPDATA%\\BrushBridge\\procreate_library`` and ``procreate_library`` next to the program.
+Searched folders: ``$BRUSH_BRIDGE_PROCREATE_LIBRARY`` and
+``$BRUSHHUB_PROCREATE_ASSETS`` (``os.pathsep``-separated),
+``%LOCALAPPDATA%\\BrushBridge\\procreate_library``, the local BrushHub asset folder when it is
+next to the program, and ``procreate_library`` next to the program. No asset is copied into this
+project; a user's existing BrushHub installation is only used as an optional local source.
 """
 
 from __future__ import annotations
@@ -26,16 +29,22 @@ from PIL import Image, ImageFilter
 SHAPE_SIZE = 512
 GRAIN_SIZE = 512
 LIBRARY_ENV = "BRUSH_BRIDGE_PROCREATE_LIBRARY"
+BRUSHHUB_ASSETS_ENV = "BRUSHHUB_PROCREATE_ASSETS"
 _IMAGE_EXTS = {".png", ".jpg", ".jpeg"}
 
 
 def library_dirs() -> list[Path]:
     """Folders searched for user-supplied Procreate built-in images (existing ones only)."""
-    dirs = [Path(x) for x in os.environ.get(LIBRARY_ENV, "").split(os.pathsep) if x.strip()]
+    dirs = [Path(x) for env_name in (LIBRARY_ENV, BRUSHHUB_ASSETS_ENV)
+            for x in os.environ.get(env_name, "").split(os.pathsep) if x.strip()]
     local = os.environ.get("LOCALAPPDATA") or str(Path.home() / "AppData" / "Local")
     dirs.append(Path(local) / "BrushBridge" / "procreate_library")
     base = Path(sys.executable).parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parents[2]
     dirs.append(base / "procreate_library")
+    # BrushHub keeps its optional real Procreate library beside its executable. This is a
+    # local lookup only; the release package does not redistribute those files.
+    for parent in (base, *base.parents):
+        dirs.append(parent / "BrushHub-1.0.0" / "brushhub" / "assets" / "procreate-builtin")
     return [d for d in dirs if d.is_dir()]
 
 
@@ -354,10 +363,20 @@ _SHAPES: tuple[tuple[tuple[str, ...], Callable], ...] = (
 
 
 def builtin_shape(path: str) -> Optional[Image.Image]:
-    """Approximate stamp image, or ``None`` when a plain computed round tip is as good."""
+    """Return a deterministic procedural stamp approximation.
+
+    A bundled Procreate shape is not present in the exported archive.  When its
+    name is unknown, there is no pixel data to recover, but a stable varied
+    stamp is still more useful than silently replacing every shape with a solid
+    round brush.  The name hash selects a conservative morphology so repeated
+    conversions remain reproducible and the report can mark the result as an
+    approximation.
+    """
     low = path.lower()
     rng = _rng("shape:" + low)
     fn = next((f for keys, f in _SHAPES if any(k in low for k in keys)), None)
     if fn is None:
-        return None
+        generic = (_ink, _ink_sponge, _dab, _flat, _streaky, _crayon, _nebula)
+        digest = hashlib.sha1(low.encode("utf-8")).digest()
+        fn = generic[digest[0] % len(generic)]
     return _img(fn(rng, SHAPE_SIZE))
