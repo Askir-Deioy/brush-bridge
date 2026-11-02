@@ -4,7 +4,7 @@
 
 作者：askir。本软件完全免费。
 
-如果拿到 `BrushBridge-0.5.0-Windows.msi`，双击安装即可；安装程序会把 GUI、CLI、示例笔刷、实验笔刷和回填表放到“程序文件/Brush Bridge”，并创建开始菜单快捷方式。也可以直接运行发布文件夹里的 `BrushBridge/BrushBridge.exe`，不安装系统组件。
+如果拿到 GitHub Release 的 `BrushBridge-0.5.0-User.msi`，双击安装即可；这是精简用户版，安装目录根部直接有 `BrushBridge.exe`，并创建开始菜单快捷方式。它只带运行所需文件、一个示例笔刷、简短说明和回填表。完整开发版 MSI 还会带 CLI、实验笔刷和验收资料。便携 ZIP 也直接运行根部的 `BrushBridge.exe`。
 
 打开发布目录 `BrushBridge/BrushBridge.exe`。拖入 ABR、SUT、Procreate 笔刷、画世界 Pro `.bru`、SAI2 工具/资源目录，或 `.brushpkg` 主存档；勾选笔刷，再选择目标文件格式并导出。
 

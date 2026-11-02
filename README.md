@@ -62,7 +62,8 @@
 
 ## 使用方法
 
-1. 从 [Releases](https://github.com/CanderFlower/brush-bridge/releases/latest) 下载发布文件夹，运行 `BrushBridge/BrushBridge.exe`（无需安装）。
+1. 从 [Releases](https://github.com/Askir-Deioy/brush-bridge/releases/latest) 下载“简洁用户版” MSI；安装后，安装目录根部的 `BrushBridge.exe` 就是图形界面，开始菜单也有快捷方式。
+   也可以下载同一 Release 的便携 ZIP，直接运行根部的 `BrushBridge.exe`（无需安装）。开发版目录仍使用 `BrushBridge/BrushBridge.exe` 和 `BrushBridgeCLI/BrushBridgeCLI.exe`。
 2. **① 选择文件**：点击“打开笔刷文件”，或把笔刷文件拖进窗口。
 3. **② 勾选笔刷**：可以搜索、按分组筛选、全选。
 4. **③ 选择目标格式**：选择目标软件格式或 `.brushpkg` 通用分享格式，点 **开始转换** 并选择导出位置。
