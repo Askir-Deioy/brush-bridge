@@ -127,9 +127,12 @@ class PhotoshopAdapter(AppAdapter):
         try:
             # Same as double-clicking: a running Photoshop receives the file and appends it to the
             # Brushes panel (saved into Brushes.psp); otherwise Photoshop starts and loads it.
-            for f in abrs:
-                subprocess.Popen([str(inst.exe), str(f)], close_fds=True)
-                time.sleep(0.5)
+            # Photoshop is a single desktop process.  Starting one process per
+            # selected file makes a large batch open many external windows and
+            # can leave Photoshop and the completion prompt unresponsive.  Pass
+            # the whole batch to one launch instead.
+            subprocess.Popen([str(inst.exe), *(str(f) for f in abrs)], close_fds=True)
+            time.sleep(0.5)
         except OSError as e:
             return InstallResult(False, f"无法启动 Photoshop：{e}\n请手动双击下面的文件导入。", files=abrs)
         where = "已发送给正在运行的 Photoshop" if running else "正在启动 Photoshop 并载入"

@@ -139,9 +139,19 @@ def result_dialog(parent, ok: bool, message: str, files: list[Path]):
     else:
         btn = None
     box.addButton("好的", QMessageBox.AcceptRole)
-    box.exec()
-    if btn is not None and box.clickedButton() is btn:
-        open_in_explorer(Path(files[0]))
+
+    # Keep the GUI event loop available while the target application finishes
+    # receiving a batch.  A nested modal exec can make the result prompt look
+    # frozen when Photoshop is also starting or importing files.
+    box.setAttribute(Qt.WA_DeleteOnClose)
+
+    def on_clicked(clicked):
+        if btn is not None and clicked is btn:
+            open_in_explorer(Path(files[0]))
+        box.close()
+
+    box.buttonClicked.connect(on_clicked)
+    box.open()
 
 
 # ---------------------------------------------------------------------------------------------

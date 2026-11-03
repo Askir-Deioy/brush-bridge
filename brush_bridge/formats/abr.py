@@ -1021,7 +1021,18 @@ def write_abr(brushes: list[Brush], out_path: Path, *, prefer_native: bool = Tru
     presets: list[bytes] = []
     for br in brushes:
         nat = br.source.native if br.source.format == "abr" else {}
-        if prefer_native and nat.get("abr_desc"):
+        # A Photoshop v10 descriptor can contain fields that Photoshop rejects
+        # when the file header is rewritten as v6.2.  Replaying native bytes is
+        # safe for v6.1/v6.2 sources, while newer sources must go through the
+        # common model so the output really matches the advertised version.
+        source_version = str(br.source.version or "")
+        native_version_ok = False
+        try:
+            parts = source_version.split(".")
+            native_version_ok = int(parts[0]) == 6 and (len(parts) == 1 or int(parts[1]) <= 2)
+        except (TypeError, ValueError):
+            native_version_ok = False
+        if prefer_native and native_version_ok and nat.get("abr_desc"):
             presets.append(nat["abr_desc"])
             samples.update(nat.get("abr_samples", {}))
             patterns.update(nat.get("abr_patterns", {}))
