@@ -156,9 +156,8 @@ from .reporting import export_detailed, capability_text
 
 def install(target: DetectedApp, brushes: list[Brush], **options) -> InstallResult:
     if target.install is None:
-        # Missing detection must not make a file conversion impossible.  The GUI normally uses
-        # the explicit ``app_export`` route below, but keep the core operation safe for callers
-        # that still choose the app entry directly (portable or manually installed copies).
+        # The desktop GUI is file based.  Keep this compatibility fallback for
+        # older callers, but describe the current manual-import workflow.
         c = app_export_codec(target.adapter)
         if c is None:
             return InstallResult(False, f"没有可导出的 {target.adapter.name} 文件格式。")
@@ -175,12 +174,12 @@ def install(target: DetectedApp, brushes: list[Brush], **options) -> InstallResu
         except Exception as e:
             log.exception("fallback export for %s", target.adapter.id)
             return InstallResult(False, f"导出 {target.adapter.name} 文件失败：{e}")
-        return InstallResult(True, f"未检测到 {target.adapter.name} 的安装位置，已导出文件。请在目标软件中手动导入。",
+        return InstallResult(True, f"已导出 {target.adapter.name} 文件。请在目标软件中手动导入。",
                              files=files)
     try:
         return target.adapter.install(target.install, brushes, **options)
     except NotImplementedError:
-        return InstallResult(False, f"暂不支持自动导入到 {target.adapter.name}，请使用「导出为文件」。")
+        return InstallResult(False, f"当前版本只生成 {target.adapter.name} 的导入文件，请使用「导出为文件」后在软件中导入。")
     except Exception as e:
         log.exception("install into %s", target.adapter.id)
         return InstallResult(False, f"导入 {target.label} 时出错：{e}")

@@ -17,25 +17,23 @@
 
 | 功能 | 说明 |
 |---|---|
-| 💻 检测软件和版本 | 自动找到电脑上安装的绘画软件、版本号、是否正在运行、笔刷保存位置 |
-| 🖌 直接浏览已装的笔刷 | 直接读取 Photoshop 画笔库、CSP 辅助工具、SAI2 自定义工具、Krita 资源包、GIMP 笔刷，带缩略图、搜索，并按软件里原本的分组（如 PS 的多层画笔组、CSP 的「工具 → 子工具组」）显示成文件夹树 |
 | 📄 打开外部笔刷文件 | 把 `.abr` `.sut` `.brush` `.brushset` `.bru` `.bundle` `.kpp` `.gbr` `.gih` `.myb` 或 PNG 图片拖进窗口即可 |
-| 🚚 一键导入 | 选好目标软件，自动转换格式并导入；做不到全自动的软件会给出明确的操作提示 |
+| 🚚 批量转换 | 一次勾选多支笔刷，选择目标格式并导出；导出后在目标软件自己的导入入口载入文件 |
 | 🔧 修复导入失败 | 例如新版 Photoshop 导出的 ABR v10 在 CSP 里报错，可一键转成通用的 v6.2 格式（无损） |
 
 ## 支持情况
 
-| 软件 | 读取已安装笔刷 | 打开文件 | 导出文件 | 自动导入 |
-|---|---|---|---|---|
-| Photoshop | ✅ 画笔库 Brushes.psp（含分组） | ✅ .abr v1/v2/v6/v10 | ✅ .abr v6.2 | ✅ 自动发送给 Photoshop 载入 |
-| Clip Studio Paint | ✅ 辅助工具 | ✅ .sut | ✅ .sut | ⚠️ 实验性（需关闭 CSP，自动备份） |
-| SAI2 | ✅ 自定义工具 | ✅ | ✅ | ✅ 写入 SAI2 设置（需关闭 SAI2，自动备份） |
-| Procreate（iPad） | — 无法在电脑上检测 | ✅ .brush / .brushset | ✅ .brushset | 📱 生成文件，传到 iPad 点开即可 |
-| 画世界 Pro（手机/平板） | — 不依赖电脑安装位置 | ✅ .bru | ✅ .bru | 📱 生成文件，传到设备后在应用内导入 |
-| Krita | ✅ 资源包 | ✅ .bundle / .kpp | ✅ .bundle | ✅ 放入资源文件夹，重启 Krita 生效 |
-| GIMP | ✅ 用户笔刷 | ✅ .gbr / .gih / .vbr | ✅ .gbr | ✅ 放入笔刷文件夹，刷新即可 |
-| MyPaint | ✅ 用户笔刷 | ✅ .myb v1/v2/v3 | ✅ .myb v3 / v2 | ✅ 放入笔刷文件夹，重启 MyPaint 生效 |
-| 图片 | — | ✅ PNG/JPG 等作为笔尖 | ✅ PNG | — |
+| 软件 | 打开文件 | 导出文件 | 导出后如何使用 |
+|---|---|---|---|
+| Photoshop | ✅ .abr v1/v2/v6/v10 | ✅ .abr v6.2 | 在 Photoshop 的画笔面板中导入 |
+| Clip Studio Paint | ✅ .sut | ✅ .sut | 在 CSP 的辅助工具面板中导入 |
+| SAI2 | ✅ 工具/资源目录 | ✅ 工具/资源目录 | 按随文件生成的说明复制到 SAI2 设置目录 |
+| Procreate（iPad） | ✅ .brush / .brushset | ✅ .brushset | 把文件传到 iPad 后在 Procreate 中打开 |
+| 画世界 Pro（手机/平板） | ✅ .bru | ✅ .bru | 把文件传到设备后在画世界 Pro 中导入 |
+| Krita | ✅ .bundle / .kpp | ✅ .bundle | 在 Krita 的资源管理器中导入 |
+| GIMP | ✅ .gbr / .gih / .vbr | ✅ .gbr | 在 GIMP 的笔刷设置中导入或刷新 |
+| MyPaint | ✅ .myb v1/v2/v3 | ✅ .myb v3 / v2 | 把文件放入 MyPaint 笔刷目录后重启或刷新 |
+| 图片 | ✅ PNG/JPG 等作为笔尖 | ✅ PNG | 在目标软件中作为笔尖图片使用 |
 
 > 同一软件内的「原样搬运」（例如 Photoshop 画笔库 → .abr 文件 → CSP）会保留原始数据，不损失任何参数。
 > 不同软件之间的转换会尽量映射笔尖、间距、压感、散布、纹理、双重画笔、颜色动态、混色等参数；
@@ -96,7 +94,7 @@ python scripts/build_exe.py   # 打包 dist/BrushBridge/ 与 dist/BrushBridgeCLI
 python scripts/make_release.py --out ..\\BrushBridge-0.5.0-Windows --force  # 只生成一个对应的 ZIP
 ```
 
-架构：`brush_bridge/core/model.py` 定义与软件无关的笔刷模型；`formats/` 每种文件格式一个编解码器，`apps/` 每个软件一个适配器（检测、列出、安装）。新增软件只需添加一个插件文件。各格式的逆向笔记见 [docs/formats](docs/formats)。
+架构：`brush_bridge/core/model.py` 定义与软件无关的笔刷模型；`formats/` 每种文件格式一个编解码器，`apps/` 保存软件相关的读取和兼容性处理。新增软件只需添加一个插件文件。各格式的逆向笔记见 [docs/formats](docs/formats)。
 
 欢迎提交 Issue 附上无法导入的笔刷文件（请确认你有权分享）。
 
@@ -119,4 +117,4 @@ Photoshop、Clip Studio Paint、Procreate、PaintTool SAI、Krita、GIMP、MyPai
 - Diagnoses files that an app refuses to import and repairs them (e.g. Photoshop 2020+ ABR v10 → v6.2 for Clip Studio Paint).
 - Procreate brushes that reference Procreate's built-in library use your own copies of those images from `%LOCALAPPDATA%\BrushBridge\procreate_library` (not shipped; procedural look-alikes otherwise).
 
-Download the `BrushBridge/` folder from Releases, or run from source with `pip install -e .` then `brush-bridge`. MIT licensed.
+Download the compact user MSI or ZIP from Releases, or run from source with `pip install -e .` then `brush-bridge`. MIT licensed.

@@ -16,9 +16,9 @@ Code: `brush_bridge/formats/csp.py` (codec), `csp_schema.py` (schema and tree), 
 | factory `EditImageTool.todb` | `<install>\CLIP STUDIO PAINT\Settings\PAINT\Tool\<language>\` | initial tool set for this version; read to learn the installed schema |
 | material library | `Documents\CELSYS\CLIPStudioCommon\Material\` | brush tips, textures and other materials |
 
-CSP keeps `EditImageTool.todb` open while it runs. brush-bridge only ever reads a **copy** of it.
-SQLite is opened with `immutable=1` or on a temp copy, so CSP never sees a lock. The only time
-brush-bridge writes to it is the opt-in direct install, and that refuses to run while CSP is open.
+CSP keeps `EditImageTool.todb` open while it runs. The current desktop workflow only reads a
+**copy** of it when inspecting compatibility; exported `.sut` files are imported through CSP's
+own Sub Tool palette.
 
 ## Schema
 
@@ -332,24 +332,8 @@ brush-bridge writes one file per brush. Each file contains:
 **Import:** in CSP, select the target tool, then drag the file onto the **Sub Tool** palette. If you
 drop it onto the *Tool* palette, CSP shows "此文件无法添加到工具组面板".
 
-## Direct install (experimental, `install(..., direct=True)`)
+## Import workflow
 
-This is only allowed while CSP is closed. The steps are:
-
-1. `system.backup(EditImageTool.todb)`.
-2. Find the Brush tool (`NodeDefaultIdentifier 22`) or the tool named in `tool=`.
-3. Find or create a sub tool group `brush-bridge`, appended to the end of the tool's child list.
-4. Append each sub tool node:
-   * The node is copied from an existing brush/eraser sub tool, so it carries all 506+ columns.
-   * The neutral values are applied on top.
-   * Two new VariantIDs (`MaxVariantID+1/+2`) are allocated, and `Manager.MaxVariantID` is bumped.
-5. Run `PRAGMA integrity_check`. If anything fails, the backup is restored.
-
-Brushes that reference materials missing from the local library fall back to the .sut export, as do
-brushes with custom tips. This path has been validated on copies only:
-
-* integrity check passes
-* the tree stays a single acyclic list with every node reachable
-* the new sub tools re-read correctly
-
-Whether CSP accepts the edited database still has to be confirmed by a user.
+The desktop application writes `.sut` files and leaves the CSP settings database untouched. In
+CSP, select the target tool and drag the exported file onto the **Sub Tool** palette. If you drop
+it onto the **Tool** palette, CSP shows "此文件无法添加到工具组面板".

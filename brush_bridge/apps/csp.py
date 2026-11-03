@@ -1,9 +1,8 @@
-﻿"""Clip Studio Paint adapter.
+﻿"""Clip Studio Paint compatibility helpers.
 
-Detection, listing of the user's sub tools (read from a *copy* of ``EditImageTool.todb``) and
-installation. Default installation (strategy B) exports .sut / .abr files the user drags into the
-Sub Tool palette. Strategy A (``install(..., direct=True)``) inserts sub tools straight into the
-tool database while CSP is closed; it is experimental and only validated on copies.
+The desktop workflow reads compatibility information from a *copy* of
+``EditImageTool.todb`` and writes `.sut` / `.abr` files for manual import through
+the CSP Sub Tool palette.
 """
 from __future__ import annotations
 
