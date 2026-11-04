@@ -1,0 +1,46 @@
+{
+  "source": "C:\\Users\\Askir\\Downloads\\岩彩.sut",
+  "converted": "C:\\Users\\Askir\\Downloads\\岩彩_0.5.1.bru",
+  "source_tip": {
+    "mode": "L",
+    "size": [
+      291,
+      300
+    ],
+    "min": 0,
+    "max": 101,
+    "mean": 6.957927,
+    "border_mean": 0.030457,
+    "center": 0,
+    "sha256": "33d0bedd0b697df9c81a7e2ac2db33d649fc4f6d6a2d5e184b675975fab23a4a"
+  },
+  "converted_tip": {
+    "mode": "L",
+    "size": [
+      200,
+      200
+    ],
+    "min": 0,
+    "max": 96,
+    "mean": 6.761175,
+    "border_mean": 0.05375,
+    "center": 0,
+    "sha256": "919981c6184344498e812b92fb3cebbb6fbcdfc63272f4d00679e17c1620dedf"
+  },
+  "source_resized_to_converted": {
+    "mode": "L",
+    "size": [
+      200,
+      200
+    ],
+    "min": 0,
+    "max": 97,
+    "mean": 6.968975,
+    "border_mean": 0.05375,
+    "center": 0,
+    "sha256": "0a13803a87d06cf1dee4c658e7d097644ea29d0c83dcdf4da10769cc46923fd7"
+  },
+  "mae_after_resize": 2.48695,
+  "max_abs_delta": 80,
+  "interpretation": "CSP source is already a dark-on-transparent/low-density mask; conversion keeps grayscale values and does not turn white into a solid opaque tip."
+}

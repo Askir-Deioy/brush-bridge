@@ -59,7 +59,7 @@ def main() -> int:
     if sample.is_file():
         copy_file(sample, out / "示例笔刷" / sample.name)
     experiments = root / "examples" / "experiments"
-    for name in ("实机回填表.xlsx", "实机回填表.csv", "实机回填表说明.md"):
+    for name in ("实机回填表.xlsx", "实机回填表.csv", "实机回填表说明.md", "回填表_优化版.docx"):
         source = experiments / name
         if source.is_file():
             copy_file(source, out / name)
