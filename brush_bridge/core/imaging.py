@@ -57,7 +57,12 @@ def tip_mask(img: Image.Image) -> Image.Image:
     coverage and must win over the RGB channels; otherwise the neutral image
     already follows the model's 255=paint convention.
     """
-    return to_mask(img, invert_if_light_background=False)
+    # Opaque light-background images are common in CSP/Krita exports: black
+    # ink is paint and white is the empty canvas.  Detect that polarity from
+    # the border.  Images with a real alpha channel still use alpha as the
+    # coverage mask, while neutral model masks on dark backgrounds stay white
+    # = paint.
+    return to_mask(img, invert_if_light_background=True)
 
 
 def background_is_light(g: Image.Image) -> bool:

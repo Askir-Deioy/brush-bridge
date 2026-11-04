@@ -191,11 +191,20 @@ def export_detailed(brushes, target, out_path, *, cancel_event=None, ignore_miss
                                 if role == "grain":
                                     b.texture = None
                 _warnings(b, cid)
-                test_path = stage / f"check-{i}" / ("brush" + c.extensions[0])
-                test_path.parent.mkdir()
-                files = c.write([b], test_path, **options)
-                _validate(c, files, 1, stage, allow_missing_resources=(cid == "procreate"))
-                row.update(status="success", file_validation="passed", warnings=list(b.notes), losses=_losses(b))
+                # A Procreate brushset stores each native archive and its PNGs in a ZIP.
+                # Writing and reopening the entire archive once per brush makes an 18-brush
+                # group appear frozen and leaves a long-lived temporary file tree.  The final
+                # group write below validates the complete archive, so defer the per-brush
+                # container check for multi-brush Procreate exports.
+                if cid == "procreate" and len(brushes) > 1:
+                    row.update(status="success", file_validation="deferred",
+                               warnings=list(b.notes), losses=_losses(b))
+                else:
+                    test_path = stage / f"check-{i}" / ("brush" + c.extensions[0])
+                    test_path.parent.mkdir()
+                    files = c.write([b], test_path, **options)
+                    _validate(c, files, 1, stage, allow_missing_resources=(cid == "procreate"))
+                    row.update(status="success", file_validation="passed", warnings=list(b.notes), losses=_losses(b))
                 successful.append(b)
             except Exception as exc:
                 row["error"] = str(exc)

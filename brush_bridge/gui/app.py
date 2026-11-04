@@ -144,13 +144,23 @@ def result_dialog(parent, ok: bool, message: str, files: list[Path]):
     # receiving a batch.  A nested modal exec can make the result prompt look
     # frozen when Photoshop is also starting or importing files.
     box.setAttribute(Qt.WA_DeleteOnClose)
+    # Keep a Python reference until the non-modal box finishes.  Without this,
+    # a large batch result can leave a native QMessageBox alive without a
+    # usable Python wrapper, which makes the prompt and its parent window look
+    # stuck on Windows.
+    parent._active_result_dialog = box
 
     def on_clicked(clicked):
         if btn is not None and clicked is btn:
             open_in_explorer(Path(files[0]))
         box.close()
 
+    def on_finished(*_):
+        if getattr(parent, "_active_result_dialog", None) is box:
+            parent._active_result_dialog = None
+
     box.buttonClicked.connect(on_clicked)
+    box.finished.connect(on_finished)
     box.open()
 
 
@@ -687,6 +697,7 @@ class MainWindow(QMainWindow):
             QApplication.restoreOverrideCursor()
 
     def closeEvent(self, e):
+        self.transfer.cancel_event.set()
         self.transfer.thumb_loader.shutdown()  # don't make the app wait for queued thumbnails
         super().closeEvent(e)
 

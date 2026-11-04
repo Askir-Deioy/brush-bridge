@@ -952,9 +952,35 @@ def brush_to_preset(br: Brush, sample_id: Optional[str], dual_id: Optional[str],
 # Writing
 # ---------------------------------------------------------------------------------------------
 
-# Empty brush hierarchy as written by Photoshop's "Export Selected Brushes".
-_PHRY_EMPTY = bytes.fromhex(
-    "3842494d706872790000002b00000010000000010000000000006e756c6c0000000100000009686965726172636879566c4c7300000000")
+def _phry_section(brushes: list[Brush]) -> bytes:
+    """Write the v6.2 brush hierarchy descriptor used by Photoshop exports.
+
+    Photoshop accepts an empty hierarchy for some files, but recent Photoshop
+    versions can reject otherwise valid v6.2 files when the ``phry`` stream is
+    missing the preset tokens.  Keep group paths flat and deterministic while
+    preserving the order of the descriptor list.
+    """
+    hierarchy: list[tuple[str, Desc]] = []
+    opened: list[str] = []
+    for br in brushes:
+        path = [p for p in str(getattr(br, "group", "") or "").split("/") if p]
+        common = 0
+        while common < len(opened) and common < len(path) and opened[common] == path[common]:
+            common += 1
+        for _ in range(len(opened) - common):
+            hierarchy.append(("Objc", Desc("groupEnd")))
+        opened = opened[:common]
+        for name in path[common:]:
+            hierarchy.append(("Objc", Desc("Grup").add("Nm  ", "TEXT", name)
+                              .add("zuid", "TEXT", str(_uuid.uuid4()))
+                              .add("ccLibrariesElement", "TEXT", "")))
+            opened.append(name)
+        hierarchy.append(("Objc", Desc("preset")))
+    for _ in opened:
+        hierarchy.append(("Objc", Desc("groupEnd")))
+    root = Desc("null").add("hierarchy", "VlLs", hierarchy)
+    payload = struct.pack(">I", 16) + descriptor_bytes(root)
+    return _section("phry", payload)
 
 
 def _sample_entry(img: Image.Image, uid: str) -> bytes:
@@ -1067,7 +1093,7 @@ def write_abr(brushes: list[Brush], out_path: Path, *, prefer_native: bool = Tru
     out += _section("samp", _join_entries(list(samples.values())))
     out += _section("patt", _join_entries(list(patterns.values())))
     out += _section("desc", desc.getvalue())
-    out += _PHRY_EMPTY
+    out += _phry_section(brushes)
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_bytes(bytes(out))
