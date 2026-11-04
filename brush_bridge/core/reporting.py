@@ -225,6 +225,7 @@ def export_detailed(brushes, target, out_path, *, cancel_event=None, ignore_miss
                 for row, b in zip([e for e in result.entries if e["status"] == "success"], successful):
                     row["warnings"] = list(b.notes)
                     row["losses"] = _losses(b)
+                    row["file_validation"] = "passed"
                     row["files"] = [str(p) for p in result.files]
             except Exception as exc:
                 for row in result.entries:
