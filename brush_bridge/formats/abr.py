@@ -198,9 +198,9 @@ class _Writer:
         self.raw(kb)
 
     def ustr(self, s: str):
-        s = s + "\x00"
-        self.u32(len(s))
-        self.raw(s.encode("utf-16-be"))
+        data = (s + "\x00").encode("utf-16-be")
+        self.u32(len(data) // 2)
+        self.raw(data)
 
     def pstr(self, s: str):
         b = s.encode("latin1")
@@ -838,6 +838,36 @@ def _brvr(dyn: Dynamic, minimum_out: list) -> Desc:
             .add("jitter", "UntF", ("#Prc", round(dyn.jitter * 100, 2))).add("Mnm ", "UntF", ("#Prc", minimum_out[-1])))
 
 
+def _tool_options(br: Brush) -> Desc:
+    # A dry mixer with no paint load cannot pick up colour or replenish paint.
+    wet = br.wet
+    mixer = wet.enabled and (wet.wetness > 0 or wet.load > 0)
+    tool = Desc("MixB" if mixer else "PbTl").add("flow", "long", int(round(br.flow * 100)))
+    if mixer:
+        tool.add("wetness", "doub", wet.wetness * 100)
+        tool.add("dryness", "doub", max(1.0, wet.load * 100))
+        tool.add("mix", "doub", wet.mix * 100)
+        tool.add("prVr", "Objc", _brvr(br.flow_dynamic, []))
+        tool.add("wtVr", "Objc", _brvr(Dynamic(), []))
+        tool.add("mxVr", "Objc", _brvr(Dynamic(), []))
+    elif wet.enabled:
+        br.warn("源笔刷的湿度和载漆量均为零，Photoshop 导出为普通画笔；原始混色设置可保存在 .brushpkg。")
+    tool.add("Md  ", "enum", ("BlnM", _BLEND_FROM.get(br.blend_mode, "Nrml")))
+    tool.add("Opct", "long", int(round(br.opacity * 100)))
+    if mixer:
+        tool.add("szVr", "Objc", _brvr(br.size_dynamic, []))
+        tool.add("smoothing", "bool", True)
+    tool.add("usePressureOverridesSize", "bool", False)
+    tool.add("usePressureOverridesOpacity", "bool", False)
+    if mixer:
+        tool.add("useLegacy", "bool", False)
+        tool.add("autoFill", "bool", True)
+        tool.add("autoClean", "bool", False)
+        tool.add("loadSolidColorOnly", "bool", True)
+        tool.add("sampleAllLayers", "bool", False)
+    return tool.add("brushPreset", "bool", True)
+
+
 def brush_to_preset(br: Brush, sample_id: Optional[str], dual_id: Optional[str],
                     pattern_id: Optional[str]) -> Desc:
     tip = Desc("sampledBrush" if sample_id else "computedBrush")
@@ -932,18 +962,7 @@ def brush_to_preset(br: Brush, sample_id: Optional[str], dual_id: Optional[str],
     p.add("Wtdg", "bool", False).add("Nose", "bool", False).add("Rpt ", "bool", False)
     p.add("useBrushSize", "bool", True).add("useBrushPose", "bool", False)
 
-    if br.wet.enabled:
-        tool = Desc("MixB").add("flow", "long", int(round(br.flow * 100)))
-        tool.add("wetness", "doub", br.wet.wetness * 100).add("dryness", "doub", br.wet.load * 100)
-        tool.add("mix", "doub", br.wet.mix * 100)
-    else:
-        tool = Desc("PbTl").add("flow", "long", int(round(br.flow * 100)))
-    tool.add("Md  ", "enum", ("BlnM", _BLEND_FROM.get(br.blend_mode, "Nrml")))
-    tool.add("Opct", "long", int(round(br.opacity * 100)))
-    tool.add("usePressureOverridesSize", "bool", False)
-    tool.add("usePressureOverridesOpacity", "bool", False)
-    tool.add("brushPreset", "bool", True)
-    p.add("toolOptions", "Objc", tool)
+    p.add("toolOptions", "Objc", _tool_options(br))
     br.warn_extras("Photoshop")
     return p
 
@@ -953,17 +972,11 @@ def brush_to_preset(br: Brush, sample_id: Optional[str], dual_id: Optional[str],
 # ---------------------------------------------------------------------------------------------
 
 def _phry_section(brushes: list[Brush]) -> bytes:
-    """Write the v6.2 brush hierarchy descriptor used by Photoshop exports.
-
-    Photoshop accepts an empty hierarchy for some files, but recent Photoshop
-    versions can reject otherwise valid v6.2 files when the ``phry`` stream is
-    missing the preset tokens.  Keep group paths flat and deterministic while
-    preserving the order of the descriptor list.
-    """
+    """Write group paths and preset tokens in descriptor order."""
     hierarchy: list[tuple[str, Desc]] = []
     opened: list[str] = []
     for br in brushes:
-        path = [p for p in str(getattr(br, "group", "") or "").split("/") if p]
+        path = [p.strip() for p in br.group.split(" / ") if p.strip()]
         common = 0
         while common < len(opened) and common < len(path) and opened[common] == path[common]:
             common += 1
@@ -984,7 +997,8 @@ def _phry_section(brushes: list[Brush]) -> bytes:
 
 
 def _sample_entry(img: Image.Image, uid: str) -> bytes:
-    img = tip_mask(img)
+    if img.mode != "L":
+        img = tip_mask(img)
     w = _Writer()
     w.pstr(uid)
     vm = _Writer()
@@ -1027,9 +1041,9 @@ def _pattern_entry(img: Image.Image, uid: str, name: str) -> bytes:
 
 
 def _section(key: str, payload: bytes) -> bytes:
-    if len(payload) % 2:
-        payload += b"\0"
-    return b"8BIM" + key.encode("latin1") + struct.pack(">I", len(payload)) + payload
+    # Photoshop's tagged blocks align to four bytes. The stored length excludes padding.
+    return (b"8BIM" + key.encode("latin1") + struct.pack(">I", len(payload))
+            + payload + b"\0" * (-len(payload) % 4))
 
 
 def _join_entries(entries: list[bytes]) -> bytes:
@@ -1041,7 +1055,7 @@ def _join_entries(entries: list[bytes]) -> bytes:
 
 
 def write_abr(brushes: list[Brush], out_path: Path, *, prefer_native: bool = True) -> Path:
-    """Write a v6.2 ABR (the version every app understands)."""
+    """Write a v6.2 ABR."""
     samples: dict[str, bytes] = {}
     patterns: dict[str, bytes] = {}
     presets: list[bytes] = []
@@ -1059,7 +1073,20 @@ def write_abr(brushes: list[Brush], out_path: Path, *, prefer_native: bool = Tru
         except (TypeError, ValueError):
             native_version_ok = False
         if prefer_native and native_version_ok and nat.get("abr_desc"):
-            presets.append(nat["abr_desc"])
+            raw = nat["abr_desc"]
+            preset = read_descriptor(_Reader(raw))
+            tool = preset.sub("toolOptions")
+            # Earlier Brush Bridge releases wrote this abbreviated mixer descriptor.
+            # Repair just the tool, keeping the original descriptor and resource links.
+            if tool.cls == "MixB" and {k for k, _, _ in tool.items} == {
+                "flow", "wetness", "dryness", "mix", "Md  ", "Opct",
+                "usePressureOverridesSize", "usePressureOverridesOpacity", "brushPreset",
+            }:
+                replacement = _tool_options(br)
+                preset.items = [(k, t, replacement if k == "toolOptions" else v)
+                                for k, t, v in preset.items]
+                raw = descriptor_bytes(preset)
+            presets.append(raw)
             samples.update(nat.get("abr_samples", {}))
             patterns.update(nat.get("abr_patterns", {}))
             continue
@@ -1101,36 +1128,17 @@ def write_abr(brushes: list[Brush], out_path: Path, *, prefer_native: bool = Tru
 
 
 def convert_to_v62(src: Path, out_path: Path, indices: Optional[list[int]] = None) -> Path:
-    """Losslessly rewrite (a subset of) any v6+ ABR / Brushes.psp as v6.2."""
+    """Rewrite (a subset of) an ABR / Brushes.psp as v6.2."""
     af = parse(src)
     try:
         if af.legacy:
             brushes = [b for i, b in enumerate(af.legacy) if indices is None or i in indices]
         else:
             idx = range(len(af.presets)) if indices is None else indices
-            brushes = [_native_only(af, i) for i in idx]
+            brushes = [preset_to_brush(af, i) for i in idx]
         return write_abr(brushes, out_path)
     finally:
         af.close()
-
-
-def _native_only(af: AbrFile, idx: int) -> Brush:
-    """Cheap Brush carrying only the raw bytes (no image decoding)."""
-    p, a, b = af.presets[idx]
-    tip = p.sub("Brsh")
-    sids = [tip.get("sampledData")]
-    dual = p.sub("dualBrush")
-    if dual.get("useDualBrush"):
-        sids.append(dual.sub("Brsh").get("sampledData"))
-    pid = p.sub("Txtr").get("Idnt") if p.get("useTexture") else None
-    br = Brush(name=str(p.get("Nm  ", "")))
-    br.source = BrushSource(app="photoshop", format="abr", version=af.version_str, path=str(af.path), index=idx)
-    br.source.native = {
-        "abr_desc": af.raw(a, b),
-        "abr_samples": _native_samples(af, sids),
-        "abr_patterns": {pid: af.raw(*_span(af.patterns[pid]))} if pid and pid in af.patterns else {},
-    }
-    return br
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1221,7 +1229,7 @@ class AbrCodec(FormatCodec):
                 f"这是新版 Photoshop 的 ABR v{vs} 格式，Clip Studio Paint、Krita、GIMP 等软件以及旧版 Photoshop 可能无法导入。")
             info.fixes.append(Fix(
                 title="转换为通用的 v6.2 格式",
-                description="无损重写为 Photoshop CS6 及以后、Clip Studio Paint 等都能识别的 ABR v6.2。",
+                description="转换为 ABR v6.2。新版 Photoshop 特有的工具设置或动态可能丢失。",
                 apply=lambda src, out_dir: [convert_to_v62(src, Path(out_dir) / (Path(src).stem + "_v6.abr"))],
             ))
         return info

@@ -21,7 +21,7 @@ def copy_file(source: Path, target: Path) -> None:
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", default=str(root.parent / "BrushBridge-0.5.1-User"))
+    parser.add_argument("--out", default=str(root.parent / "BrushBridge-0.5.2.1-User"))
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
@@ -46,12 +46,12 @@ def main() -> int:
     copy_file(root / "LICENSE", out / "LICENSE")
     copy_file(root / "docs" / "QUICKSTART_ZH.md", out / "使用说明.md")
     (out / "版本说明.md").write_text(
-        "# Brush Bridge 0.5.1 简洁用户版\n\n"
+        "# Brush Bridge 0.5.2.1 简洁用户版\n\n"
         "作者：askir。本软件完全免费。\n\n"
         "这是面向普通用户的精简安装包，安装目录根部的 `BrushBridge.exe` 就是图形界面。\n"
         "本包只包含运行所需文件、简短使用说明、一个示例笔刷和实机回填表；\n"
         "源码、完整验收证据和开发工具保留在项目仓库的源码与开发版发布包中。\n\n"
-        "如果要记录朋友在不同软件中的实际效果，请填写 `实机回填表.xlsx` 或 `实机回填表.csv`。\n",
+        "如需回填截图，请参考 `回填表_含原始示例.docx`，并填写 `回填表_空白模板.docx`。\n",
         encoding="utf-8",
     )
 
@@ -59,7 +59,8 @@ def main() -> int:
     if sample.is_file():
         copy_file(sample, out / "示例笔刷" / sample.name)
     experiments = root / "examples" / "experiments"
-    for name in ("实机回填表.xlsx", "实机回填表.csv", "实机回填表说明.md", "回填表_优化版.docx"):
+    for name in ("实机回填表.xlsx", "实机回填表.csv", "实机回填表说明.md",
+                 "回填表_含原始示例.docx", "回填表_空白模板.docx"):
         source = experiments / name
         if source.is_file():
             copy_file(source, out / name)
