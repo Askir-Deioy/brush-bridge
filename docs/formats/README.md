@@ -10,3 +10,4 @@
 | GIMP | [gimp](gimp/README.md) |
 | MyPaint | [mypaint](mypaint/README.md) |
 | SAI2 | [sai2](sai2/README.md) |
+| Clip Studio Paint 多素材 | [csp](csp/README.md) |
