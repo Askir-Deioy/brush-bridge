@@ -22,6 +22,8 @@
 | `.cache/` | 本地验证输出，不作为产品承诺；引用时写明文件名和生成时间 |
 | `dist/`、发布目录 | 构建产物。发布前必须与当前源码重新核对 |
 
+运行 `.venv-win\Scripts\python.exe scripts\build_exe.py` 后，可以直接打开 `build\BrushBridge\BrushBridge.exe` 做本机预览。构建脚本会把 `dist\BrushBridge` 的 `_internal` 运行时同步到这个预览目录。正式发布仍从 `dist/` 组装，不需要先做安装包验证。
+
 ## 维护顺序
 
 1. `git status --short --branch`，确认是否有未提交源码、锁文件或构建产物。

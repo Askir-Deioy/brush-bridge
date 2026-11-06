@@ -52,6 +52,6 @@ py -3.11 -m venv .venv-win
 .\.venv-win\Scripts\python.exe scripts\build_exe.py
 ```
 
-构建产物为 `dist/BrushBridge/` 与 `dist/BrushBridgeCLI/` 两个可直接运行的目录；不依赖 PyInstaller 临时解压。原创示例和文件级兼容记录在 `examples/verification`，文件规范在 `docs/BRUSHPKG.md`。
+构建产物为 `dist/BrushBridge/` 与 `dist/BrushBridgeCLI/` 两个可直接运行的目录；同时会同步出本机预览目录 `build/BrushBridge/` 与 `build/BrushBridgeCLI/`，可以在正式组装发布包前直接打开其中的 EXE。不依赖 PyInstaller 临时解压。原创示例和文件级兼容记录在 `examples/verification`，文件规范在 `docs/BRUSHPKG.md`。
 
 实机回填表在 `examples/experiments/实机回填表.xlsx` 和 `实机回填表.csv`，填写说明在同目录的 `实机回填表说明.md`。

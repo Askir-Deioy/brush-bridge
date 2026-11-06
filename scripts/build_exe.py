@@ -7,9 +7,29 @@ PyInstaller one-file temporary extraction step.
 import subprocess
 import sys
 import os
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _sync_build_preview(name: str) -> None:
+    """Make the requested build/<name> path runnable before packaging.
+
+    PyInstaller uses ``build`` as a work directory and puts the self-contained
+    onedir application under ``dist``.  Copying the runtime beside the workdir
+    executable gives local development a stable preview path without changing
+    the release assembly flow.
+    """
+    source = ROOT / "dist" / name
+    target = ROOT / "build" / name
+    executable = source / f"{name}.exe"
+    internal = source / "_internal"
+    if not executable.is_file() or not internal.is_dir():
+        raise SystemExit(f"无法同步 {name} 预览目录：缺少 {executable} 或 {internal}")
+    target.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(executable, target / executable.name)
+    shutil.copytree(internal, target / "_internal", dirs_exist_ok=True)
 
 
 def main() -> int:
@@ -71,7 +91,14 @@ def main() -> int:
     cli_args[cli_args.index("--windowed")] = "--console"
     cli_args[cli_args.index("BrushBridge")] = "BrushBridgeCLI"
     cli_args[cli_args.index(str(launcher))] = str(cli)
-    return subprocess.call(cli_args, cwd=ROOT, env=env)
+    result = subprocess.call(cli_args, cwd=ROOT, env=env)
+    if result:
+        return result
+    _sync_build_preview("BrushBridge")
+    _sync_build_preview("BrushBridgeCLI")
+    print(f"Build preview: {ROOT / 'build' / 'BrushBridge' / 'BrushBridge.exe'}")
+    print(f"Build CLI preview: {ROOT / 'build' / 'BrushBridgeCLI' / 'BrushBridgeCLI.exe'}")
+    return 0
 
 
 if __name__ == "__main__":
