@@ -165,6 +165,9 @@ class Brush:
 
     # --- tip shape ---------------------------------------------------------------------------
     tips: list[Image.Image] = field(default_factory=list)  # empty => computed round tip
+    # Optional source-colour versions of the same tip images.  ``tips`` remains
+    # the neutral paint mask used by targets that only accept grayscale.
+    tip_colors: list[Image.Image] = field(default_factory=list)
     hardness: float = 1.0  # used when tips is empty
     size_px: float = 30.0
     min_size_px: float = 1.0

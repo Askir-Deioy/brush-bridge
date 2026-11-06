@@ -204,6 +204,7 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
         im = resolve(r)
         if im is not None:
             b.tips.append(thumbnail_to_tip(im))
+            b.tip_colors.append(im.convert("RGBA"))
         else:
             b.resources["tip"] = {"status": "missing", "name": r.name or r.path, "required": True}
             b.warn(f"笔尖素材“{r.name or r.path}”未找到，已使用圆形笔尖代替。")
@@ -482,6 +483,7 @@ def brush_columns(b: Brush) -> dict[str, object]:
 def _fingerprint(b: Brush) -> dict[str, object]:
     fp = brush_columns(b)
     fp["__tips"] = _img_hash(b.tips)
+    fp["__tip_colors"] = _img_hash(b.tip_colors)
     fp["__texture"] = _hash_opt(b.texture.image if b.texture else None)
     fp["__dual"] = _hash_opt(b.dual.image if b.dual else None)
     fp["__eraser"] = b.is_eraser
@@ -493,7 +495,7 @@ def loses_images(b: Brush) -> bool:
     nat = (b.source.native or {}).get("csp") if b.source else None
     old = (nat or {}).get("fingerprint") or {}
     new = _fingerprint(b)
-    return ((bool(b.tips) and old.get("__tips") != new["__tips"])
+    return ((bool(b.tips) and (old.get("__tips") != new["__tips"] or old.get("__tip_colors") != new["__tip_colors"]))
             or (b.texture is not None and old.get("__texture") != new["__texture"])
             or (b.dual is not None and old.get("__dual") != new["__dual"]))
 
@@ -750,12 +752,14 @@ def build_variant(b: Brush) -> tuple[dict, list[tuple[str, str]], list[dict], di
             generated.append(m.material_row())
         return encode_material_refs(refs)
 
-    if fp_old.get("__tips", "") != fp_new["__tips"]:
+    if (fp_old.get("__tips", "") != fp_new["__tips"]
+            or fp_old.get("__tip_colors", "") != fp_new["__tip_colors"]):
         if b.tips:
             if len(b.tips) > MAX_GENERATED_TIPS:
                 b.warn(f"笔尖图像超过 {MAX_GENERATED_TIPS} 个，只保留前 {MAX_GENERATED_TIPS} 个。")
             row["BrushUsePatternImage"] = 1
-            row["BrushPatternImageArray"] = gen(b.tips[:MAX_GENERATED_TIPS], KIND_TIP, "笔尖")
+            images = b.tip_colors if len(b.tip_colors) == len(b.tips) else b.tips
+            row["BrushPatternImageArray"] = gen(images[:MAX_GENERATED_TIPS], KIND_TIP, "笔尖")
         else:
             row["BrushUsePatternImage"] = 0
             row["BrushPatternImageArray"] = None

@@ -6,7 +6,7 @@
 |---|---|---|---|---|
 | BB-001 | fixed_pending_real_app | Photoshop ABR 兼容性：原生导出与 Procreate 往返后的 ABR 在用户机器上出现无法导入/版本不兼容 | 已定位并修复无分组 `phry` 层级差异。兼容输出的 `phry` 从 91/68 归一为原生风格的 43 字节，`samp`、`patt`、基础参数和笔尖像素保持不变；用户确认原文件均可导入 Photoshop。正确的海怪配对 `海怪测试`/`海怪ps导出测试` 除 UUID 外结构一致 | 在其他人的 Photoshop 版本中导入修复后的两个兼容输出，记录版本和结果；海怪作为成功对照样本保留 |
 | BB-002 | fixed_pending_real_app | 完成提示内容过长，遮挡底部退出按钮 | 已将结果提示改为独立可滚动报告区，底部按钮固定；GUI 回归 8 passed | 在 Windows 冻结 GUI 中用长批量报告确认窗口缩放和按钮可操作 |
-| BB-003 | investigating | 多素材/固定颜色笔刷（类似 `candy brush.sut`）跨格式表达不清，可能被压成单一笔尖或近似 | `candy brush.sut` 读取为 11 个 `L` 笔尖、随机顺序；`.brushpkg`/CSP/Krita/GIMP 保留 11 个；ABR/Procreate/SAI2/画世界 Pro/MyPaint 回读为 1/1/1/1/0 个；当前 CSP 读取路径通过 `thumbnail_to_tip()` 丢弃素材颜色 | 先在主存档中保留多素材和颜色通道，再按目标能力报告明确降级；补颜色感知的受控样本和报告损失测试 |
+| BB-003 | fixed_pending_real_app | 多素材/固定颜色笔刷跨格式表达 | 两个 SUT 样本确认存在彩色多素材。公共模型新增 `tip_colors`，`.brushpkg` 与 CSP 回写可保留彩色素材和灰度遮罩；两个样本完成 `.sut → .brushpkg → .sut` 文件级彩色像素与 16/3 个素材数量回归。ABR/Procreate/SAI2/画世界 Pro/MyPaint 仍会降级，报告现在把“只使用第一张/单个形状”分类为 approximation | 核对 CSP 实机回写颜色；再按目标格式决定是否实现专门的彩色多素材近似 |
 | BB-004 | open | 反馈、修复和交接记录没有持续更新，导致状态口径分散 | L0 用户反馈；历史文件与仓库 docs 重复 | 使用 `docs/feedback/` + 本台账；每次修复后更新状态、证据和交接入口 |
 | BB-005 | deferred | CC BY-NC 许可路线 | 用户明确说“以后”，当前不作为本轮发布许可变更 | 另开许可决策记录，先不把受限代码或素材放入 MIT 发布包 |
 

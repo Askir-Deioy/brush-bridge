@@ -91,7 +91,7 @@ def _losses(b: Brush) -> list[dict[str, str]]:
         ("missing_resource", ("缺少", "找不到")),
         ("unsupported", ("不支持", "无法", "不能")),
         ("ignored", ("忽略", "丢失")),
-        ("approximation", ("近似", "截断", "只保留", "只写出", "暂按", "不完整支持")),
+        ("approximation", ("近似", "截断", "只保留", "只写出", "只使用", "第一张", "第一个", "单个形状", "暂按", "不完整支持")),
     )
     out: list[dict[str, str]] = []
     for note in b.notes:
