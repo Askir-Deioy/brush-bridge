@@ -24,6 +24,8 @@
 
 运行 `.venv-win\Scripts\python.exe scripts\build_exe.py` 后，可以直接打开 `build\BrushBridge\BrushBridge.exe` 做本机预览。构建脚本会把 `dist\BrushBridge` 的 `_internal` 运行时同步到这个预览目录。正式发布仍从 `dist/` 组装，不需要先做安装包验证。
 
+当前待办目标是新版画世界 Pro BRU 的版本化读取和写出、彩色多素材目标适配、其他 Photoshop 版本的 ABR 兼容实机确认，以及长报告窗口的冻结预览确认。每次对话结束时从这四项中保留仍未完成的项目。
+
 ## 维护顺序
 
 1. `git status --short --branch`，确认是否有未提交源码、锁文件或构建产物。

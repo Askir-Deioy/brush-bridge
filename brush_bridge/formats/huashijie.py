@@ -21,7 +21,7 @@ from typing import Any, Optional
 
 from PIL import Image
 
-from ..core.imaging import pad_square, stroke_preview, tip_mask
+from ..core.imaging import pad_square, round_tip, stroke_preview, tip_mask
 from ..core.model import Brush, BrushRef, BrushSource
 from ..core.plugin import FileInfo, FormatCodec, register_codec
 
@@ -173,6 +173,21 @@ def _records(path: Path) -> tuple[bytes, list[tuple[bytes, bytes, bytes, list[tu
     data = Path(path).read_bytes()
     if len(data) < HEADER_LEN or not data.startswith(MAGIC):
         raise HuaShiJieFormatError("不是画世界 Pro BRU 文件（缺少 hsjbru 头部）")
+    version = int.from_bytes(data[8:10], "big")
+    if version >= 8:
+        # Newer BRU exports may contain a parameter record without embedded
+        # preview/tip PNGs.  The icon path is metadata only.  Keep the record
+        # and let the common model represent a computed round tip.
+        metadata_start = HEADER_LEN
+        declared = int.from_bytes(data[0x6C:0x70], "big")
+        end = metadata_start + declared if declared else len(data)
+        if end > len(data):
+            raise HuaShiJieFormatError("新版 BRU 参数记录超出文件范围")
+        metadata = data[metadata_start:end]
+        fields = _parse_fields(metadata)
+        if not fields or _field_value(fields, 3, None) is None:
+            raise HuaShiJieFormatError("新版 BRU 缺少笔刷名称字段")
+        return data, [(metadata, b"", b"", fields)]
     # Header: magic[6], reserved[2], version u16 at 0x08, total length u32 at 0x0a.
     declared = int.from_bytes(data[10:14], "big")
     if declared and declared != len(data):
@@ -209,13 +224,19 @@ def _record_to_brush(path: Path, index: int, item) -> Brush:
     name = _field_value(fields, 3, f"画世界笔刷 {index + 1}")
     if not isinstance(name, str) or not name.strip():
         name = f"画世界笔刷 {index + 1}"
-    preview = _image(preview_png)
-    tip_rgba = _image(tip_png)
-    tip = tip_rgba.getchannel("A")
-    if tip.getbbox() is None:
-        # A few old exports use a fully opaque grayscale image instead of alpha.
-        tip = tip_rgba.convert("L")
-    b = Brush(name=name.strip(), tips=[tip], preview=preview)
+    if preview_png and tip_png:
+        preview = _image(preview_png)
+        tip_rgba = _image(tip_png)
+        tip = tip_rgba.getchannel("A")
+        if tip.getbbox() is None:
+            # A few old exports use a fully opaque grayscale image instead of alpha.
+            tip = tip_rgba.convert("L")
+        b = Brush(name=name.strip(), tips=[tip], preview=preview)
+    else:
+        # v8 basic brushes can omit raster resources and rely on a computed
+        # round tip.  Keep the public model honest instead of inventing an
+        # embedded PNG that was never present in the source file.
+        b = Brush(name=name.strip(), tips=[])
     b.size_px = max(1.0, float(_field_value(fields, 8, 30.0)))
     b.opacity = max(0.0, min(1.0, float(_field_value(fields, 13, 1.0))))
     b.spacing = max(0.0, min(10.0, float(_field_value(fields, 17, 0.1))))
@@ -227,12 +248,16 @@ def _record_to_brush(path: Path, index: int, item) -> Brush:
                     for n, _wire, value in fields},
         "metadata": metadata,
     }
-    b.resources["tip"] = {"status": "embedded", "name": f"brush[{index}].tip.png",
-                           "width": tip.width, "height": tip.height}
-    b.source = BrushSource(app="huashijie", format="huashijie", version=FORMAT_VERSION,
+    if tip_png:
+        b.resources["tip"] = {"status": "embedded", "name": f"brush[{index}].tip.png",
+                               "width": tip.width, "height": tip.height}
+    version = "8" if not tip_png else FORMAT_VERSION
+    b.source = BrushSource(app="huashijie", format="huashijie", version=version,
                            path=str(path), index=index,
                            native={"metadata": metadata, "preview_png": preview_png, "tip_png": tip_png})
     b.warn("画世界 Pro BRU 已读取；复杂参数保存在主存档扩展区，导出后需要在画世界 Pro 中实机核对。")
+    if not tip_png:
+        b.warn("新版 BRU 未内嵌笔尖图片，按计算硬圆笔尖读取。")
     return b
 
 
