@@ -974,6 +974,15 @@ def brush_to_preset(br: Brush, sample_id: Optional[str], dual_id: Optional[str],
 def _phry_section(brushes: list[Brush]) -> bytes:
     """Write group paths and preset tokens in descriptor order."""
     hierarchy: list[tuple[str, Desc]] = []
+    # Photoshop's own ungrouped v6.2 exports omit hierarchy entries entirely.
+    # Some Photoshop versions accept explicit preset tokens here, while others
+    # reject the same file even though the desc/samp data is valid.  Keep the
+    # native empty hierarchy for the common ungrouped case.
+    if not any((br.group or "").strip() for br in brushes):
+        root = Desc("null").add("hierarchy", "VlLs", hierarchy)
+        payload = struct.pack(">I", 16) + descriptor_bytes(root)
+        return _section("phry", payload)
+
     opened: list[str] = []
     for br in brushes:
         path = [p.strip() for p in br.group.split(" / ") if p.strip()]

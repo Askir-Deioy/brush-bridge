@@ -21,7 +21,7 @@ def copy_file(source: Path, target: Path) -> None:
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", default=str(root.parent / "BrushBridge-0.5.2.1-User"))
+    parser.add_argument("--out", default=str(root.parent / "BrushBridge-0.5.26-User"))
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
@@ -46,7 +46,7 @@ def main() -> int:
     copy_file(root / "LICENSE", out / "LICENSE")
     copy_file(root / "docs" / "QUICKSTART_ZH.md", out / "使用说明.md")
     (out / "版本说明.md").write_text(
-        "# Brush Bridge 0.5.2.1 简洁用户版\n\n"
+        "# Brush Bridge 0.5.26 简洁用户版\n\n"
         "作者：askir。本软件完全免费。\n\n"
         "这是面向普通用户的精简安装包，安装目录根部的 `BrushBridge.exe` 就是图形界面。\n"
         "本包只包含运行所需文件、简短使用说明、一个示例笔刷和实机回填表；\n"

@@ -60,6 +60,20 @@ def test_write_read_roundtrip(tmp_path):
     assert r[1].tips == [] and abs(r[1].hardness - 0.5) < 1e-9
 
 
+def test_ungrouped_export_uses_empty_phry_hierarchy(tmp_path):
+    out = tmp_path / "ungrouped.abr"
+    codec("abr").write([Brush(name="一", tips=[_tip()]), Brush(name="二", tips=[_tip()])], out,
+                       prefer_native=False)
+    af = abr.parse(out)
+    try:
+        sec = af.sections["phry"]
+        reader = abr._Reader(af.data, sec.start + 4)
+        hierarchy = abr.read_descriptor(reader).get("hierarchy")
+        assert hierarchy == []
+    finally:
+        af.close()
+
+
 def test_native_passthrough_is_lossless(tmp_path):
     c = codec("abr")
     a = tmp_path / "a.abr"

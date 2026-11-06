@@ -1,5 +1,7 @@
 # Brush Bridge 笔刷桥
 
+> 维护入口：先看 [项目维护总览](docs/MAINTENANCE_GUIDE_ZH.md)、[问题台账](docs/ISSUE_LOG.md) 和 [反馈记录模板](docs/FEEDBACK_TEMPLATE_ZH.md)。每次用户反馈都应在 `docs/feedback/` 留下带日期的记录；文件级回读、目标软件导入和真实笔迹验收分开记载。
+
 作者：askir。本软件完全免费。
 
 > 本地开发版 **0.5.0**：新增独立 `.brushpkg` 主存档、来源保留、逐支转换报告、画世界 Pro BRU、Procreate 内置素材查找和 SAI2 共享包读取。先看 [中文快速开始](docs/QUICKSTART_ZH.md)、[文件规范](docs/BRUSHPKG.md) 和 [实现与验收状态](docs/IMPLEMENTATION_STATUS.md)。下文保留上游功能介绍，其中实机兼容和“无损”描述不代表本地版本已经完成对应验收。

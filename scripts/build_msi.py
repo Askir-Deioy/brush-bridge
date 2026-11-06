@@ -2,8 +2,8 @@
 
 Run with the project's Windows Python 3.11 environment:
     .venv-win\\Scripts\\python.exe scripts\\build_msi.py \\
-        --source ..\\BrushBridge-0.5.2.1-User \\
-        --out ..\\BrushBridge-0.5.2.1-User.msi
+        --source ..\\BrushBridge-0.5.26-User \\
+        --out ..\\BrushBridge-0.5.26-User.msi
 
 The MSI embeds the already-built onedir files. It does not download or
 execute anything during installation.
@@ -24,7 +24,7 @@ PRODUCT_CODE = "{8C7A3D8B-1F42-4E5A-9B0A-5B8B4A2C0F50}"
 USER_PRODUCT_CODE = "{D7D1D8CE-7C66-4EA6-AE78-BD4D4D5E9B70}"
 PRODUCT_NAME = "Brush Bridge"
 # Windows Installer compares three version fields.
-PRODUCT_VERSION = "0.5.2"
+PRODUCT_VERSION = "0.5.26"
 MANUFACTURER = "askir"
 
 

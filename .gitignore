@@ -19,3 +19,6 @@ examples/verification/sources/
 tests/local_*
 *.log
 procreate_library/
+
+# Microsoft Office temporary lock files copied into experiment forms.
+examples/experiments/~$*.docx

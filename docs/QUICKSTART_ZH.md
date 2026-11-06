@@ -4,7 +4,7 @@
 
 作者：askir。本软件完全免费。
 
-双击 GitHub Release 的 `BrushBridge-0.5.2.1-User.msi` 安装精简用户版。安装目录根部有 `BrushBridge.exe`，开始菜单也有快捷方式。便携 ZIP 解压后，直接运行根部的 `BrushBridge.exe`。
+双击 GitHub Release 的 `BrushBridge-0.5.26-User.msi` 安装精简用户版。安装目录根部有 `BrushBridge.exe`，开始菜单也有快捷方式。便携 ZIP 解压后，直接运行根部的 `BrushBridge.exe`。
 
 打开发布目录 `BrushBridge/BrushBridge.exe`。拖入 ABR、SUT、Procreate 笔刷、画世界 Pro `.bru`、SAI2 工具/资源目录，或 `.brushpkg` 主存档；勾选笔刷，再选择目标文件格式并导出。
 

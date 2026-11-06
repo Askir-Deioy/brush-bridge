@@ -15,8 +15,8 @@ from PySide6.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, Signal
 from PySide6.QtGui import QColor, QFont, QFontDatabase, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QFileDialog, QFrame, QHBoxLayout, QInputDialog, QLabel,
-    QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton, QSplitter, QCheckBox,
-    QTabWidget, QTextBrowser, QVBoxLayout, QWidget,
+    QDialog, QDialogButtonBox, QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton,
+    QSplitter, QCheckBox, QTabWidget, QTextBrowser, QVBoxLayout, QWidget,
 )
 
 from .. import __version__
@@ -129,37 +129,47 @@ def pil_to_pixmap(img: Image.Image, size: int = THUMB) -> QPixmap:
 
 
 def result_dialog(parent, ok: bool, message: str, files: list[Path]):
-    box = QMessageBox(parent)
+    # QMessageBox puts long text into one growing label and may let the native
+    # dialog push the buttons below the screen.  Use a small modeless dialog
+    # with a dedicated scrollable report and a fixed button row instead.
+    box = QDialog(parent)
     box.setWindowTitle("完成" if ok else "没有完全成功")
-    box.setIcon(QMessageBox.Information if ok else QMessageBox.Warning)
-    box.setText(message)
-    if files:
-        box.setDetailedText("\n".join(str(f) for f in files))
-        btn = box.addButton("打开文件所在位置", QMessageBox.ActionRole)
-    else:
-        btn = None
-    box.addButton("好的", QMessageBox.AcceptRole)
-
-    # Keep the GUI event loop available while the target application finishes
-    # receiving a batch.  A nested modal exec can make the result prompt look
-    # frozen when Photoshop is also starting or importing files.
+    box.setWindowModality(Qt.NonModal)
     box.setAttribute(Qt.WA_DeleteOnClose)
-    # Keep a Python reference until the non-modal box finishes.  Without this,
-    # a large batch result can leave a native QMessageBox alive without a
-    # usable Python wrapper, which makes the prompt and its parent window look
-    # stuck on Windows.
-    parent._active_result_dialog = box
+    box.setMinimumSize(560, 360)
+    box.resize(760, 560)
 
-    def on_clicked(clicked):
-        if btn is not None and clicked is btn:
-            open_in_explorer(Path(files[0]))
-        box.close()
+    layout = QVBoxLayout(box)
+    report = QTextBrowser(box)
+    report.setReadOnly(True)
+    report.setPlainText(message)
+    report.setLineWrapMode(QTextBrowser.WidgetWidth)
+    layout.addWidget(report, 1)
+
+    if files:
+        files_box = QTextBrowser(box)
+        files_box.setReadOnly(True)
+        files_box.setMaximumHeight(110)
+        files_box.setPlainText("生成文件：\n" + "\n".join(str(f) for f in files))
+        layout.addWidget(files_box)
+
+    buttons = QDialogButtonBox(box)
+    if files:
+        open_button = buttons.addButton("打开文件所在位置", QDialogButtonBox.ActionRole)
+        open_button.clicked.connect(lambda: open_in_explorer(Path(files[0])))
+    buttons.addButton("好的", QDialogButtonBox.AcceptRole)
+    buttons.accepted.connect(box.accept)
+    layout.addWidget(buttons, 0)
+
+    # Keep a Python reference until the non-modal box finishes.  Without this,
+    # a large batch result can leave a native dialog alive without a usable
+    # Python wrapper on Windows.
+    parent._active_result_dialog = box
 
     def on_finished(*_):
         if getattr(parent, "_active_result_dialog", None) is box:
             parent._active_result_dialog = None
 
-    box.buttonClicked.connect(on_clicked)
     box.finished.connect(on_finished)
     box.open()
 
