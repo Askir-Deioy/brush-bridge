@@ -952,7 +952,11 @@ class ColorWheelWidget(QWidget):
     def resizeEvent(self, event):
         side = min(self.width(), self.height())
         self.ring.setGeometry(0, 0, side, side)
-        square_side = max(100, side - 82)
+        # The square must fit inside the ring's circular hole, including its
+        # corners.  Use the hole diameter divided by sqrt(2), otherwise the
+        # square corners cover the outer ring.
+        hole_diameter = max(120, side - 30)
+        square_side = max(100, int(hole_diameter / 1.41421356237) - 4)
         self.square.setGeometry((side - square_side) // 2, (side - square_side) // 2,
                                 square_side, square_side)
         super().resizeEvent(event)
@@ -969,6 +973,7 @@ class ColorPickerDialog(QDialog):
         self._updating = False
         root = QVBoxLayout(self)
         self.wheel = ColorWheelWidget()
+        self.wheel.setMinimumSize(300, 300)
         self.ring = self.wheel.ring
         self.square = self.wheel.square
         self.ring.changed.connect(self._hue_changed)
@@ -981,7 +986,11 @@ class ColorPickerDialog(QDialog):
                                                        ("H", "h", 359), ("S", "s", 100), ("V", "v", 100))):
             spin = QSpinBox()
             spin.setRange(0, maximum)
-            spin.valueChanged.connect(lambda _=0, key=key: self._field_changed(key))
+            # Do not rebuild the model on every keystroke.  QSpinBox emits
+            # valueChanged while the user is still entering a multi-digit
+            # value, which used to replace "1" with a derived value before
+            # the user could finish typing.  Commit on Enter/focus loss.
+            spin.editingFinished.connect(lambda key=key: self._field_changed(key))
             grid.addWidget(QLabel(label), row // 3, (row % 3) * 2)
             grid.addWidget(spin, row // 3, (row % 3) * 2 + 1)
             self.fields[key] = spin

@@ -84,6 +84,31 @@ def test_main_window_smoke(qapp, win):
     assert pm.width() == gui.THUMB
 
 
+def test_vhsv_picker_nested_layout_and_numeric_commit(qapp):
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from brush_bridge.gui.app import ColorPickerDialog
+
+    d = ColorPickerDialog()
+    d.show()
+    qapp.processEvents()
+    side = min(d.wheel.width(), d.wheel.height())
+    assert d.square.geometry().right() < d.ring.width()
+    assert d.square.geometry().bottom() < d.ring.height()
+    assert d.square.width() <= int((side - 30) / 1.41421356237)
+
+    spin = d.fields["r"]
+    spin.setFocus()
+    spin.lineEdit().selectAll()
+    QTest.keyClicks(spin.lineEdit(), "1")
+    qapp.processEvents()
+    assert spin.lineEdit().text() == "1"
+    QTest.keyClick(spin.lineEdit(), Qt.Key_Return)
+    qapp.processEvents()
+    assert spin.value() == 1
+    d.close()
+
+
 def test_grid_checking_updates_count(qapp, win):
     from PySide6.QtCore import Qt
     from PySide6.QtTest import QTest
