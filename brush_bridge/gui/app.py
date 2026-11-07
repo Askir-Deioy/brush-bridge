@@ -12,11 +12,12 @@ from typing import Any, Callable, Optional
 
 from PIL import Image
 from PySide6.QtCore import QObject, QRunnable, QSettings, Qt, QThreadPool, QTimer, Signal
-from PySide6.QtGui import QColor, QFont, QFontDatabase, QIcon, QPixmap
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QFont, QFontDatabase, QIcon, QLinearGradient,
+                           QPainter, QPen, QPixmap)
 from PySide6.QtWidgets import (
-    QApplication, QComboBox, QFileDialog, QFrame, QHBoxLayout, QInputDialog, QLabel,
-    QDialog, QDialogButtonBox, QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton,
-    QSplitter, QCheckBox, QTabWidget, QTextBrowser, QVBoxLayout, QWidget,
+    QApplication, QComboBox, QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QInputDialog, QLabel,
+    QDialogButtonBox, QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton,
+    QSplitter, QCheckBox, QTabWidget, QTextBrowser, QVBoxLayout, QWidget, QSpinBox,
 )
 
 from .. import __version__
@@ -735,8 +736,16 @@ class UtilityPage(QWidget):
         self.export_button.clicked.connect(self._export_selected)
         self.export_button.setEnabled(False)
         action_row.addWidget(self.export_button)
+        picker = QPushButton("打开独立取色器")
+        picker.clicked.connect(self._open_picker)
+        action_row.addWidget(picker)
         action_row.addStretch(1)
         root.addLayout(action_row)
+
+    def _open_picker(self):
+        dialog = ColorPickerDialog(self)
+        self._picker_dialog = dialog
+        dialog.show()
 
     def _browse_exe(self):
         path, _ = QFileDialog.getOpenFileName(self, "选择 SAI2.exe", self.exe_path.text() or str(Path.home()), "SAI2 (sai2.exe)")
@@ -823,6 +832,209 @@ class UtilityPage(QWidget):
 
         run_bg(work, done, lambda msg: (self.win.idle(), self.export_button.setEnabled(True),
                                         QMessageBox.warning(self, "SAI2 导出失败", msg)))
+
+
+class HueRingWidget(QWidget):
+    changed = Signal(float)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.hue = 0.0
+        self.setMinimumSize(180, 180)
+
+    def paintEvent(self, _event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        side = min(self.width(), self.height()) - 12
+        rect = self.rect().center()
+        outer = side / 2
+        area = self.rect().center().x() - outer, self.rect().center().y() - outer, side, side
+        gradient = QConicalGradient(self.rect().center(), -90)
+        for pos, color in ((0.0, "#ff0000"), (1/6, "#ffff00"), (2/6, "#00ff00"),
+                           (3/6, "#00ffff"), (4/6, "#0000ff"), (5/6, "#ff00ff"), (1.0, "#ff0000")):
+            gradient.setColorAt(pos, QColor(color))
+        p.setBrush(QBrush(gradient))
+        p.setPen(Qt.NoPen)
+        p.drawEllipse(*area)
+        inner = side - 30
+        p.setBrush(self.palette().window())
+        p.drawEllipse(self.rect().center().x() - inner / 2, self.rect().center().y() - inner / 2, inner, inner)
+        angle = self.hue / 360 * 2 * 3.141592653589793 - 3.141592653589793 / 2
+        x = self.rect().center().x() + (outer - 8) * __import__("math").cos(angle)
+        y = self.rect().center().y() + (outer - 8) * __import__("math").sin(angle)
+        p.setBrush(Qt.NoBrush)
+        p.setPen(QPen(Qt.black, 3))
+        p.drawEllipse(x - 6, y - 6, 12, 12)
+
+    def mousePressEvent(self, event):
+        self._set_from_pos(event.position().x(), event.position().y())
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton:
+            self._set_from_pos(event.position().x(), event.position().y())
+
+    def _set_from_pos(self, x, y):
+        import math
+        dx, dy = x - self.width() / 2, y - self.height() / 2
+        self.hue = (math.degrees(math.atan2(dy, dx)) + 90) % 360
+        self.changed.emit(self.hue)
+        self.update()
+
+
+class SaturationValueWidget(QWidget):
+    changed = Signal(float, float)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
+        self.setMinimumSize(240, 180)
+
+    def paintEvent(self, _event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        base = QColor.fromHsvF(self.hue / 360, 1.0, 1.0)
+        p.fillRect(self.rect(), base)
+        white = QLinearGradient(0, 0, self.width(), 0)
+        white.setColorAt(0, QColor(255, 255, 255, 255))
+        white.setColorAt(1, QColor(255, 255, 255, 0))
+        p.fillRect(self.rect(), white)
+        black = QLinearGradient(0, 0, 0, self.height())
+        black.setColorAt(0, QColor(0, 0, 0, 0))
+        black.setColorAt(1, QColor(0, 0, 0, 255))
+        p.fillRect(self.rect(), black)
+        x, y = self.saturation * self.width(), (1 - self.value) * self.height()
+        p.setBrush(Qt.NoBrush)
+        p.setPen(QPen(Qt.white, 2))
+        p.drawEllipse(x - 6, y - 6, 12, 12)
+        p.setPen(QPen(Qt.black, 1))
+        p.drawEllipse(x - 7, y - 7, 14, 14)
+
+    def set_hue(self, hue):
+        self.hue = hue
+        self.update()
+
+    def mousePressEvent(self, event):
+        self._set_from_pos(event.position().x(), event.position().y())
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton:
+            self._set_from_pos(event.position().x(), event.position().y())
+
+    def _set_from_pos(self, x, y):
+        self.saturation = max(0.0, min(1.0, x / max(1, self.width())))
+        self.value = max(0.0, min(1.0, 1 - y / max(1, self.height())))
+        self.changed.emit(self.saturation, self.value)
+        self.update()
+
+
+class ColorPickerDialog(QDialog):
+    """Independent standard-HSV picker MVP. CSP synchronization is a later adapter."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("独立取色器 · 标准 HSV")
+        self.resize(620, 430)
+        self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
+        self._updating = False
+        root = QVBoxLayout(self)
+        canvas = QHBoxLayout()
+        self.ring = HueRingWidget()
+        self.square = SaturationValueWidget()
+        self.ring.changed.connect(self._hue_changed)
+        self.square.changed.connect(self._sv_changed)
+        canvas.addWidget(self.ring)
+        canvas.addWidget(self.square, 1)
+        root.addLayout(canvas, 1)
+
+        grid = QGridLayout()
+        self.fields = {}
+        for row, (label, key, maximum) in enumerate((("R", "r", 255), ("G", "g", 255), ("B", "b", 255),
+                                                       ("H", "h", 359), ("S", "s", 100), ("V", "v", 100))):
+            spin = QSpinBox()
+            spin.setRange(0, maximum)
+            spin.valueChanged.connect(lambda _=0, key=key: self._field_changed(key))
+            grid.addWidget(QLabel(label), row // 3, (row % 3) * 2)
+            grid.addWidget(spin, row // 3, (row % 3) * 2 + 1)
+            self.fields[key] = spin
+        grid.addWidget(QLabel("HEX"), 2, 0)
+        self.hex_edit = QLineEdit("#FF0000")
+        self.hex_edit.editingFinished.connect(self._hex_changed)
+        grid.addWidget(self.hex_edit, 2, 1, 1, 3)
+        root.addLayout(grid)
+
+        controls = QHBoxLayout()
+        controls.addWidget(QLabel("同步模式"))
+        mode = QComboBox()
+        mode.addItems(["手动同步", "自动同步", "仅复制 HEX"])
+        mode.setToolTip("CSP 联动接口确认后启用同步；当前 MVP 可复制 HEX。")
+        controls.addWidget(mode)
+        top = QCheckBox("窗口置顶")
+        top.toggled.connect(self._set_topmost)
+        controls.addWidget(top)
+        copy_button = QPushButton("复制 HEX")
+        copy_button.clicked.connect(lambda: QApplication.clipboard().setText(self.hex_edit.text()))
+        controls.addWidget(copy_button)
+        hide_button = QPushButton("隐藏")
+        hide_button.clicked.connect(self.hide)
+        controls.addWidget(hide_button)
+        controls.addStretch(1)
+        root.addLayout(controls)
+        self._sync_from_hsv()
+
+    def _set_topmost(self, checked):
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, checked)
+        self.show()
+
+    def _hue_changed(self, hue):
+        self.hue = hue
+        self._sync_from_hsv()
+
+    def _sv_changed(self, saturation, value):
+        self.saturation, self.value = saturation, value
+        self._sync_from_hsv()
+
+    def _sync_from_hsv(self):
+        if self._updating:
+            return
+        self._updating = True
+        color = QColor.fromHsvF(self.hue / 360, self.saturation, self.value)
+        self.fields["r"].setValue(color.red())
+        self.fields["g"].setValue(color.green())
+        self.fields["b"].setValue(color.blue())
+        self.fields["h"].setValue(round(self.hue) % 360)
+        self.fields["s"].setValue(round(self.saturation * 100))
+        self.fields["v"].setValue(round(self.value * 100))
+        self.hex_edit.setText(color.name().upper())
+        self.square.set_hue(self.hue)
+        self.square.saturation, self.square.value = self.saturation, self.value
+        self.square.update()
+        self.ring.hue = self.hue
+        self.ring.update()
+        self._updating = False
+
+    def _field_changed(self, key):
+        if self._updating:
+            return
+        if key in "rgb":
+            color = QColor(self.fields["r"].value(), self.fields["g"].value(), self.fields["b"].value())
+            h, s, v, _ = color.getHsvF()
+            self.hue, self.saturation, self.value = (0 if h < 0 else h * 360), s, v
+        else:
+            self.hue = self.fields["h"].value()
+            self.saturation = self.fields["s"].value() / 100
+            self.value = self.fields["v"].value() / 100
+        self._sync_from_hsv()
+
+    def _hex_changed(self):
+        if self._updating:
+            return
+        color = QColor(self.hex_edit.text().strip())
+        if not color.isValid():
+            self._sync_from_hsv()
+            return
+        h, s, v, _ = color.getHsvF()
+        self.hue, self.saturation, self.value = (0 if h < 0 else h * 360), s, v
+        self._sync_from_hsv()
 
 
 # ---------------------------------------------------------------------------------------------
