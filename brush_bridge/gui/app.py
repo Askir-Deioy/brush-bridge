@@ -856,7 +856,9 @@ class HueRingWidget(QWidget):
         # CSP/SAI orientation: red at upper-left, green at upper-right,
         # blue across the lower half.  Qt's conical gradient runs in the
         # opposite direction, so the color stops are intentionally reversed.
-        gradient = QConicalGradient(self.rect().center(), 180)
+        # Align the rendered gradient with the cursor: H=0 is the red
+        # segment at the upper-left, matching the SAI/CSP reference panel.
+        gradient = QConicalGradient(self.rect().center(), 150)
         for pos, color in ((0.0, "#ff0000"), (1/6, "#ff00ff"), (2/6, "#0000ff"),
                            (3/6, "#00ffff"), (4/6, "#00ff00"), (5/6, "#ffff00"), (1.0, "#ff0000")):
             gradient.setColorAt(pos, QColor(color))
