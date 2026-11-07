@@ -744,9 +744,10 @@ class UtilityPage(QWidget):
         root.addLayout(action_row)
 
     def _open_picker(self):
-        dialog = ColorPickerDialog(self)
+        dialog = ColorPickerDialog(None)
         self._picker_dialog = dialog
         dialog.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        dialog.finished.connect(lambda *_: setattr(self, "_picker_dialog", None))
         dialog.show()
         dialog.raise_()
         dialog.activateWindow()
@@ -955,7 +956,7 @@ class ColorWheelWidget(QWidget):
         super().__init__(parent)
         self.ring = HueRingWidget(self)
         self.square = SaturationValueWidget(self)
-        self.setMinimumSize(280, 280)
+        self.setMinimumSize(180, 180)
 
     def resizeEvent(self, event):
         side = min(self.width(), self.height())
@@ -1071,16 +1072,18 @@ class ColorPickerDialog(QDialog):
         self.embedded = embedded
         self.setWindowTitle("独立取色器 · V-HSV")
         self.setWindowFlag(Qt.Tool, True)
-        self.resize(620, 650)
+        self.setMinimumSize(300, 380)
+        self.resize(420, 500)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
         self._last_color = None
         self.previous_color = QColor("#FFFFFF")
+        self._input_dialog = None
         self._updating = False
         self._pending_fields = {}
         self._field_commit_scheduled = False
         root = QVBoxLayout(self)
         self.wheel = ColorWheelWidget()
-        self.wheel.setMinimumSize(300, 300)
+        self.wheel.setMinimumSize(180, 180)
         self.ring = self.wheel.ring
         self.square = self.wheel.square
         self.ring.changed.connect(self._hue_changed)
@@ -1172,7 +1175,7 @@ class ColorPickerDialog(QDialog):
         self.fields["v"].setValue(round(self.value * 100))
         self.hex_edit.setText(color.name().upper())
         self.swatch.set_colors(color, self.previous_color)
-        self.hsv_summary.setText(f"H {round(self.hue) % 360:03d}°   S {round(self.saturation * 100):03d}%   V {round(self.value * 100):03d}%")
+        self.hsv_summary.setText(f"H {round(self.hue) % 360:03d}   S {round(self.saturation * 100):03d}   V {round(self.value * 100):03d}")
         self.square.set_hue(self.hue)
         self.square.saturation, self.square.value = self.saturation, self.value
         self.square.update()
@@ -1182,10 +1185,21 @@ class ColorPickerDialog(QDialog):
 
     def _open_color_input(self):
         color = self._last_color or QColor("#FF0000")
-        dialog = ColorInputDialog(self, (color.red(), color.green(), color.blue()))
-        if dialog.exec() == QDialog.Accepted:
-            self.hue, self.saturation, self.value = rgb8_to_vhsv(*dialog.rgb())
-            self._sync_from_hsv()
+        dialog = ColorInputDialog(None, (color.red(), color.green(), color.blue()))
+        dialog.setWindowFlag(Qt.Tool, True)
+        dialog.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        self._input_dialog = dialog
+
+        def finished(result):
+            if result == QDialog.Accepted:
+                self.hue, self.saturation, self.value = rgb8_to_vhsv(*dialog.rgb())
+                self._sync_from_hsv()
+            if self._input_dialog is dialog:
+                self._input_dialog = None
+            dialog.deleteLater()
+
+        dialog.finished.connect(finished)
+        dialog.open()
 
     def _field_changed(self, key):
         if self._updating:
