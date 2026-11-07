@@ -746,7 +746,10 @@ class UtilityPage(QWidget):
     def _open_picker(self):
         dialog = ColorPickerDialog(self)
         self._picker_dialog = dialog
+        dialog.setWindowFlag(Qt.WindowStaysOnTopHint, True)
         dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
 
     def _browse_exe(self):
         path, _ = QFileDialog.getOpenFileName(self, "选择 SAI2.exe", self.exe_path.text() or str(Path.home()), "SAI2 (sai2.exe)")
@@ -948,8 +951,6 @@ class ColorWheelWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("background: #242424;")
         self.ring = HueRingWidget(self)
         self.square = SaturationValueWidget(self)
         self.setMinimumSize(280, 280)
@@ -966,14 +967,112 @@ class ColorWheelWidget(QWidget):
         super().resizeEvent(event)
 
 
-class ColorPickerDialog(QDialog):
-    """Independent SAI-like V-HSV picker MVP. CSP synchronization is later."""
+class DualSwatch(QWidget):
+    clicked = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.current = QColor("#FF0000")
+        self.previous = QColor("#FFFFFF")
+        self.setFixedSize(74, 46)
+        self.setToolTip("点击输入颜色")
+
+    def set_colors(self, current: QColor, previous: QColor):
+        self.current, self.previous = QColor(current), QColor(previous)
+        self.update()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit()
+        super().mousePressEvent(event)
+
+    def paintEvent(self, _event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        p.setPen(QPen(QColor("#505050"), 1))
+        p.setBrush(self.previous)
+        p.drawRoundedRect(2, 2, 38, 38, 4, 4)
+        p.setBrush(self.current)
+        p.drawRoundedRect(32, 8, 38, 36, 4, 4)
+
+
+class ColorInputDialog(QDialog):
+    """Small, explicit RGB/HEX editor opened from the dual swatch."""
+
+    def __init__(self, parent=None, rgb=(255, 0, 0)):
+        super().__init__(parent)
+        self.setWindowTitle("输入颜色")
+        self.setMinimumWidth(360)
+        root = QVBoxLayout(self)
+        grid = QGridLayout()
+        self.spins = {}
+        for row, (label, key) in enumerate((("R", "r"), ("G", "g"), ("B", "b"))):
+            grid.addWidget(QLabel(label), row, 0)
+            spin = QSpinBox()
+            spin.setRange(0, 255)
+            spin.setValue(rgb["rgb".index(key)])
+            self.spins[key] = spin
+            grid.addWidget(spin, row, 1)
+        grid.addWidget(QLabel("HEX"), 0, 2)
+        self.hex_edit = QLineEdit(QColor(*rgb).name().upper())
+        grid.addWidget(self.hex_edit, 0, 3, 1, 2)
+        root.addLayout(grid)
+        self.preview = QLabel()
+        self.preview.setMinimumHeight(34)
+        root.addWidget(self.preview)
+        for spin in self.spins.values():
+            spin.valueChanged.connect(self._sync_hex)
+        self.hex_edit.editingFinished.connect(self._sync_rgb)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.setMinimumHeight(42)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        root.addWidget(buttons)
+        self._sync_hex()
+
+    def _sync_hex(self):
+        color = QColor(self.spins["r"].value(), self.spins["g"].value(), self.spins["b"].value())
+        self.hex_edit.setText(color.name().upper())
+        self.preview.setStyleSheet(f"background:{color.name()}; border:1px solid #555;")
+
+    def _sync_rgb(self):
+        color = QColor(self.hex_edit.text().strip())
+        if color.isValid():
+            for key, value in zip("rgb", (color.red(), color.green(), color.blue())):
+                self.spins[key].setValue(value)
+            self._sync_hex()
+
+    def rgb(self):
+        return tuple(self.spins[key].value() for key in "rgb")
+
+
+class ColorPickerPage(QWidget):
+    """Embedded V-HSV page; it never detaches or forces itself above the app."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        root = QVBoxLayout(self)
+        title = QLabel("V-HSV 取色")
+        title.setObjectName("title")
+        root.addWidget(title)
+        hint = QLabel("取色器已嵌入 Brush Bridge 界面；点击左下双色板输入 RGB 或 HEX。")
+        hint.setObjectName("hint")
+        root.addWidget(hint)
+        self.picker = ColorPickerDialog(self, embedded=True)
+        self.picker.setWindowFlags(Qt.Widget)
+        root.addWidget(self.picker, 1)
+class ColorPickerDialog(QDialog):
+    """Independent SAI-like V-HSV picker MVP. CSP synchronization is later."""
+
+    def __init__(self, parent=None, embedded=False):
+        super().__init__(parent)
+        self.embedded = embedded
         self.setWindowTitle("独立取色器 · V-HSV")
+        self.setWindowFlag(Qt.Tool, True)
         self.resize(620, 650)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
+        self._last_color = None
+        self.previous_color = QColor("#FFFFFF")
         self._updating = False
         self._pending_fields = {}
         self._field_commit_scheduled = False
@@ -985,6 +1084,16 @@ class ColorPickerDialog(QDialog):
         self.ring.changed.connect(self._hue_changed)
         self.square.changed.connect(self._sv_changed)
         root.addWidget(self.wheel, 1, Qt.AlignCenter)
+
+        summary = QHBoxLayout()
+        self.swatch = DualSwatch()
+        self.swatch.clicked.connect(self._open_color_input)
+        summary.addWidget(self.swatch)
+        self.hsv_summary = QLabel("H 000°   S 100%   V 100%")
+        self.hsv_summary.setObjectName("hint")
+        summary.addWidget(self.hsv_summary)
+        summary.addStretch(1)
+        root.addLayout(summary)
 
         grid = QGridLayout()
         self.fields = {}
@@ -1004,7 +1113,10 @@ class ColorPickerDialog(QDialog):
         self.hex_edit = QLineEdit("#FF0000")
         self.hex_edit.editingFinished.connect(self._hex_changed)
         grid.addWidget(self.hex_edit, 2, 1, 1, 3)
-        root.addLayout(grid)
+        grid_container = QWidget()
+        grid_container.setLayout(grid)
+        grid_container.setVisible(False)
+        root.addWidget(grid_container)
 
         controls = QHBoxLayout()
         controls.addWidget(QLabel("同步模式"))
@@ -1013,6 +1125,7 @@ class ColorPickerDialog(QDialog):
         mode.setToolTip("CSP 联动接口确认后启用同步；当前 MVP 可复制 HEX。")
         controls.addWidget(mode)
         top = QCheckBox("窗口置顶")
+        top.setChecked(True)
         top.toggled.connect(self._set_topmost)
         controls.addWidget(top)
         copy_button = QPushButton("复制 HEX")
@@ -1022,8 +1135,11 @@ class ColorPickerDialog(QDialog):
         hide_button.clicked.connect(self.hide)
         controls.addWidget(hide_button)
         controls.addStretch(1)
-        root.addLayout(controls)
+        controls_container = QWidget()
+        controls_container.setLayout(controls)
+        root.addWidget(controls_container)
         self._sync_from_hsv()
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
 
     def _set_topmost(self, checked):
         self.setWindowFlag(Qt.WindowStaysOnTopHint, checked)
@@ -1043,6 +1159,9 @@ class ColorPickerDialog(QDialog):
         self._updating = True
         r, g, b = vhsv_to_rgb8(self.hue, self.saturation, self.value)
         color = QColor(r, g, b)
+        if self._last_color is not None and self._last_color != color:
+            self.previous_color = QColor(self._last_color)
+        self._last_color = QColor(color)
         self.fields["r"].setValue(r)
         self.fields["g"].setValue(g)
         self.fields["b"].setValue(b)
@@ -1050,12 +1169,21 @@ class ColorPickerDialog(QDialog):
         self.fields["s"].setValue(round(self.saturation * 100))
         self.fields["v"].setValue(round(self.value * 100))
         self.hex_edit.setText(color.name().upper())
+        self.swatch.set_colors(color, self.previous_color)
+        self.hsv_summary.setText(f"H {round(self.hue) % 360:03d}°   S {round(self.saturation * 100):03d}%   V {round(self.value * 100):03d}%")
         self.square.set_hue(self.hue)
         self.square.saturation, self.square.value = self.saturation, self.value
         self.square.update()
         self.ring.hue = self.hue
         self.ring.update()
         self._updating = False
+
+    def _open_color_input(self):
+        color = self._last_color or QColor("#FF0000")
+        dialog = ColorInputDialog(self, (color.red(), color.green(), color.blue()))
+        if dialog.exec() == QDialog.Accepted:
+            self.hue, self.saturation, self.value = rgb8_to_vhsv(*dialog.rgb())
+            self._sync_from_hsv()
 
     def _field_changed(self, key):
         if self._updating:
