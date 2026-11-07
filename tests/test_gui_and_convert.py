@@ -106,6 +106,17 @@ def test_vhsv_picker_nested_layout_and_numeric_commit(qapp):
     QTest.keyClick(spin.lineEdit(), Qt.Key_Return)
     qapp.processEvents()
     assert spin.value() == 1
+
+    # Enter the three RGB channels as a group.  Intermediate focus changes
+    # must not recalculate and overwrite the previous channel.
+    for key, value in (("r", "12"), ("g", "34"), ("b", "56")):
+        current = d.fields[key]
+        current.setFocus()
+        current.lineEdit().setText(value)
+        qapp.processEvents()
+    d.hex_edit.setFocus()
+    qapp.processEvents()
+    assert (d.fields["r"].value(), d.fields["g"].value(), d.fields["b"].value()) == (12, 34, 56)
     d.close()
 
 

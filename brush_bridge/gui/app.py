@@ -860,8 +860,8 @@ class HueRingWidget(QWidget):
         p.setBrush(QBrush(gradient))
         p.setPen(Qt.NoPen)
         p.drawEllipse(*area)
-        inner = side - 30
-        p.setBrush(self.palette().window())
+        inner = side - 34
+        p.setBrush(QColor("#242424"))
         p.drawEllipse(self.rect().center().x() - inner / 2, self.rect().center().y() - inner / 2, inner, inner)
         angle = ((self.hue - 60.0) % 360.0) / 360 * 2 * 3.141592653589793 - 3.141592653589793 / 2
         x = self.rect().center().x() + (outer - 8) * __import__("math").cos(angle)
@@ -915,6 +915,9 @@ class SaturationValueWidget(QWidget):
             image = QImage(pixels.data, width, height, width * 3, QImage.Format_RGB888).copy()
             self._rendered_key, self._rendered_image = key, image
         p.drawImage(0, 0, self._rendered_image)
+        p.setBrush(Qt.NoBrush)
+        p.setPen(QPen(QColor("#101010"), 2))
+        p.drawRect(self.rect().adjusted(0, 0, -1, -1))
         x, y = self.saturation * self.width(), (1 - self.value) * self.height()
         p.setBrush(Qt.NoBrush)
         p.setPen(QPen(Qt.white, 2))
@@ -945,6 +948,8 @@ class ColorWheelWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setStyleSheet("background: #242424;")
         self.ring = HueRingWidget(self)
         self.square = SaturationValueWidget(self)
         self.setMinimumSize(280, 280)
@@ -955,8 +960,7 @@ class ColorWheelWidget(QWidget):
         # The square must fit inside the ring's circular hole, including its
         # corners.  Use the hole diameter divided by sqrt(2), otherwise the
         # square corners cover the outer ring.
-        hole_diameter = max(120, side - 30)
-        square_side = max(100, int(hole_diameter / 1.41421356237) - 4)
+        square_side = max(100, int(side * 0.58))
         self.square.setGeometry((side - square_side) // 2, (side - square_side) // 2,
                                 square_side, square_side)
         super().resizeEvent(event)
@@ -971,6 +975,8 @@ class ColorPickerDialog(QDialog):
         self.resize(620, 650)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
         self._updating = False
+        self._pending_fields = {}
+        self._field_commit_scheduled = False
         root = QVBoxLayout(self)
         self.wheel = ColorWheelWidget()
         self.wheel.setMinimumSize(300, 300)
@@ -1054,14 +1060,53 @@ class ColorPickerDialog(QDialog):
     def _field_changed(self, key):
         if self._updating:
             return
-        if key in "rgb":
-            self.hue, self.saturation, self.value = rgb8_to_vhsv(
-                self.fields["r"].value(), self.fields["g"].value(), self.fields["b"].value())
+        text = self.fields[key].lineEdit().text().strip()
+        try:
+            typed = int(text)
+        except ValueError:
+            typed = self.fields[key].value()
+        self._pending_fields[key] = typed
+        self._schedule_field_commit()
+
+    def _schedule_field_commit(self):
+        if self._field_commit_scheduled:
+            return
+        self._field_commit_scheduled = True
+        QTimer.singleShot(0, self._commit_pending_fields)
+
+    def _commit_pending_fields(self):
+        self._field_commit_scheduled = False
+        if not self._pending_fields:
+            return
+        # Moving from R to G to B fires editingFinished on each previous
+        # spinbox.  Wait until the whole numeric group has lost focus so that
+        # intermediate values cannot rewrite the next field while it is being
+        # entered.
+        if any(spin.lineEdit().hasFocus() for spin in self.fields.values()):
+            QTimer.singleShot(40, self._commit_pending_fields)
+            return
+        pending = self._pending_fields
+        self._pending_fields = {}
+        committed_rgb = None
+        if any(key in pending for key in "rgb"):
+            rgb = tuple(pending.get(key, int(self.fields[key].lineEdit().text() or 0)) for key in "rgb")
+            committed_rgb = rgb
+            self.hue, self.saturation, self.value = rgb8_to_vhsv(*rgb)
         else:
-            self.hue = self.fields["h"].value()
-            self.saturation = self.fields["s"].value() / 100
-            self.value = self.fields["v"].value() / 100
+            self.hue = pending.get("h", int(self.fields["h"].lineEdit().text() or 0))
+            self.saturation = pending.get("s", int(self.fields["s"].lineEdit().text() or 0)) / 100
+            self.value = pending.get("v", int(self.fields["v"].lineEdit().text() or 0)) / 100
         self._sync_from_hsv()
+        if committed_rgb is not None:
+            # Preserve the exact integers the user entered.  The V-HSV
+            # inverse is intentionally tolerant because 8-bit quantization
+            # is many-to-one; re-rendering immediately would turn e.g. 12
+            # into 13 and make the field appear to reject the input.
+            self._updating = True
+            for key, value in zip("rgb", committed_rgb):
+                self.fields[key].setValue(value)
+            self.hex_edit.setText(QColor(*committed_rgb).name().upper())
+            self._updating = False
 
     def _hex_changed(self):
         if self._updating:
