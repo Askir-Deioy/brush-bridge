@@ -94,6 +94,27 @@ def data_dir_for(install_dir: Path, build: Optional[str]) -> tuple[Path, bool]:
     return fmt.default_settings_dir(), False
 
 
+def app_install_from_exe(exe: Path) -> Optional[AppInstall]:
+    """Build an SAI2 install record from a user-selected executable."""
+    exe = Path(exe).expanduser()
+    if not exe.is_file():
+        return None
+    install_dir = exe.parent
+    hist = history_build(install_dir)
+    build = hist or pe_build(exe)
+    data_dir, legacy = data_dir_for(install_dir, build)
+    saier = "saier" in install_dir.name.lower() or (install_dir / "汉化说明.txt").exists()
+    name = Sai2Adapter.name + ("（Saier 汉化版）" if saier else "")
+    return AppInstall(
+        app_id="sai2", name=name, version=build or file_version(exe), exe=exe,
+        data_dir=data_dir,
+        extra={"build": build or "", "build_source": "history.txt" if hist else "exe",
+               "legacy_layout": legacy, "localized": "saier" if saier else "",
+               "init_dir": str(install_dir / "init") if (install_dir / "init").is_dir() else "",
+               "settings_exists": fmt.is_settings_root(data_dir)},
+    )
+
+
 @register_app
 class Sai2Adapter(AppAdapter):
     id = "sai2"

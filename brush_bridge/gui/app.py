@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from PIL import Image
-from PySide6.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, Signal
+from PySide6.QtCore import QObject, QRunnable, QSettings, Qt, QThreadPool, QTimer, Signal
 from PySide6.QtGui import QColor, QFont, QFontDatabase, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QFileDialog, QFrame, QHBoxLayout, QInputDialog, QLabel,
@@ -20,11 +20,12 @@ from PySide6.QtWidgets import (
 )
 
 from .. import __version__
+from ..apps.sai2 import app_install_from_exe
 from ..core import convert
 from ..core.convert import DetectedApp, OpenedFile
 from ..core.model import BrushRef
-from ..core.plugin import FileInfo, codecs, load_plugins
-from ..core.system import export_dir, open_in_explorer
+from ..core.plugin import FileInfo, app as plugin_app, codecs, load_plugins
+from ..core.system import export_dir, open_in_explorer, safe_filename
 from .brush_grid import (THUMB, BrushGridView, BrushListModel, GroupTree, PixmapCache, ThumbnailLoader,
                          pil_to_qimage)
 
@@ -679,6 +680,152 @@ class DiagnosePage(QWidget):
 
 
 # ---------------------------------------------------------------------------------------------
+# Page 3: convenience tools
+# ---------------------------------------------------------------------------------------------
+class UtilityPage(QWidget):
+    """Small, explicit helpers that need a user-selected local application."""
+
+    def __init__(self, win: "MainWindow"):
+        super().__init__()
+        self.win = win
+        self.install = None
+        self.refs: list[BrushRef] = []
+        self.settings = QSettings("BrushBridge", "BrushBridge")
+
+        root = QVBoxLayout(self)
+        title = QLabel("便捷工具")
+        title.setObjectName("title")
+        root.addWidget(title)
+        hint = QLabel("先选择本机 SAI2 的 sai2.exe，再查看、安装或导出单支笔刷。")
+        hint.setObjectName("hint")
+        root.addWidget(hint)
+
+        path_row = QHBoxLayout()
+        self.exe_path = QLineEdit(str(self.settings.value("sai2/exe", "")))
+        self.exe_path.setPlaceholderText("选择 SAI2.exe")
+        path_row.addWidget(self.exe_path, 1)
+        browse = QPushButton("选择 SAI2.exe…")
+        browse.clicked.connect(self._browse_exe)
+        path_row.addWidget(browse)
+        load = QPushButton("读取本地笔刷")
+        load.clicked.connect(self._load_sai2)
+        path_row.addWidget(load)
+        root.addLayout(path_row)
+
+        self.status = QLabel("尚未选择 SAI2。")
+        self.status.setObjectName("hint")
+        root.addWidget(self.status)
+
+        self.brushes = QListWidget()
+        self.brushes.setObjectName("sources")
+        root.addWidget(self.brushes, 1)
+
+        group_row = QHBoxLayout()
+        group_row.addWidget(QLabel("安装工具组"))
+        self.group_name = QLineEdit("导入笔刷")
+        group_row.addWidget(self.group_name, 1)
+        root.addLayout(group_row)
+
+        action_row = QHBoxLayout()
+        self.install_button = QPushButton("安装选中笔刷")
+        self.install_button.clicked.connect(self._install_selected)
+        self.install_button.setEnabled(False)
+        action_row.addWidget(self.install_button)
+        self.export_button = QPushButton("导出选中笔刷…")
+        self.export_button.clicked.connect(self._export_selected)
+        self.export_button.setEnabled(False)
+        action_row.addWidget(self.export_button)
+        action_row.addStretch(1)
+        root.addLayout(action_row)
+
+    def _browse_exe(self):
+        path, _ = QFileDialog.getOpenFileName(self, "选择 SAI2.exe", self.exe_path.text() or str(Path.home()), "SAI2 (sai2.exe)")
+        if path:
+            self.exe_path.setText(path)
+            self._load_sai2()
+
+    def _load_sai2(self):
+        path = Path(self.exe_path.text().strip())
+        inst = app_install_from_exe(path)
+        if inst is None:
+            self.install = None
+            self.refs = []
+            self.brushes.clear()
+            self.install_button.setEnabled(False)
+            self.export_button.setEnabled(False)
+            self.status.setText("找不到可用的 sai2.exe。")
+            return
+        self.settings.setValue("sai2/exe", str(path))
+        self.install = inst
+        try:
+            self.refs = plugin_app("sai2").list_brushes(inst)
+        except Exception as exc:
+            self.refs = []
+            self.status.setText(f"读取 SAI2 设置失败：{exc}")
+            return
+        self.brushes.clear()
+        for ref in self.refs:
+            item = QListWidgetItem(ref.name)
+            item.setData(Qt.UserRole, ref)
+            item.setToolTip(ref.detail or ref.group or ref.name)
+            self.brushes.addItem(item)
+        self.status.setText(f"{inst.label}。本地笔刷 {len(self.refs)} 支，设置目录：{inst.data_dir}")
+        enabled = bool(self.refs)
+        self.install_button.setEnabled(enabled)
+        self.export_button.setEnabled(enabled)
+
+    def _selected_ref(self) -> Optional[BrushRef]:
+        item = self.brushes.currentItem()
+        return item.data(Qt.UserRole) if item else None
+
+    def _install_selected(self):
+        ref = self._selected_ref()
+        if ref is None or self.install is None:
+            return
+        group = self.group_name.text().strip() or "导入笔刷"
+        self.win.busy("正在安装 SAI2 笔刷…")
+        self.install_button.setEnabled(False)
+
+        def work():
+            brush = ref.load()
+            return plugin_app("sai2").install(self.install, [brush], group_name=group, prefer_native=True)
+
+        def done(result):
+            self.win.idle()
+            self.install_button.setEnabled(True)
+            if result.ok:
+                result_dialog(self, True, result.message, result.files)
+            else:
+                QMessageBox.warning(self, "SAI2 安装失败", result.message)
+
+        run_bg(work, done, lambda msg: (self.win.idle(), self.install_button.setEnabled(True),
+                                        QMessageBox.warning(self, "SAI2 安装失败", msg)))
+
+    def _export_selected(self):
+        ref = self._selected_ref()
+        if ref is None:
+            return
+        folder = QFileDialog.getExistingDirectory(self, "选择 SAI2 导出目录", str(Path.home() / "Downloads"))
+        if not folder:
+            return
+        self.win.busy("正在导出 SAI2 笔刷…")
+        self.export_button.setEnabled(False)
+
+        def work():
+            brush = ref.load()
+            destination = Path(folder) / safe_filename(ref.name)
+            return convert.export([brush], "sai2", destination, prefer_native=True)
+
+        def done(files):
+            self.win.idle()
+            self.export_button.setEnabled(True)
+            result_dialog(self, True, "已导出选中的 SAI2 笔刷。", files)
+
+        run_bg(work, done, lambda msg: (self.win.idle(), self.export_button.setEnabled(True),
+                                        QMessageBox.warning(self, "SAI2 导出失败", msg)))
+
+
+# ---------------------------------------------------------------------------------------------
 # Main window
 # ---------------------------------------------------------------------------------------------
 class MainWindow(QMainWindow):
@@ -693,6 +840,8 @@ class MainWindow(QMainWindow):
         self.diag = DiagnosePage(self)
         self.tabs.addTab(self.transfer, "🖌 笔刷转换")
         self.tabs.addTab(self.diag, "🔧 修复导入问题")
+        self.tools = UtilityPage(self)
+        self.tabs.addTab(self.tools, "🧰 便捷工具")
         self.setCentralWidget(self.tabs)
         self.transfer.set_detected([])
         self.statusBar().showMessage("请选择笔刷文件，然后选择目标格式导出　　作者：askir · 本软件完全免费")
