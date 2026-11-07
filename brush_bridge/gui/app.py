@@ -12,7 +12,7 @@ from typing import Any, Callable, Optional
 
 from PIL import Image
 from PySide6.QtCore import QObject, QRunnable, QSettings, Qt, QThreadPool, QTimer, Signal
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QFont, QFontDatabase, QIcon, QLinearGradient,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QFont, QFontDatabase, QIcon, QImage,
                            QPainter, QPen, QPixmap)
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QInputDialog, QLabel,
@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 from .. import __version__
 from ..apps.sai2 import app_install_from_exe
 from ..core import convert
+from ..core.color_models import rgb8_to_vhsv, vhsv_to_rgb8
 from ..core.convert import DetectedApp, OpenedFile
 from ..core.model import BrushRef
 from ..core.plugin import FileInfo, app as plugin_app, codecs, load_plugins
@@ -892,16 +893,15 @@ class SaturationValueWidget(QWidget):
     def paintEvent(self, _event):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        base = QColor.fromHsvF(self.hue / 360, 1.0, 1.0)
-        p.fillRect(self.rect(), base)
-        white = QLinearGradient(0, 0, self.width(), 0)
-        white.setColorAt(0, QColor(255, 255, 255, 255))
-        white.setColorAt(1, QColor(255, 255, 255, 0))
-        p.fillRect(self.rect(), white)
-        black = QLinearGradient(0, 0, 0, self.height())
-        black.setColorAt(0, QColor(0, 0, 0, 0))
-        black.setColorAt(1, QColor(0, 0, 0, 255))
-        p.fillRect(self.rect(), black)
+        width, height = max(1, self.width()), max(1, self.height())
+        image = QImage(width, height, QImage.Format_RGB32)
+        for y in range(height):
+            value = 1.0 - y / max(1, height - 1)
+            for x in range(width):
+                saturation = x / max(1, width - 1)
+                r, g, b = vhsv_to_rgb8(self.hue, saturation, value)
+                image.setPixel(x, y, (r << 16) | (g << 8) | b)
+        p.drawImage(0, 0, image)
         x, y = self.saturation * self.width(), (1 - self.value) * self.height()
         p.setBrush(Qt.NoBrush)
         p.setPen(QPen(Qt.white, 2))
@@ -928,11 +928,11 @@ class SaturationValueWidget(QWidget):
 
 
 class ColorPickerDialog(QDialog):
-    """Independent standard-HSV picker MVP. CSP synchronization is a later adapter."""
+    """Independent SAI-like V-HSV picker MVP. CSP synchronization is later."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("独立取色器 · 标准 HSV")
+        self.setWindowTitle("独立取色器 · V-HSV")
         self.resize(620, 430)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
         self._updating = False
@@ -997,10 +997,11 @@ class ColorPickerDialog(QDialog):
         if self._updating:
             return
         self._updating = True
-        color = QColor.fromHsvF(self.hue / 360, self.saturation, self.value)
-        self.fields["r"].setValue(color.red())
-        self.fields["g"].setValue(color.green())
-        self.fields["b"].setValue(color.blue())
+        r, g, b = vhsv_to_rgb8(self.hue, self.saturation, self.value)
+        color = QColor(r, g, b)
+        self.fields["r"].setValue(r)
+        self.fields["g"].setValue(g)
+        self.fields["b"].setValue(b)
         self.fields["h"].setValue(round(self.hue) % 360)
         self.fields["s"].setValue(round(self.saturation * 100))
         self.fields["v"].setValue(round(self.value * 100))
@@ -1016,9 +1017,8 @@ class ColorPickerDialog(QDialog):
         if self._updating:
             return
         if key in "rgb":
-            color = QColor(self.fields["r"].value(), self.fields["g"].value(), self.fields["b"].value())
-            h, s, v, _ = color.getHsvF()
-            self.hue, self.saturation, self.value = (0 if h < 0 else h * 360), s, v
+            self.hue, self.saturation, self.value = rgb8_to_vhsv(
+                self.fields["r"].value(), self.fields["g"].value(), self.fields["b"].value())
         else:
             self.hue = self.fields["h"].value()
             self.saturation = self.fields["s"].value() / 100
@@ -1032,8 +1032,7 @@ class ColorPickerDialog(QDialog):
         if not color.isValid():
             self._sync_from_hsv()
             return
-        h, s, v, _ = color.getHsvF()
-        self.hue, self.saturation, self.value = (0 if h < 0 else h * 360), s, v
+        self.hue, self.saturation, self.value = rgb8_to_vhsv(color.red(), color.green(), color.blue())
         self._sync_from_hsv()
 
 
