@@ -51,13 +51,42 @@ def rgb8_to_vhsv(red: int, green: int, blue: int) -> tuple[float, float, float]:
     if value <= 0.0:
         return 0.0, 0.0, 0.0
 
-    # Undo the value-dependent exponent to recover the top-edge RGB color.
-    top = []
-    for channel in values:
-        normalized = _clamp(channel / value)
-        top.append(0.0 if normalized <= 0.0 else normalized ** value)
-    hue, saturation, _ = colorsys.rgb_to_hsv(*top)
-    return (0.0 if saturation <= 1e-9 else hue * 360.0), _clamp(saturation), value
+    # Quantization makes a direct inverse unreliable in dark saturated colors:
+    # several different S coordinates can round the smallest channel to zero.
+    # Search around the ordinary HSV hue and choose the V-HSV coordinates whose
+    # forward-rendered 8-bit RGB is closest.  This is only used for RGB/HEX
+    # edits, not for the pointer-drag path, so the small bounded search keeps
+    # the fields aligned with the visible model without making dragging slow.
+    hue0, _, _ = colorsys.rgb_to_hsv(*values)
+    hue0 *= 360.0
+    if max(values) - min(values) <= 1.0 / 255.0:
+        return 0.0, 0.0, value
+
+    target = (red, green, blue)
+
+    def error(hue: float, saturation: float) -> int:
+        got = vhsv_to_rgb8(hue, saturation, value)
+        return sum((a - b) ** 2 for a, b in zip(got, target))
+
+    # A two-level score prefers the lowest S that reproduces the quantized
+    # RGB within two levels, matching SAI2's displayed coordinate better than
+    # blindly choosing a saturated exact match after 8-bit rounding.
+    best = (10**9, 10**9, hue0, 0.0)
+    for h_step in (2.0, 0.25):
+        if h_step == 2.0:
+            h_values = [hue0 - 24.0 + i * h_step for i in range(25)]
+            s_values = [i / 50.0 for i in range(51)]
+        else:
+            h_values = [best[2] - 2.0 + i * h_step for i in range(17)]
+            s_values = [max(0.0, best[3] - 0.04) + i * 0.005 for i in range(17)]
+        for hue in h_values:
+            for saturation in s_values:
+                current = error(hue, _clamp(saturation))
+                sat = _clamp(saturation)
+                score = max(0, current - 2) * 1000 + sat
+                if score < best[1]:
+                    best = current, score, hue, sat
+    return best[2] % 360.0, best[3], value
 
 
 def vhsv_roundtrip(rgb: tuple[int, int, int]) -> tuple[int, int, int]:

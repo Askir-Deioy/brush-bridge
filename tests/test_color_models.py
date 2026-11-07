@@ -21,3 +21,10 @@ def test_vhsv_rgb_roundtrip_stays_quantized_close():
         got = vhsv_roundtrip(rgb)
         assert max(abs(a - b) for a, b in zip(rgb, got)) <= 2, (rgb, got)
 
+
+def test_vhsv_inverse_keeps_dark_saturation_coordinate():
+    # Direct HSV inversion would report S=100 for these colors because the
+    # smallest channel rounded to zero.  V-HSV coordinates remain below 100.
+    assert 0.80 < rgb8_to_vhsv(108, 0, 33)[1] < 0.92
+    assert 0.62 < rgb8_to_vhsv(47, 0, 82)[1] < 0.78
+

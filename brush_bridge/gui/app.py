@@ -850,9 +850,12 @@ class HueRingWidget(QWidget):
         rect = self.rect().center()
         outer = side / 2
         area = self.rect().center().x() - outer, self.rect().center().y() - outer, side, side
-        gradient = QConicalGradient(self.rect().center(), -90)
-        for pos, color in ((0.0, "#ff0000"), (1/6, "#ffff00"), (2/6, "#00ff00"),
-                           (3/6, "#00ffff"), (4/6, "#0000ff"), (5/6, "#ff00ff"), (1.0, "#ff0000")):
+        # CSP/SAI orientation: red at upper-left, green at upper-right,
+        # blue across the lower half.  Qt's conical gradient runs in the
+        # opposite direction, so the color stops are intentionally reversed.
+        gradient = QConicalGradient(self.rect().center(), 180)
+        for pos, color in ((0.0, "#ff0000"), (1/6, "#ff00ff"), (2/6, "#0000ff"),
+                           (3/6, "#00ffff"), (4/6, "#00ff00"), (5/6, "#ffff00"), (1.0, "#ff0000")):
             gradient.setColorAt(pos, QColor(color))
         p.setBrush(QBrush(gradient))
         p.setPen(Qt.NoPen)
@@ -860,7 +863,7 @@ class HueRingWidget(QWidget):
         inner = side - 30
         p.setBrush(self.palette().window())
         p.drawEllipse(self.rect().center().x() - inner / 2, self.rect().center().y() - inner / 2, inner, inner)
-        angle = self.hue / 360 * 2 * 3.141592653589793 - 3.141592653589793 / 2
+        angle = ((self.hue - 60.0) % 360.0) / 360 * 2 * 3.141592653589793 - 3.141592653589793 / 2
         x = self.rect().center().x() + (outer - 8) * __import__("math").cos(angle)
         y = self.rect().center().y() + (outer - 8) * __import__("math").sin(angle)
         p.setBrush(Qt.NoBrush)
@@ -877,7 +880,7 @@ class HueRingWidget(QWidget):
     def _set_from_pos(self, x, y):
         import math
         dx, dy = x - self.width() / 2, y - self.height() / 2
-        self.hue = (math.degrees(math.atan2(dy, dx)) + 90) % 360
+        self.hue = (math.degrees(math.atan2(dy, dx)) + 150) % 360
         self.changed.emit(self.hue)
         self.update()
 
@@ -888,20 +891,30 @@ class SaturationValueWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
-        self.setMinimumSize(240, 180)
+        self._rendered_key = None
+        self._rendered_image = None
+        self.setMinimumSize(100, 100)
 
     def paintEvent(self, _event):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
         width, height = max(1, self.width()), max(1, self.height())
-        image = QImage(width, height, QImage.Format_RGB32)
-        for y in range(height):
-            value = 1.0 - y / max(1, height - 1)
-            for x in range(width):
-                saturation = x / max(1, width - 1)
-                r, g, b = vhsv_to_rgb8(self.hue, saturation, value)
-                image.setPixel(x, y, (r << 16) | (g << 8) | b)
-        p.drawImage(0, 0, image)
+        key = (width, height, round(self.hue, 3))
+        if self._rendered_key != key:
+            import colorsys
+            import numpy as np
+
+            saturation = np.linspace(0.0, 1.0, width, dtype=np.float32)
+            value = np.linspace(1.0, 0.0, height, dtype=np.float32)[:, None]
+            pure = np.asarray(colorsys.hsv_to_rgb((self.hue % 360.0) / 360.0, 1.0, 1.0), dtype=np.float32)
+            top = 1.0 - saturation[:, None] * (1.0 - pure[None, :])
+            safe_value = np.maximum(value, 1e-6)
+            rgb = safe_value[:, :, None] * np.power(top[None, :, :], 1.0 / safe_value[:, :, None])
+            rgb[-1, :, :] = 0.0
+            pixels = np.rint(np.clip(rgb, 0.0, 1.0) * 255.0).astype(np.uint8)
+            image = QImage(pixels.data, width, height, width * 3, QImage.Format_RGB888).copy()
+            self._rendered_key, self._rendered_image = key, image
+        p.drawImage(0, 0, self._rendered_image)
         x, y = self.saturation * self.width(), (1 - self.value) * self.height()
         p.setBrush(Qt.NoBrush)
         p.setPen(QPen(Qt.white, 2))
@@ -927,24 +940,40 @@ class SaturationValueWidget(QWidget):
         self.update()
 
 
+class ColorWheelWidget(QWidget):
+    """CSP/SAI-style nested hue ring and V-HSV square."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ring = HueRingWidget(self)
+        self.square = SaturationValueWidget(self)
+        self.setMinimumSize(280, 280)
+
+    def resizeEvent(self, event):
+        side = min(self.width(), self.height())
+        self.ring.setGeometry(0, 0, side, side)
+        square_side = max(100, side - 82)
+        self.square.setGeometry((side - square_side) // 2, (side - square_side) // 2,
+                                square_side, square_side)
+        super().resizeEvent(event)
+
+
 class ColorPickerDialog(QDialog):
     """Independent SAI-like V-HSV picker MVP. CSP synchronization is later."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("独立取色器 · V-HSV")
-        self.resize(620, 430)
+        self.resize(620, 650)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
         self._updating = False
         root = QVBoxLayout(self)
-        canvas = QHBoxLayout()
-        self.ring = HueRingWidget()
-        self.square = SaturationValueWidget()
+        self.wheel = ColorWheelWidget()
+        self.ring = self.wheel.ring
+        self.square = self.wheel.square
         self.ring.changed.connect(self._hue_changed)
         self.square.changed.connect(self._sv_changed)
-        canvas.addWidget(self.ring)
-        canvas.addWidget(self.square, 1)
-        root.addLayout(canvas, 1)
+        root.addWidget(self.wheel, 1, Qt.AlignCenter)
 
         grid = QGridLayout()
         self.fields = {}
