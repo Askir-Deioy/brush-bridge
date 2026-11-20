@@ -12,9 +12,9 @@ from __future__ import annotations
 
 import argparse
 import runpy
-import shutil
-import uuid
+from ctypes import POINTER, WinDLL, WinError, byref, c_void_p, c_wchar_p, wintypes
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import msilib
 import msilib.schema
@@ -29,6 +29,31 @@ ROOT = Path(__file__).resolve().parents[1]
 VERSION = runpy.run_path(str(ROOT / "brush_bridge" / "__init__.py"))["__version__"]
 PRODUCT_VERSION = ".".join(VERSION.split(".")[:3])
 MANUFACTURER = "askir"
+
+
+def _set_utf8_codepage(package: Path) -> None:
+    """Set the database's string pool code page before adding localized rows."""
+    installer = WinDLL("msi")
+    installer.MsiOpenDatabaseW.argtypes = [c_wchar_p, c_void_p, POINTER(wintypes.UINT)]
+    installer.MsiDatabaseImportW.argtypes = [wintypes.UINT, c_wchar_p, c_wchar_p]
+    installer.MsiDatabaseCommit.argtypes = [wintypes.UINT]
+    installer.MsiCloseHandle.argtypes = [wintypes.UINT]
+    handle = wintypes.UINT()
+    result = installer.MsiOpenDatabaseW(str(package), msilib.MSIDBOPEN_TRANSACT, byref(handle))
+    if result:
+        raise WinError(result)
+    try:
+        with TemporaryDirectory() as folder:
+            codepage = Path(folder) / "_ForceCodepage.idt"
+            codepage.write_bytes(b"\r\n\r\n65001\t_ForceCodepage\r\n")
+            result = installer.MsiDatabaseImportW(handle, folder, codepage.name)
+            if result:
+                raise WinError(result)
+        result = installer.MsiDatabaseCommit(handle)
+        if result:
+            raise WinError(result)
+    finally:
+        installer.MsiCloseHandle(handle)
 
 
 def _add_tree(db, cab, parent, source: Path, logical: str, default: str | None = None):
@@ -79,6 +104,9 @@ def build(source: Path, output: Path) -> Path:
     db = msilib.init_database(
         str(output), msilib.schema, PRODUCT_NAME, product_code, PRODUCT_VERSION, MANUFACTURER
     )
+    db.Close()
+    _set_utf8_codepage(output)
+    db = msilib.OpenDatabase(str(output), msilib.MSIDBOPEN_TRANSACT)
     cab = msilib.CAB("BrushBridge.cab")
     feature = msilib.Feature(
         db,
