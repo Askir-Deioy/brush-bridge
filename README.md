@@ -11,7 +11,7 @@
 
 跨软件实机验证用的原创实验笔刷在 [`examples/experiments`](examples/experiments)；每支都附有理想效果、测试步骤和可填写的 CSV 记录，不把文件回读冒充真实软件笔迹验收。
 
-[English](#english) · [下载](https://github.com/CanderFlower/brush-bridge/releases/latest) · MIT License
+[English](#english) · [下载](https://github.com/Askir-Deioy/brush-bridge/releases/latest) · MIT License
 
 ---
 

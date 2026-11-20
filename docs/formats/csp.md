@@ -144,9 +144,10 @@ The header is made of u32 words. Its size (word 0) depends on the CSP version:
 
 ### `BrushInOutTarget` (BLOB, inferred)
 
-`u32 0x0c, u32 count, u32 0x0c`, then `count` × (`u32 id`, `u32 enabled`, `u32 min %`). Seen ids
-are `0x70`, `0x3e9` (probably size), `0x3fd` (probably opacity) and `0x411`. brush-bridge copies
-this blob unchanged.
+`u32 0x0c, u32 count, u32 0x0c`, then `count` × (`u32 id`, `u32 enabled`, `u32 min %`).
+Generated brushes set `0x3e9` (brush size) from the source size taper and `0x3fd`
+(brush density) as a per-dab approximation of the source opacity taper.
+The native target list is preserved on unchanged CSP round trips.
 
 ### `BrushRotationEffector` (INTEGER bit field, inferred)
 
@@ -269,8 +270,8 @@ textures). The builder reproduces CSP's own `Offscreen` attribute, empty and pix
 | `BrushPatternReverseHorizontal/Vertical` | `flip_x/flip_y` | |
 | `BrushUseSpray`, `BrushSpraySize(+Unit, SyncBrushSize)`, `BrushSprayDensity(+Effector)` | `size_px`, `spacing`, `scatter`, `scatter_both_axes`, `count`, `count_jitter` | see "Spray semantics" below |
 | `BrushUseIn/Out`, `BrushIn/OutLength(+Unit)`, `BrushInOutType` | `taper_start/end` | length px ÷ 100 (type 1 = %) |
-| `TextureImage`, `TextureCompositeMode`, `TextureScale2`, `TextureDensity(+Effector)`, `TextureReverseDensity`, `TextureBrightness`, `TextureContrast`, `TextureForPlot` | `texture` | composite mode 0 = multiply (inferred), 1 = subtract — verified in CSP 5.1.2: subtract removes paint where the texture image is **light** (white-background/black-dot test texture leaves only the dots). This matches Procreate's subtract grain mode (bright grain subtracts), so the grain image is carried over unchanged. |
-| `UseDualBrush`, `Dual*` | `dual` | |
+| `TextureImage`, `TextureCompositeMode`, `TextureScale2`, `TextureDensity(+Effector)`, `TextureReverseDensity`, `TextureBrightness`, `TextureContrast`, `TextureForPlot` | `texture` | Normal = 0, Multiply = 1, Subtract = 2. |
+| `UseDualBrush`, `Dual*` | `dual` | Includes secondary orientation, flow, size dynamics and the embedded secondary texture. |
 | `BrushChangePatternColor` / `BrushChangeStrokeColor` + `Brush[Stroke]Hue/Saturation/Value/SubColor…` | `color` | hue range 0–180 → 0–1 |
 | `BrushUseWaterColor`, `BrushMixColor`, `BrushMixAlpha`, `BrushMixColorExtension` | `wet` | load = paint amount, wetness = 1 − paint density |
 | `CompositeMode` | `blend_mode` / `is_eraser` | see below |
@@ -295,18 +296,21 @@ Factory brushes use only 0, 2, 27 and 31. Value 31 is probably "compare density"
 ### Spray semantics
 
 With `BrushUseSpray=1`, `BrushSize` is the **spray area** and `BrushSpraySize` is the **particle
-(tip) size**: px, or % of `BrushSize` when `BrushSpraySizeSyncBrushSize=1`. `BrushSprayDensity` is
-the number of particles per dab and `BrushInterval` stays a % of `BrushSize` (the area). Factory
-examples: 噴霧 100 px / 12.8 px, 濕潤水彩 30 px / 120 %.
+(tip) size** in the unit specified by `BrushSpraySizeUnit`. In CSP 4.2, `BrushSpraySizeSyncBrushSize=1`
+links changes in the UI while both fields still store lengths. This also applies to `DualSpraySize`.
+`BrushInterval` stays a % of `BrushSize` (the area).
 
 brush-bridge maps this with `spray_layout()`:
 
-* scatter ≥ 0.1: area = 2 × scatter × tip size, particle = 100 / (2 × scatter) % (synced),
-  interval = spacing × tip size ÷ area.
+* scatter ≥ 0.1: area = 2 × scatter × tip size, particle = tip size in px,
+  interval = spacing × tip size ÷ area, expressed as a percentage.
 * scatter < 0.1: spray is turned off. Several tips per dab without positional scatter (e.g.
   Procreate "count 2, jitter 0") are approximated by dividing the interval by the count.
 
 Reading reverses this: tip size = particle size, scatter = area ÷ (2 × particle).
+
+`DualBrushCompositeMode` and `TextureCompositeMode` have their own ID tables. In both tables
+Multiply is 1. In the dual table, 2 is Add (Glow) and 9 is Color Burn. In the texture table, 2 is Subtract.
 
 **Lossless round trip:** `Brush.source.native["csp"]` keeps the following:
 

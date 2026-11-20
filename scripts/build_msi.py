@@ -2,8 +2,8 @@
 
 Run with the project's Windows Python 3.11 environment:
     .venv-win\\Scripts\\python.exe scripts\\build_msi.py \\
-        --source ..\\BrushBridge-0.5.3-User \\
-        --out ..\\BrushBridge-0.5.3-User.msi
+        --source ..\\BrushBridge-<version>-User \\
+        --out ..\\BrushBridge-<version>-User.msi
 
 The MSI embeds the already-built onedir files. It does not download or
 execute anything during installation.
@@ -11,6 +11,7 @@ execute anything during installation.
 from __future__ import annotations
 
 import argparse
+import runpy
 import shutil
 import uuid
 from pathlib import Path
@@ -24,7 +25,9 @@ PRODUCT_CODE = "{8C7A3D8B-1F42-4E5A-9B0A-5B8B4A2C0F50}"
 USER_PRODUCT_CODE = "{D7D1D8CE-7C66-4EA6-AE78-BD4D4D5E9B70}"
 PRODUCT_NAME = "Brush Bridge"
 # Windows Installer compares three version fields.
-PRODUCT_VERSION = "0.5.3"
+ROOT = Path(__file__).resolve().parents[1]
+VERSION = runpy.run_path(str(ROOT / "brush_bridge" / "__init__.py"))["__version__"]
+PRODUCT_VERSION = ".".join(VERSION.split(".")[:3])
 MANUFACTURER = "askir"
 
 
@@ -115,7 +118,7 @@ def build(source: Path, output: Path) -> Path:
         raise SystemExit("无法找到 GUI 主程序的 MSI 组件键路径")
 
     menu = msilib.Directory(db, cab, target, ".", "ProgramMenuFolder", ".")
-    icon_path = Path(__file__).resolve().parents[1] / "packaging" / "icon.ico"
+    icon_path = ROOT / "packaging" / "icon.ico"
     if icon_path.is_file():
         msilib.add_data(db, "Icon", [("BrushBridgeIcon", msilib.Binary(str(icon_path)))])
         icon_name = "BrushBridgeIcon"
@@ -146,6 +149,7 @@ def build(source: Path, output: Path) -> Path:
     # and the corresponding uninstall actions.
     msilib.add_data(db, "InstallExecuteSequence", msilib.sequence.InstallExecuteSequence)
     msilib.add_data(db, "InstallUISequence", msilib.sequence.InstallUISequence)
+    msilib.add_data(db, "AdminExecuteSequence", msilib.sequence.AdminExecuteSequence)
     msilib.add_data(
         db,
         "Property",

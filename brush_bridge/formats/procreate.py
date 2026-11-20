@@ -50,8 +50,6 @@ SHAPE = "Shape.png"
 GRAIN = "Grain.png"
 SUB_DIR = "Sub01/"  # second brush of a combined brush (Procreate 5)
 SUB_ARCHIVE = SUB_DIR + "Brush.archive"
-# Combined-brush blend modes kept as such for the dual tip; the rest act like a mask (multiply).
-_DUAL_MODES = {"multiply": "multiply", "darken": "darken", "subtract": "subtract", "difference": "difference"}
 THUMB = "QuickLook/Thumbnail.png"
 BRUSHSET_PLIST = "brushset.plist"
 
@@ -670,8 +668,11 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
     br.count = max(1, int(round(_f(p, "shapeCount") * 16)))
     br.count_jitter = _clamp(_f(p, "shapeCountJitter"))
     br.tip_order = "random" if p.get("shapeRandomise") else "sequential"
-    br.flip_x = bool(p.get("shapeFlipXJitter"))
-    br.flip_y = bool(p.get("shapeFlipYJitter"))
+    br.flip_x_random = bool(p.get("shapeFlipXJitter"))
+    br.flip_y_random = bool(p.get("shapeFlipYJitter"))
+    br.flip_x, br.flip_y = br.flip_x_random, br.flip_y_random
+    br.roundness_pressure = _clamp(_f(p, "dynamicsPressureShapeRoundness")) * (
+        1 - _clamp(_f(p, "dynamicsPressureShapeRoundnessMinimum", 1.0)))
 
     # --- dynamics -----------------------------------------------------------------------------
     def signed(key: str, label: str) -> float:
@@ -726,11 +727,14 @@ def params_to_brush(p: dict[str, Any], *, shape: Optional[Image.Image], grain: O
     br.blend_mode = _blend_from_codes(p.get("blendMode"), p.get("extendedBlend"))
     br.stabilization = _clamp(max(_f(p, "plotSmoothing"), _f(p, "plotMovingAverageStabilization")))
 
-    # Pressure taper (Apple Pencil) is what most artists see; touch taper is used when linked.
-    pre = "taper" if p.get("pencilTaperSizeLinked") else "pencilTaper"
-    if _f(p, pre + "Size") > 0 or _f(p, pre + "Opacity") > 0:
-        br.taper_start = _clamp(_f(p, pre + "StartLength"))
-        br.taper_end = _clamp(_f(p, pre + "EndLength"))
+    # Link Tip Sizes couples the two sliders within one taper mode.
+    for pre in ("pencilTaper", "taper"):
+        start, end = (_clamp(_f(p, pre + side + "Length")) for side in ("Start", "End"))
+        size, opacity = (_clamp(_f(p, pre + key)) for key in ("Size", "Opacity"))
+        if (start or end) and (size or opacity):
+            br.taper_start, br.taper_end = start, end
+            br.taper_size, br.taper_opacity = size, opacity
+            break
 
     # --- grain --------------------------------------------------------------------------------
     bundled_grain = p.get("bundledGrainPath") if isinstance(p.get("bundledGrainPath"), str) else ""
@@ -871,8 +875,8 @@ def brush_to_params(br: Brush, *, has_grain: bool) -> dict[str, Any]:
     _set(p, "shapeCount", _clamp(max(1, int(br.count)) / 16.0) if br.count > 1 else 0.0)
     _set(p, "shapeCountJitter", _clamp(br.count_jitter))
     _set(p, "shapeRandomise", br.tip_order == "random")
-    _set(p, "shapeFlipXJitter", br.flip_x)
-    _set(p, "shapeFlipYJitter", br.flip_y)
+    _set(p, "shapeFlipXJitter", br.flip_x or br.flip_x_random)
+    _set(p, "shapeFlipYJitter", br.flip_y or br.flip_y_random)
 
     _set(p, "dynamicsPressureSize", _dynamic_value(br.size_dynamic, "pressure"))
     _set(p, "dynamicsTiltSize", _clamp(br.size_dynamic.tilt))
@@ -909,7 +913,8 @@ def brush_to_params(br: Brush, *, has_grain: bool) -> dict[str, Any]:
         for pre in ("pencilTaper", "taper"):
             _set(p, pre + "StartLength", _clamp(br.taper_start))
             _set(p, pre + "EndLength", _clamp(br.taper_end))
-            _set(p, pre + "Size", 1.0)
+            _set(p, pre + "Size", _clamp(br.taper_size))
+            _set(p, pre + "Opacity", _clamp(br.taper_opacity))
         _set(p, "taperVersion", 1)
 
     tx = br.texture
@@ -1131,11 +1136,16 @@ def _attach_combined(zf: zipfile.ZipFile, e: _Entry, names: set[str], params: di
     sub = params_to_brush(
         sp, shape=_read_png(zf, sub_pre + SHAPE) if sub_pre + SHAPE in names else None,
         grain=_read_png(zf, sub_pre + GRAIN) if sub_pre + GRAIN in names else None, thumb=None)
-    mode = _BLEND_BY_MODE.get(int(_f(params, "dualBlendMode", 1)), "multiply")
+    mode = _blend_from_codes(_f(params, "dualBlendMode", 1), _f(params, "dualBlendModeExtended"))
     br.dual = DualTip(image=sub.main_tip(), size_px=sub.size_px, spacing=sub.spacing, scatter=sub.scatter,
-                      count=sub.count, mode=_DUAL_MODES.get(mode, "multiply"), name=sub.name or "Sub01")
+                      count=sub.count, mode=mode, name=sub.name or "Sub01", angle=sub.angle,
+                      angle_follow_stroke=sub.angle_follow_stroke, angle_jitter=sub.angle_jitter,
+                      flip_x_random=sub.flip_x_random, flip_y_random=sub.flip_y_random, link_size=True,
+                      size_dynamic=sub.size_dynamic, flow=sub.flow * sub.opacity,
+                      flow_dynamic=sub.opacity_dynamic if sub.opacity_dynamic.is_active() else sub.flow_dynamic,
+                      texture=sub.texture)
     br.warn(f"该笔刷是 Procreate 组合笔刷（组合模式：{mode}），第二个笔刷已转换为“双重笔刷/2 号笔尖”，"
-            "其纹理、动态和颜色设置无法保留，效果为近似。")
+            "次笔尖的湿混、颜色和部分动态按目标格式近似。")
 
 
 def _load_entry(zf: zipfile.ZipFile, e: _Entry, path: Path, set_name: str) -> Brush:

@@ -74,6 +74,16 @@ class DualTip:
     count: int = 1
     mode: str = "multiply"
     name: str = ""
+    angle: float = 0.0
+    angle_follow_stroke: bool = False
+    angle_jitter: float = 0.0
+    flip_x_random: bool = False
+    flip_y_random: bool = False
+    link_size: bool = False
+    size_dynamic: Dynamic = field(default_factory=Dynamic)
+    flow: float = 1.0  # effective coverage of the secondary stamp
+    flow_dynamic: Dynamic = field(default_factory=Dynamic)
+    texture: Optional[Texture] = None
 
 
 @dataclass
@@ -213,6 +223,11 @@ class Brush:
     notes: list[str] = field(default_factory=list)  # conversion warnings shown to the user
     extensions: dict[str, Any] = field(default_factory=dict)
     resources: dict[str, dict[str, Any]] = field(default_factory=dict)
+    flip_x_random: bool = False
+    flip_y_random: bool = False
+    taper_size: float = 1.0
+    taper_opacity: float = 0.0
+    roundness_pressure: float = 0.0
 
     def warn(self, msg: str) -> None:
         if msg not in self.notes:

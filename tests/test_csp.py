@@ -187,10 +187,49 @@ def test_spray_area_and_particle_semantics(tmp_path):
     out = CspCodec().write([b], tmp_path / "spray.sut")[0]
     v = _variant(out)
     assert v["BrushUseSpray"] == 1 and v["BrushSize"] == pytest.approx(40)
-    assert v["BrushSpraySizeSyncBrushSize"] == 1 and v["BrushSpraySize"] == pytest.approx(50)
+    assert v["BrushSpraySizeSyncBrushSize"] == 1 and v["BrushSpraySize"] == pytest.approx(20)
     assert v["BrushSprayDensity"] == 4 and v["BrushInterval"] == pytest.approx(5)
     r = CspCodec().read(out)[0]
     assert r.size_px == pytest.approx(20) and r.scatter == pytest.approx(1.0) and r.spacing == pytest.approx(0.1)
+
+
+def test_dual_spray_uses_lengths_and_dual_blend_mode_ids(tmp_path):
+    tip = Image.new("L", (32, 32), 128)
+    texture = Texture(image=Image.new("L", (40, 56), 85), scale=0.6, depth=0.3, mode="height")
+    b = Brush(name="双重喷洒", size_px=10, scatter=0.18, flip_x_random=True, roundness_pressure=0.96,
+              taper_start=0.4, taper_end=0.3, taper_size=0.5, taper_opacity=1,
+              dual=DualTip(image=tip, size_px=40, scatter=0.75, spacing=0.12, count=6, mode="color_burn",
+                           link_size=True, angle=60, angle_jitter=0.25, flip_y_random=True,
+                           size_dynamic=Dynamic(pressure=0.75), flow=0.4, texture=texture))
+    out = CspCodec().write([b], tmp_path / "dual-spray.sut")[0]
+    v = _variant(out)
+    assert v["BrushSize"] == pytest.approx(3.6)
+    assert v["BrushSpraySize"] == pytest.approx(10)
+    assert v["DualBrushCompositeMode"] == 9
+    assert v["DualUseSpray"] == 1 and v["DualSpraySizeSyncBrushSize"] == 1
+    assert v["DualSize"] == pytest.approx(60)
+    assert v["DualSpraySize"] == pytest.approx(40)
+    assert v["DualInterval"] == pytest.approx(8)
+    assert v["SyncDualBrushSize"] == 1 and v["DualFlow"] == 40
+    assert v["DualRotationEffectorInSpray"] == 129 and v["DualRotationRandomInSpray"] == 25
+    assert v["BrushPatternReverseHorizontal"] == 2 and v["DualPatternReverseVertical"] == 2
+    r = CspCodec().read(out)[0]
+    assert r.roundness_pressure == pytest.approx(0.96)
+    assert (r.taper_start, r.taper_end, r.taper_size, r.taper_opacity) == pytest.approx((0.4, 0.3, 0.5, 1))
+    d = r.dual
+    assert d is not None and d.count == 6 and d.mode == "color_burn"
+    assert (d.size_px, d.scatter, d.spacing) == pytest.approx((40, 0.75, 0.12))
+    assert (d.angle, d.angle_jitter, d.flow, d.size_dynamic.pressure) == pytest.approx((60, 0.25, 0.4, 0.75))
+    assert d.texture and d.texture.mode == "height" and d.texture.scale == pytest.approx(0.6)
+    assert d.texture.image.tobytes() == texture.image.tobytes()
+
+
+def test_subpercent_edge_does_not_enable_csp_watercolor_edge(tmp_path):
+    from brush_bridge.core.model import EdgeEffect
+
+    b = Brush(name="微量灼边", edge=EdgeEffect(opacity=0.0012, darken=0.0025))
+    out = CspCodec().write([b], tmp_path / "tiny-edge.sut")[0]
+    assert _variant(out)["BrushUseWaterEdge"] == 0
 
 
 def test_material_ref_roundtrip():
@@ -338,6 +377,8 @@ def test_generated_texture_and_dual(tmp_path):
     assert r.dual is not None and np.array_equal(np.asarray(r.dual.image.convert("L")), np.asarray(dual))
     v = _variant(f)
     assert v["UseDualBrush"] == 1 and v["DualAutoIntervalType"] == 0
+    assert v["DualBrushCompositeMode"] == 1
+    assert v["TextureCompositeMode"] == 2
 
 
 def test_downgrade_fix(tmp_path):

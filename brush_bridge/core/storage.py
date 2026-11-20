@@ -6,7 +6,7 @@ import io
 import json
 import math
 import datetime
-from dataclasses import fields, is_dataclass
+from dataclasses import MISSING, fields, is_dataclass
 from pathlib import Path
 
 from PIL import Image
@@ -16,6 +16,25 @@ from . import model
 MAX_DEPTH = 64
 MAX_IMAGE_PIXELS = 64_000_000
 
+# These fields were added after .brushpkg files began storing fingerprints.
+# Their default values must hash the same as their absence in older archives.
+_FINGERPRINT_DEFAULTS = {
+    model.Brush: {"flip_x_random", "flip_y_random", "taper_size", "taper_opacity", "roundness_pressure"},
+    model.DualTip: {"angle", "angle_follow_stroke", "angle_jitter", "flip_x_random", "flip_y_random",
+                    "link_size", "size_dynamic", "flow", "flow_dynamic", "texture"},
+}
+
+
+def _dataclass_values(value, for_fingerprint):
+    omitted = _FINGERPRINT_DEFAULTS.get(type(value), ()) if for_fingerprint else ()
+    for f in fields(value):
+        member = getattr(value, f.name)
+        if f.name in omitted:
+            default = f.default if f.default is not MISSING else f.default_factory()
+            if member == default:
+                continue
+        yield f.name, member
+
 
 def classes():
     # Never import a class named by an input file.
@@ -24,10 +43,10 @@ def classes():
             model.DualTip, model.ColorDynamics, model.WetMix, model.EdgeEffect, Asset)}
 
 
-def encode(value, put_blob, depth=0):
+def encode(value, put_blob, depth=0, *, for_fingerprint=False):
     if depth > MAX_DEPTH:
         raise ValueError("数据嵌套超过限制")
-    child = lambda v: encode(v, put_blob, depth + 1)
+    child = lambda v: encode(v, put_blob, depth + 1, for_fingerprint=for_fingerprint)
     if value is None or isinstance(value, (str, bool, int)):
         return value
     if isinstance(value, float):
@@ -48,7 +67,7 @@ def encode(value, put_blob, depth=0):
     if isinstance(value, datetime.datetime):
         return {"$type": "datetime", "value": value.isoformat()}
     if is_dataclass(value):
-        known = {f.name: child(getattr(value, f.name)) for f in fields(value)}
+        known = {name: child(member) for name, member in _dataclass_values(value, for_fingerprint)}
         known.update({k: child(v) for k, v in getattr(value, "_package_unknown", {}).items() if k not in known})
         return {"$type": type(value).__name__, "fields": known}
     if isinstance(value, dict):
@@ -105,9 +124,9 @@ def json_bytes(value):
 def fingerprint(brush):
     def blob(data, suffix):
         return hashlib.sha256(data).hexdigest() + "." + suffix
-    vals = {f.name: getattr(brush, f.name) for f in fields(brush)
-            if f.name not in {"source", "notes", "uid", "preview"}}
-    return hashlib.sha256(json_bytes(encode(vals, blob))).hexdigest()
+    vals = {name: value for name, value in _dataclass_values(brush, True)
+            if name not in {"source", "notes", "uid", "preview"}}
+    return hashlib.sha256(json_bytes(encode(vals, blob, for_fingerprint=True))).hexdigest()
 
 
 def seal_source(brush):

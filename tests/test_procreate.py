@@ -352,8 +352,12 @@ def test_negative_sensor_directions_survive_roundtrip():
 def test_combined_brush_becomes_dual_tip(tmp_path):
     main = pc.template_params("组合")
     main["dualBlendMode"] = 6  # difference
+    main.update(pencilTaperSizeLinked=True, pencilTaperStartLength=0.3,
+                pencilTaperEndLength=0.4, pencilTaperSize=0.5, pencilTaperOpacity=1.0)
     sub = pc.template_params("副笔刷")
     sub["bundledShapePath"] = None
+    sub.update(shapeAngle=0.5, shapeRotation=1.0, shapeScatter=0.25, shapeFlipXJitter=True,
+               paintOpacity=0.4, dynamicsGlazedFlow=0.5, dynamicsPressureSize=0.6)
     p = tmp_path / "combo.brushset"
     with zipfile.ZipFile(p, "w") as zf:
         zf.writestr("A/Brush.archive", pc.archive(main))
@@ -368,6 +372,12 @@ def test_combined_brush_becomes_dual_tip(tmp_path):
     assert len(brushes) == 1  # Sub01 / Reset are parts of the brush, not extra brushes
     b = brushes[0]
     assert b.dual is not None and b.dual.mode == "difference" and b.dual.image.size == (64, 64)
+    assert b.dual.angle == pytest.approx(28.64789)
+    assert b.dual.angle_follow_stroke and b.dual.flip_x_random and b.dual.link_size
+    assert b.dual.angle_jitter == 0.25
+    assert b.dual.flow == pytest.approx(0.2)
+    assert b.dual.size_dynamic.pressure == pytest.approx(0.6)
+    assert (b.taper_start, b.taper_end, b.taper_size, b.taper_opacity) == pytest.approx((0.3, 0.4, 0.5, 1.0))
     assert "Sub01/Brush.archive" in b.source.native["files"]
 
 

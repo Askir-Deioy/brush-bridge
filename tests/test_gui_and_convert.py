@@ -84,19 +84,73 @@ def test_main_window_smoke(qapp, win):
     assert pm.width() == gui.THUMB
 
 
-def test_vhsv_picker_nested_layout_and_numeric_commit(qapp):
-    from PySide6.QtCore import Qt
+def test_vhsv_picker_nested_layout_and_numeric_commit(qapp, tmp_path):
+    import sqlite3
+    from PySide6.QtCore import QPoint, Qt
     from PySide6.QtTest import QTest
-    from brush_bridge.gui.app import ColorPickerDialog
+    from brush_bridge.apps.csp_sync import (
+        format_shortcut,
+        parse_shortcut_text,
+        read_csp_screen_picker_shortcut,
+    )
+    from brush_bridge.gui.app import ColorPickerDialog, HueRingWidget
 
     d = ColorPickerDialog()
+    # Set manual mode during unit tests so offscreen tests don't send Win32 input.
+    d.mode_combo.setCurrentIndex(2)
     d.show()
     qapp.processEvents()
     side = min(d.wheel.width(), d.wheel.height())
-    assert d.square.geometry().right() < d.ring.width()
-    assert d.square.geometry().bottom() < d.ring.height()
+    _, _, inner_d = HueRingWidget.ring_geometry(side)
+    assert d.square.width() * 1.41421356237 <= inner_d
     assert d.square.width() <= int((side - 30) / 1.41421356237)
 
+    # Resizing the window must actually scale the color wheel up and keep the
+    # square's corners strictly inside the circular inner hole.
+    d.resize(460, 560)
+    qapp.processEvents()
+    larger_side = min(d.wheel.width(), d.wheel.height())
+    assert larger_side > side
+    _, _, larger_inner_d = HueRingWidget.ring_geometry(larger_side)
+    assert d.square.width() * 1.41421356237 <= larger_inner_d
+
+    # Clicking the outer corner of HueRingWidget must not jump the hue.
+    d._hue_changed(30.0)
+    QTest.mouseClick(d.ring, Qt.LeftButton, Qt.NoModifier, QPoint(2, 2))
+    assert round(d.hue, 1) == 30.0
+
+    # DualSwatch: changing the active slot's color must NOT overwrite the other
+    # slot's saved color; clicking the other slot switches back to its color.
+    assert d.swatch.active_slot == 0
+    d._hue_changed(120.0)
+    slot0_color = d.swatch.current.name()
+    slot1_color = d.swatch.previous.name()
+    assert slot0_color != slot1_color and slot1_color.lower() == "#ffffff"
+    # Click visible bottom-right area of slot 1 to switch active slot
+    QTest.mouseClick(d.swatch, Qt.LeftButton, Qt.NoModifier, QPoint(45, 35))
+    assert d.swatch.active_slot == 1
+    assert d.swatch.current.name().lower() == "#ffffff"
+    assert d.swatch.previous.name() == slot0_color
+    # Modify slot 1 to blue and verify slot 0 still retains green
+    d._hue_changed(240.0)
+    d._sv_changed(1.0, 1.0)
+    blue_color = d.swatch.current.name()
+    assert d.swatch.previous.name() == slot0_color
+    # Click visible top-left area of slot 0 to switch back to slot 0
+    QTest.mouseClick(d.swatch, Qt.LeftButton, Qt.NoModifier, QPoint(8, 8))
+    assert d.swatch.active_slot == 0
+    assert d.swatch.current.name() == slot0_color
+    assert d.swatch.previous.name() == blue_color
+
+    # SwatchPaletteBar: save two different colors into slots 0 and 1 separately
+    d._save_current_to_palette(0)
+    d._hue_changed(218.0)
+    d._save_current_to_palette(1)
+    assert d.palette_bar.slots[0][0] == 120.0
+    assert d.palette_bar.slots[1][0] == 218.0
+
+    d.toggle_fields_button.setChecked(True)
+    qapp.processEvents()
     spin = d.fields["r"]
     spin.setFocus()
     spin.lineEdit().selectAll()
@@ -118,6 +172,21 @@ def test_vhsv_picker_nested_layout_and_numeric_commit(qapp):
     qapp.processEvents()
     assert (d.fields["r"].value(), d.fields["g"].value(), d.fields["b"].value()) == (12, 34, 56)
     d.close()
+
+    # CSP shortcut SQLite reader test
+    khc = tmp_path / "default.khc"
+    with sqlite3.connect(khc) as con:
+        con.execute(
+            "CREATE TABLE shortcutmenu(_PW_ID INTEGER PRIMARY KEY, "
+            "menucommandtype TEXT, menucommand TEXT, shortcut TEXT, modifier INTEGER)"
+        )
+        con.execute(
+            "INSERT INTO shortcutmenu VALUES (1, 'advancedcommand', "
+            "'applicationscreeneyecolorpicker', 'F', 4)"
+        )
+    sc = read_csp_screen_picker_shortcut(khc)
+    assert sc == ("F", 4) and format_shortcut(sc) == "Ctrl+F"
+    assert parse_shortcut_text("Ctrl+Shift+X") == ("X", 6)
 
 
 def test_grid_checking_updates_count(qapp, win):

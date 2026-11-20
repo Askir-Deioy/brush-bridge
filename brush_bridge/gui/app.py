@@ -11,16 +11,23 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from PIL import Image
-from PySide6.QtCore import QObject, QRunnable, QSettings, Qt, QThreadPool, QTimer, Signal
+from PySide6.QtCore import QObject, QPoint, QRect, QRunnable, QSettings, QSize, Qt, QThreadPool, QTimer, Signal
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QFont, QFontDatabase, QIcon, QImage,
                            QPainter, QPen, QPixmap)
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QInputDialog, QLabel,
     QDialogButtonBox, QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QMessageBox, QPushButton,
-    QSplitter, QCheckBox, QTabWidget, QTextBrowser, QVBoxLayout, QWidget, QSpinBox,
+    QSizePolicy, QSplitter, QStackedLayout, QCheckBox, QTabWidget, QTextBrowser, QVBoxLayout, QWidget, QSpinBox,
 )
 
 from .. import __version__
+from ..apps.csp_sync import (
+    client_to_physical_screen,
+    format_shortcut,
+    parse_shortcut_text,
+    read_csp_screen_picker_shortcut,
+    sync_color_to_csp,
+)
 from ..apps.sai2 import app_install_from_exe
 from ..core import convert
 from ..core.color_models import rgb8_to_vhsv, vhsv_to_rgb8
@@ -231,6 +238,10 @@ class TransferPage(QWidget):
         self.search.setMaximumWidth(220)
         head.addWidget(self.search)
         rv.addLayout(head)
+
+        thumbnail_label = QLabel("卡片显示原笔刷缩略图。请在目标软件中试画以查看转换效果。")
+        thumbnail_label.setObjectName("hint")
+        rv.addWidget(thumbnail_label)
 
         self.grid = BrushGridView(self.model, parent=self)
         self.grid.setObjectName("grid")
@@ -684,6 +695,30 @@ class DiagnosePage(QWidget):
 # ---------------------------------------------------------------------------------------------
 # Page 3: convenience tools
 # ---------------------------------------------------------------------------------------------
+UTILITY_STYLE = """
+QWidget#utilityPage { background: #f3f5fa; color: #1d293b; }
+QLabel#utilityTitle { font-size: 24px; font-weight: bold; }
+QFrame[utilityCard="true"] { background: #ffffff; border: 1px solid #dce2ed; border-radius: 12px; }
+QFrame#utilityPicker { background: #edf2ff; border-color: #d7e2fc; }
+QLabel[cardTitle="true"] { font-size: 16px; font-weight: bold; }
+QLabel[cardHint="true"] { color: #526077; }
+QFrame#utilityHue { border-radius: 23px;
+    background: qconicalgradient(cx: 0.5, cy: 0.5, angle: 120, stop: 0 #e5687e,
+                  stop: 0.17 #a17ae7, stop: 0.34 #6189e5, stop: 0.51 #4bb5bd,
+                  stop: 0.68 #77b777, stop: 0.85 #edbc60, stop: 1 #e5687e); }
+QFrame#utilityHueCenter { background: #edf2ff; border-radius: 15px; }
+QLineEdit { background: #ffffff; color: #1d293b; border: 1px solid #cbd4e2;
+            border-radius: 6px; padding: 7px 9px; }
+QLineEdit:focus, QPushButton:focus { border-color: #2f6fed; }
+QWidget#utilityList { background: #f7f9fc; border: 1px solid #dce2ed; border-radius: 8px; }
+QPushButton { color: #25344c; border-color: #cbd4e2; padding: 7px 12px; }
+QPushButton:disabled { background: #f1f4f8; color: #6b7587; border-color: #e0e6ef; }
+QPushButton#utilityOpenPicker { background: #245bd3; color: #ffffff; border-color: #245bd3; font-weight: bold; }
+QPushButton#utilityOpenPicker:hover { background: #1948b6; }
+QPushButton#utilityOpenPicker:focus { border-color: #163879; }
+"""
+
+
 class UtilityPage(QWidget):
     """Small, explicit helpers that need a user-selected local application."""
 
@@ -693,42 +728,93 @@ class UtilityPage(QWidget):
         self.install = None
         self.refs: list[BrushRef] = []
         self.settings = QSettings("BrushBridge", "BrushBridge")
+        self.setObjectName("utilityPage")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setStyleSheet(UTILITY_STYLE)
 
         root = QVBoxLayout(self)
+        root.setContentsMargins(22, 18, 22, 22)
+        root.setSpacing(14)
         title = QLabel("便捷工具")
-        title.setObjectName("title")
+        title.setObjectName("utilityTitle")
         root.addWidget(title)
-        hint = QLabel("先选择本机 SAI2 的 sai2.exe，再查看、安装或导出单支笔刷。")
-        hint.setObjectName("hint")
-        root.addWidget(hint)
+
+        cards = QGridLayout()
+        cards.setSpacing(14)
+        cards.setColumnStretch(0, 2)
+        cards.setColumnStretch(1, 1)
+        cards.setRowStretch(1, 1)
+        root.addLayout(cards, 1)
+
+        setup, setup_body = self._card("SAI2 连接")
+        cards.addWidget(setup, 0, 0)
+        self.exe_path = QLineEdit(str(self.settings.value("sai2/exe", "")))
+        self.exe_path.setPlaceholderText("sai2.exe 的路径")
+        self.exe_path.setAccessibleName("SAI2 程序路径")
+        self.exe_path.returnPressed.connect(self._load_sai2)
+        setup_body.addWidget(self.exe_path)
 
         path_row = QHBoxLayout()
-        self.exe_path = QLineEdit(str(self.settings.value("sai2/exe", "")))
-        self.exe_path.setPlaceholderText("选择 SAI2.exe")
-        path_row.addWidget(self.exe_path, 1)
-        browse = QPushButton("选择 SAI2.exe…")
+        browse = QPushButton("浏览…")
         browse.clicked.connect(self._browse_exe)
         path_row.addWidget(browse)
         load = QPushButton("读取本地笔刷")
         load.clicked.connect(self._load_sai2)
         path_row.addWidget(load)
-        root.addLayout(path_row)
+        path_row.addStretch(1)
+        setup_body.addLayout(path_row)
 
-        self.status = QLabel("尚未选择 SAI2。")
-        self.status.setObjectName("hint")
-        root.addWidget(self.status)
+        self.status = QLabel("选择本机的 sai2.exe 以读取笔刷。")
+        self.status.setProperty("cardHint", True)
+        self.status.setWordWrap(True)
+        setup_body.addWidget(self.status)
+
+        picker, picker_body = self._card("独立取色器")
+        picker.setObjectName("utilityPicker")
+        cards.addWidget(picker, 0, 1)
+        picker_hint = QLabel("使用 V-HSV 色环选色，或从屏幕拾取颜色。")
+        picker_hint.setProperty("cardHint", True)
+        picker_hint.setWordWrap(True)
+        picker_intro = QHBoxLayout()
+        picker_intro.addWidget(picker_hint, 1, Qt.AlignTop)
+        hue = QFrame()
+        hue.setObjectName("utilityHue")
+        hue.setFixedSize(46, 46)
+        hue_center = QFrame(hue)
+        hue_center.setObjectName("utilityHueCenter")
+        hue_center.setGeometry(8, 8, 30, 30)
+        picker_intro.addWidget(hue, 0, Qt.AlignRight)
+        picker_body.addLayout(picker_intro)
+        picker_body.addStretch(1)
+        open_picker = QPushButton("打开取色器")
+        open_picker.setObjectName("utilityOpenPicker")
+        open_picker.clicked.connect(self._open_picker)
+        picker_body.addWidget(open_picker, 0, Qt.AlignLeft)
+
+        library, library_body = self._card("SAI2 笔刷管理")
+        cards.addWidget(library, 1, 0, 1, 2)
+        list_panel = QWidget()
+        list_panel.setObjectName("utilityList")
+        self.brush_views = QStackedLayout(list_panel)
+        self.brush_views.setContentsMargins(1, 1, 1, 1)
+        empty = QLabel("从 SAI2 读取的笔刷会显示在这里。")
+        empty.setProperty("cardHint", True)
+        empty.setAlignment(Qt.AlignCenter)
+        self.brush_views.addWidget(empty)
 
         self.brushes = QListWidget()
         self.brushes.setObjectName("sources")
-        root.addWidget(self.brushes, 1)
-
-        group_row = QHBoxLayout()
-        group_row.addWidget(QLabel("安装工具组"))
-        self.group_name = QLineEdit("导入笔刷")
-        group_row.addWidget(self.group_name, 1)
-        root.addLayout(group_row)
+        self.brushes.setAccessibleName("SAI2 本地笔刷")
+        self.brushes.setMinimumHeight(140)
+        self.brush_views.addWidget(self.brushes)
+        library_body.addWidget(list_panel, 1)
 
         action_row = QHBoxLayout()
+        group_label = QLabel("安装工具组")
+        self.group_name = QLineEdit("导入笔刷")
+        group_label.setBuddy(self.group_name)
+        action_row.addWidget(group_label)
+        action_row.addWidget(self.group_name, 1)
         self.install_button = QPushButton("安装选中笔刷")
         self.install_button.clicked.connect(self._install_selected)
         self.install_button.setEnabled(False)
@@ -737,17 +823,27 @@ class UtilityPage(QWidget):
         self.export_button.clicked.connect(self._export_selected)
         self.export_button.setEnabled(False)
         action_row.addWidget(self.export_button)
-        picker = QPushButton("打开独立取色器")
-        picker.clicked.connect(self._open_picker)
-        action_row.addWidget(picker)
-        action_row.addStretch(1)
-        root.addLayout(action_row)
+        library_body.addLayout(action_row)
+
+    @staticmethod
+    def _card(title: str) -> tuple[QFrame, QVBoxLayout]:
+        frame = QFrame()
+        frame.setProperty("utilityCard", True)
+        body = QVBoxLayout(frame)
+        body.setContentsMargins(16, 14, 16, 14)
+        body.setSpacing(9)
+        heading = QLabel(title)
+        heading.setProperty("cardTitle", True)
+        body.addWidget(heading)
+        return frame, body
 
     def _open_picker(self):
-        dialog = ColorPickerDialog(None)
-        self._picker_dialog = dialog
-        dialog.setWindowFlag(Qt.WindowStaysOnTopHint, True)
-        dialog.finished.connect(lambda *_: setattr(self, "_picker_dialog", None))
+        dialog = getattr(self, "_picker_dialog", None)
+        if dialog is None:
+            dialog = ColorPickerDialog(None)
+            self._picker_dialog = dialog
+            dialog.finished.connect(lambda *_: setattr(self, "_picker_dialog", None))
+        dialog.setWindowFlag(Qt.WindowStaysOnTopHint, dialog.top_check.isChecked())
         dialog.show()
         dialog.raise_()
         dialog.activateWindow()
@@ -760,31 +856,33 @@ class UtilityPage(QWidget):
 
     def _load_sai2(self):
         path = Path(self.exe_path.text().strip())
-        inst = app_install_from_exe(path)
-        if inst is None:
-            self.install = None
-            self.refs = []
-            self.brushes.clear()
-            self.install_button.setEnabled(False)
-            self.export_button.setEnabled(False)
+        self.install = app_install_from_exe(path)
+        self.refs = []
+        self.brushes.clear()
+        self.brush_views.setCurrentIndex(0)
+        self.install_button.setEnabled(False)
+        self.export_button.setEnabled(False)
+        self.status.setToolTip("")
+        if self.install is None:
             self.status.setText("找不到可用的 sai2.exe。")
             return
         self.settings.setValue("sai2/exe", str(path))
-        self.install = inst
         try:
-            self.refs = plugin_app("sai2").list_brushes(inst)
+            self.refs = plugin_app("sai2").list_brushes(self.install)
         except Exception as exc:
-            self.refs = []
             self.status.setText(f"读取 SAI2 设置失败：{exc}")
             return
-        self.brushes.clear()
         for ref in self.refs:
             item = QListWidgetItem(ref.name)
             item.setData(Qt.UserRole, ref)
             item.setToolTip(ref.detail or ref.group or ref.name)
             self.brushes.addItem(item)
-        self.status.setText(f"{inst.label}。本地笔刷 {len(self.refs)} 支，设置目录：{inst.data_dir}")
+        self.status.setText(f"{self.install.label} · 本地笔刷 {len(self.refs)} 支")
+        self.status.setToolTip(str(self.install.data_dir))
         enabled = bool(self.refs)
+        if enabled:
+            self.brush_views.setCurrentWidget(self.brushes)
+            self.brushes.setCurrentRow(0)
         self.install_button.setEnabled(enabled)
         self.export_button.setEnabled(enabled)
 
@@ -839,67 +937,161 @@ class UtilityPage(QWidget):
                                         QMessageBox.warning(self, "SAI2 导出失败", msg)))
 
 
+PICKER_STYLE = """
+QDialog {
+    background: #2b2b2b;
+    color: #e0e0e0;
+    font-size: 12px;
+}
+QWidget {
+    color: #e0e0e0;
+    font-size: 12px;
+}
+QLabel#hint {
+    color: #b8b8b8;
+    font-family: "Consolas", "Microsoft YaHei UI";
+    font-size: 12px;
+}
+QLabel#status {
+    color: #8f9ba8;
+    font-size: 11px;
+}
+QPushButton {
+    background: #3a3a3a;
+    color: #e4e4e4;
+    border: 1px solid #525252;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+}
+QPushButton:hover {
+    background: #484848;
+    border-color: #686868;
+}
+QPushButton:pressed {
+    background: #2e2e2e;
+}
+QComboBox, QLineEdit, QSpinBox {
+    background: #222222;
+    color: #eaeaea;
+    border: 1px solid #4c4c4c;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 12px;
+}
+QComboBox::drop-down {
+    border: none;
+    width: 16px;
+}
+QComboBox QAbstractItemView {
+    background: #2b2b2b;
+    color: #eaeaea;
+    selection-background-color: #2f6fed;
+}
+QCheckBox {
+    spacing: 4px;
+    font-size: 12px;
+}
+"""
+
+
 class HueRingWidget(QWidget):
     changed = Signal(float)
+    committed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.hue = 0.0
-        self.setMinimumSize(180, 180)
+        self._dragging = False
+        self.setMinimumSize(160, 160)
+
+    @staticmethod
+    def ring_geometry(side: int) -> tuple[float, float, float]:
+        """Return ``(outer_diameter, ring_thickness, inner_diameter)`` for ``side``."""
+        outer_diameter = max(40.0, float(side) - 12.0)
+        ring_thickness = max(16.0, min(26.0, float(side) * 0.10))
+        inner_diameter = max(20.0, outer_diameter - 2.0 * ring_thickness)
+        return outer_diameter, ring_thickness, inner_diameter
 
     def paintEvent(self, _event):
+        import math
+
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        side = min(self.width(), self.height()) - 12
-        rect = self.rect().center()
-        outer = side / 2
-        area = self.rect().center().x() - outer, self.rect().center().y() - outer, side, side
-        # CSP/SAI orientation: red at upper-left, green at upper-right,
-        # blue across the lower half.  Qt's conical gradient runs in the
-        # opposite direction, so the color stops are intentionally reversed.
-        # Align the rendered gradient with the cursor: H=0 is the red
-        # segment at the upper-left, matching the SAI/CSP reference panel.
-        gradient = QConicalGradient(self.rect().center(), 150)
+        side = min(self.width(), self.height())
+        outer_d, ring_w, inner_d = self.ring_geometry(side)
+        cx, cy = self.width() / 2.0, self.height() / 2.0
+        outer_r = outer_d / 2.0
+        inner_r = inner_d / 2.0
+
+        # CSP/SAI orientation: red at upper-left (150 deg CCW from +x), green at
+        # upper-right, blue across the lower half.
+        gradient = QConicalGradient(cx, cy, 150)
         for pos, color in ((0.0, "#ff0000"), (1/6, "#ff00ff"), (2/6, "#0000ff"),
                            (3/6, "#00ffff"), (4/6, "#00ff00"), (5/6, "#ffff00"), (1.0, "#ff0000")):
             gradient.setColorAt(pos, QColor(color))
         p.setBrush(QBrush(gradient))
-        p.setPen(Qt.NoPen)
-        p.drawEllipse(*area)
-        inner = side - 34
-        p.setBrush(QColor("#242424"))
-        p.drawEllipse(self.rect().center().x() - inner / 2, self.rect().center().y() - inner / 2, inner, inner)
-        angle = ((self.hue - 60.0) % 360.0) / 360 * 2 * 3.141592653589793 - 3.141592653589793 / 2
-        x = self.rect().center().x() + (outer - 8) * __import__("math").cos(angle)
-        y = self.rect().center().y() + (outer - 8) * __import__("math").sin(angle)
+        p.setPen(QPen(QColor("#181818"), 1))
+        p.drawEllipse(cx - outer_r, cy - outer_r, outer_d, outer_d)
+
+        p.setBrush(QColor("#232323"))
+        p.setPen(QPen(QColor("#181818"), 1))
+        p.drawEllipse(cx - inner_r, cy - inner_r, inner_d, inner_d)
+
+        angle = math.radians(self.hue - 150.0)
+        mid_r = (outer_r + inner_r) / 2.0
+        cur_r = max(5.0, min(8.0, ring_w * 0.36))
+        x = cx + mid_r * math.cos(angle)
+        y = cy + mid_r * math.sin(angle)
         p.setBrush(Qt.NoBrush)
-        p.setPen(QPen(Qt.black, 3))
-        p.drawEllipse(x - 6, y - 6, 12, 12)
+        p.setPen(QPen(QColor(0, 0, 0, 230), 2.6))
+        p.drawEllipse(x - cur_r - 1.0, y - cur_r - 1.0, (cur_r + 1.0) * 2.0, (cur_r + 1.0) * 2.0)
+        p.setPen(QPen(QColor(255, 255, 255, 245), 1.8))
+        p.drawEllipse(x - cur_r, y - cur_r, cur_r * 2.0, cur_r * 2.0)
+
+    def _is_on_ring(self, x: float, y: float) -> bool:
+        import math
+
+        side = min(self.width(), self.height())
+        outer_d, _, inner_d = self.ring_geometry(side)
+        dx, dy = x - self.width() / 2.0, y - self.height() / 2.0
+        dist = math.hypot(dx, dy)
+        return (inner_d / 2.0 - 5.0) <= dist <= (outer_d / 2.0 + 6.0)
 
     def mousePressEvent(self, event):
-        self._set_from_pos(event.position().x(), event.position().y())
+        if event.button() == Qt.LeftButton and self._is_on_ring(event.position().x(), event.position().y()):
+            self._dragging = True
+            self._set_from_pos(event.position().x(), event.position().y())
 
     def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.LeftButton:
+        if self._dragging and (event.buttons() & Qt.LeftButton):
             self._set_from_pos(event.position().x(), event.position().y())
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self._dragging:
+            self._dragging = False
+            self._set_from_pos(event.position().x(), event.position().y())
+            self.committed.emit()
 
     def _set_from_pos(self, x, y):
         import math
-        dx, dy = x - self.width() / 2, y - self.height() / 2
-        self.hue = (math.degrees(math.atan2(dy, dx)) + 150) % 360
+        dx, dy = x - self.width() / 2.0, y - self.height() / 2.0
+        self.hue = (math.degrees(math.atan2(dy, dx)) + 150.0) % 360.0
         self.changed.emit(self.hue)
         self.update()
 
 
 class SaturationValueWidget(QWidget):
     changed = Signal(float, float)
+    committed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
         self._rendered_key = None
         self._rendered_image = None
-        self.setMinimumSize(100, 100)
+        self._dragging = False
+        self.setMinimumSize(64, 64)
 
     def paintEvent(self, _event):
         p = QPainter(self)
@@ -910,93 +1102,286 @@ class SaturationValueWidget(QWidget):
             import colorsys
             import numpy as np
 
-            saturation = np.linspace(0.0, 1.0, width, dtype=np.float32)
+            saturation = np.linspace(0.0, 1.0, width, dtype=np.float32)[None, :]
             value = np.linspace(1.0, 0.0, height, dtype=np.float32)[:, None]
             pure = np.asarray(colorsys.hsv_to_rgb((self.hue % 360.0) / 360.0, 1.0, 1.0), dtype=np.float32)
-            top = 1.0 - saturation[:, None] * (1.0 - pure[None, :])
-            safe_value = np.maximum(value, 1e-6)
-            rgb = safe_value[:, :, None] * np.power(top[None, :, :], 1.0 / safe_value[:, :, None])
-            rgb[-1, :, :] = 0.0
+            chroma = saturation * (1.0 - 0.5 * saturation * (1.0 - value))
+            rgb = value[:, :, None] - chroma[:, :, None] * (1.0 - pure[None, None, :])
             pixels = np.rint(np.clip(rgb, 0.0, 1.0) * 255.0).astype(np.uint8)
             image = QImage(pixels.data, width, height, width * 3, QImage.Format_RGB888).copy()
             self._rendered_key, self._rendered_image = key, image
+        p.setClipRect(self.rect())
         p.drawImage(0, 0, self._rendered_image)
         p.setBrush(Qt.NoBrush)
-        p.setPen(QPen(QColor("#101010"), 2))
+        x, y = self.saturation * self.width(), (1.0 - self.value) * self.height()
+        p.setPen(QPen(QColor(0, 0, 0, 220), 2.2))
+        p.drawEllipse(x - 6.5, y - 6.5, 13.0, 13.0)
+        p.setPen(QPen(QColor(255, 255, 255, 245), 1.6))
+        p.drawEllipse(x - 5.5, y - 5.5, 11.0, 11.0)
+        p.setPen(QPen(QColor("#141414"), 1.5))
         p.drawRect(self.rect().adjusted(0, 0, -1, -1))
-        x, y = self.saturation * self.width(), (1 - self.value) * self.height()
-        p.setBrush(Qt.NoBrush)
-        p.setPen(QPen(Qt.white, 2))
-        p.drawEllipse(x - 6, y - 6, 12, 12)
-        p.setPen(QPen(Qt.black, 1))
-        p.drawEllipse(x - 7, y - 7, 14, 14)
 
     def set_hue(self, hue):
         self.hue = hue
         self.update()
 
     def mousePressEvent(self, event):
-        self._set_from_pos(event.position().x(), event.position().y())
+        if event.button() == Qt.LeftButton:
+            self._dragging = True
+            self._set_from_pos(event.position().x(), event.position().y())
 
     def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.LeftButton:
+        if self._dragging and (event.buttons() & Qt.LeftButton):
             self._set_from_pos(event.position().x(), event.position().y())
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self._dragging:
+            self._dragging = False
+            self._set_from_pos(event.position().x(), event.position().y())
+            self.committed.emit()
 
     def _set_from_pos(self, x, y):
         self.saturation = max(0.0, min(1.0, x / max(1, self.width())))
-        self.value = max(0.0, min(1.0, 1 - y / max(1, self.height())))
+        self.value = max(0.0, min(1.0, 1.0 - y / max(1, self.height())))
         self.changed.emit(self.saturation, self.value)
         self.update()
 
 
 class ColorWheelWidget(QWidget):
-    """CSP/SAI-style nested hue ring and V-HSV square."""
+    """CSP/SAI-style nested hue ring and V-HSV square that scales with the window."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ring = HueRingWidget(self)
         self.square = SaturationValueWidget(self)
-        self.setMinimumSize(180, 180)
+        self.setMinimumSize(160, 160)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+    def sizeHint(self) -> QSize:
+        return QSize(260, 260)
 
     def resizeEvent(self, event):
         side = min(self.width(), self.height())
-        self.ring.setGeometry(0, 0, side, side)
-        # The square must fit inside the ring's circular hole, including its
-        # corners.  Use the hole diameter divided by sqrt(2), otherwise the
-        # square corners cover the outer ring.
-        square_side = max(100, int(side * 0.58))
-        self.square.setGeometry((side - square_side) // 2, (side - square_side) // 2,
-                                square_side, square_side)
+        x0 = (self.width() - side) // 2
+        y0 = (self.height() - side) // 2
+        self.ring.setGeometry(x0, y0, side, side)
+        # The square's diagonal must strictly fit inside the circular hole of
+        # the hue ring with a small dark gap around all four corners.
+        _, _, inner_diameter = HueRingWidget.ring_geometry(side)
+        square_side = max(64, int((inner_diameter - 6.0) / 1.41421356237))
+        self.square.setGeometry(
+            x0 + (side - square_side) // 2,
+            y0 + (side - square_side) // 2,
+            square_side,
+            square_side,
+        )
         super().resizeEvent(event)
 
 
 class DualSwatch(QWidget):
+    """CSP/SAI-style Main/Sub color slots that store two colors independently."""
+
     clicked = Signal()
+    slotChanged = Signal(int)
+    swapped = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.current = QColor("#FF0000")
-        self.previous = QColor("#FFFFFF")
-        self.setFixedSize(74, 46)
-        self.setToolTip("点击输入颜色")
+        self.slot_colors = [QColor("#FF0000"), QColor("#FFFFFF")]
+        self.active_slot = 0
+        self.setFixedSize(62, 42)
+        self.setToolTip("左键点击主色/副色切换编辑槽位；点击右上 ⇄ 互换主副色；双击打开数值输入")
+
+    @property
+    def current(self) -> QColor:
+        return self.slot_colors[self.active_slot]
+
+    @current.setter
+    def current(self, color: QColor):
+        self.slot_colors[self.active_slot] = QColor(color)
+
+    @property
+    def previous(self) -> QColor:
+        return self.slot_colors[1 - self.active_slot]
+
+    @previous.setter
+    def previous(self, color: QColor):
+        self.slot_colors[1 - self.active_slot] = QColor(color)
+
+    def set_active_color(self, color: QColor):
+        self.slot_colors[self.active_slot] = QColor(color)
+        self.update()
 
     def set_colors(self, current: QColor, previous: QColor):
-        self.current, self.previous = QColor(current), QColor(previous)
+        self.slot_colors[self.active_slot] = QColor(current)
+        self.slot_colors[1 - self.active_slot] = QColor(previous)
         self.update()
+
+    @staticmethod
+    def slot_rect(index: int) -> QRect:
+        return QRect(3, 3, 28, 28) if index == 0 else QRect(23, 12, 28, 28)
+
+    @staticmethod
+    def swap_rect() -> QRect:
+        return QRect(34, 1, 20, 11)
+
+    def active_global_center(self) -> QPoint:
+        """Return the screen coordinate of the active slot's unobstructed center."""
+        rect = self.slot_rect(self.active_slot)
+        return self.mapToGlobal(rect.center())
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.clicked.emit()
+            pos = event.position().toPoint()
+            if self.swap_rect().contains(pos):
+                self.slot_colors[0], self.slot_colors[1] = self.slot_colors[1], self.slot_colors[0]
+                self.swapped.emit()
+                self.update()
+                return
+            inactive = 1 - self.active_slot
+            active_r = self.slot_rect(self.active_slot)
+            inactive_r = self.slot_rect(inactive)
+            # Active slot is drawn on top; clicking the visible part of the
+            # inactive slot switches to it without overwriting either slot.
+            if inactive_r.contains(pos) and not active_r.contains(pos):
+                self.active_slot = inactive
+                self.slotChanged.emit(self.active_slot)
+                self.update()
+                return
+            if active_r.contains(pos):
+                return
         super().mousePressEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit()
+        super().mouseDoubleClickEvent(event)
 
     def paintEvent(self, _event):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        p.setPen(QPen(QColor("#505050"), 1))
-        p.setBrush(self.previous)
-        p.drawRoundedRect(2, 2, 38, 38, 4, 4)
-        p.setBrush(self.current)
-        p.drawRoundedRect(32, 8, 38, 36, 4, 4)
+        inactive = 1 - self.active_slot
+
+        # Draw inactive slot behind
+        r_in = self.slot_rect(inactive)
+        p.setPen(QPen(QColor("#606060"), 1))
+        p.setBrush(self.slot_colors[inactive])
+        p.drawRoundedRect(r_in, 4, 4)
+
+        # Draw active slot on top so its entire 28x28 area is solid & unobstructed
+        r_act = self.slot_rect(self.active_slot)
+        p.setPen(QPen(QColor("#121212"), 2.5))
+        p.setBrush(self.slot_colors[self.active_slot])
+        p.drawRoundedRect(r_act, 4, 4)
+        p.setPen(QPen(QColor("#ffffff"), 1.3))
+        p.drawRoundedRect(r_act.adjusted(1, 1, -1, -1), 3, 3)
+
+        # Tiny swap arrows in top-right corner (drawn with QPainter so it never
+        # depends on Unicode symbol font fallback).
+        sr = self.swap_rect()
+        cx, cy = sr.center().x(), sr.center().y()
+        p.setPen(QPen(QColor("#b8b8b8"), 1.3))
+        p.drawLine(cx - 5, cy - 2, cx + 4, cy - 2)
+        p.drawLine(cx + 2, cy - 4, cx + 4, cy - 2)
+        p.drawLine(cx + 2, cy, cx + 4, cy - 2)
+        p.drawLine(cx - 4, cy + 2, cx + 5, cy + 2)
+        p.drawLine(cx - 2, cy, cx - 4, cy + 2)
+        p.drawLine(cx - 2, cy + 4, cx - 4, cy + 2)
+
+
+class SwatchPaletteBar(QWidget):
+    """8 independent saved color slots so the artist can store and recall colors separately."""
+
+    colorSelected = Signal(float, float, float)
+
+    def __init__(self, parent=None, count: int = 8):
+        super().__init__(parent)
+        self.count = count
+        self.slots: list[Optional[tuple[float, float, float]]] = [None] * count
+        self.selected_index = 0
+        self.setFixedHeight(22)
+        self.setMinimumWidth(160)
+        self.setToolTip("独立存色格：左键点击已存色格读取颜色；点击空格、右键点击任意格或点右侧「＋」将当前颜色存入该格")
+
+    def load_from_list(self, items: list):
+        for i in range(min(self.count, len(items))):
+            val = items[i]
+            if isinstance(val, (list, tuple)) and len(val) == 3:
+                try:
+                    self.slots[i] = (float(val[0]), float(val[1]), float(val[2]))
+                except (TypeError, ValueError):
+                    self.slots[i] = None
+        self.update()
+
+    def to_list(self) -> list:
+        return [list(s) if s is not None else None for s in self.slots]
+
+    def save_to_slot(self, hsv: tuple[float, float, float], index: Optional[int] = None) -> int:
+        if index is None:
+            # Prefer the first empty slot; if all are full, store into selected_index
+            empty = next((i for i, s in enumerate(self.slots) if s is None), None)
+            index = empty if empty is not None else self.selected_index
+        index = max(0, min(self.count - 1, int(index)))
+        self.slots[index] = (float(hsv[0]), float(hsv[1]), float(hsv[2]))
+        self.selected_index = index
+        self.update()
+        return index
+
+    def _cell_rect(self, index: int) -> QRect:
+        gap = 4
+        w = max(16, (self.width() - gap * (self.count - 1)) // self.count)
+        return QRect(index * (w + gap), 1, w, self.height() - 2)
+
+    def _index_at(self, pos: QPoint) -> Optional[int]:
+        for i in range(self.count):
+            if self._cell_rect(i).contains(pos):
+                return i
+        return None
+
+    def mousePressEvent(self, event):
+        idx = self._index_at(event.position().toPoint())
+        if idx is None:
+            return
+        self.selected_index = idx
+        if event.button() == Qt.RightButton:
+            self.parent()._save_current_to_palette(idx)
+            return
+        if event.button() == Qt.LeftButton:
+            if self.slots[idx] is not None:
+                h, s, v = self.slots[idx]
+                self.colorSelected.emit(h, s, v)
+                self.update()
+            else:
+                self.parent()._save_current_to_palette(idx)
+
+    def paintEvent(self, _event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        for i in range(self.count):
+            r = self._cell_rect(i)
+            hsv = self.slots[i]
+            if hsv is not None:
+                rgb = vhsv_to_rgb8(*hsv)
+                p.setBrush(QColor(*rgb))
+            else:
+                p.setBrush(QColor("#202020"))
+            if i == self.selected_index:
+                p.setPen(QPen(QColor("#dcdcdc"), 1.4))
+            else:
+                p.setPen(QPen(QColor("#4a4a4a"), 1.0))
+            p.drawRoundedRect(r, 3, 3)
+
+
+def _parse_hex_color(text: str) -> QColor:
+    raw = text.strip().lstrip("#")
+    if len(raw) in (3, 6) and all(ch in "0123456789abcdefABCDEF" for ch in raw):
+        return QColor("#" + raw)
+    return QColor(text.strip())
+
+
+def _format_csp_hex(color: QColor) -> str:
+    """Return 6-digit uppercase HEX without leading ``#`` for CSP's HEX input box."""
+    return color.name().lstrip("#").upper()
 
 
 class ColorInputDialog(QDialog):
@@ -1005,7 +1390,8 @@ class ColorInputDialog(QDialog):
     def __init__(self, parent=None, rgb=(255, 0, 0)):
         super().__init__(parent)
         self.setWindowTitle("输入颜色")
-        self.setMinimumWidth(360)
+        self.setStyleSheet(PICKER_STYLE)
+        self.setMinimumWidth(280)
         root = QVBoxLayout(self)
         grid = QGridLayout()
         self.spins = {}
@@ -1017,29 +1403,33 @@ class ColorInputDialog(QDialog):
             self.spins[key] = spin
             grid.addWidget(spin, row, 1)
         grid.addWidget(QLabel("HEX"), 0, 2)
-        self.hex_edit = QLineEdit(QColor(*rgb).name().upper())
+        self.hex_edit = QLineEdit(_format_csp_hex(QColor(*rgb)))
         grid.addWidget(self.hex_edit, 0, 3, 1, 2)
         root.addLayout(grid)
         self.preview = QLabel()
-        self.preview.setMinimumHeight(34)
+        self.preview.setMinimumHeight(28)
         root.addWidget(self.preview)
         for spin in self.spins.values():
-            spin.valueChanged.connect(self._sync_hex)
+            spin.editingFinished.connect(self._sync_hex)
         self.hex_edit.editingFinished.connect(self._sync_rgb)
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttons.setMinimumHeight(42)
-        buttons.accepted.connect(self.accept)
+        buttons.setMinimumHeight(34)
+        buttons.accepted.connect(self._on_accept)
         buttons.rejected.connect(self.reject)
         root.addWidget(buttons)
         self._sync_hex()
 
+    def _on_accept(self):
+        self._sync_hex()
+        self.accept()
+
     def _sync_hex(self):
         color = QColor(self.spins["r"].value(), self.spins["g"].value(), self.spins["b"].value())
-        self.hex_edit.setText(color.name().upper())
+        self.hex_edit.setText(_format_csp_hex(color))
         self.preview.setStyleSheet(f"background:{color.name()}; border:1px solid #555;")
 
     def _sync_rgb(self):
-        color = QColor(self.hex_edit.text().strip())
+        color = _parse_hex_color(self.hex_edit.text())
         if color.isValid():
             for key, value in zip("rgb", (color.red(), color.green(), color.blue())):
                 self.spins[key].setValue(value)
@@ -1049,106 +1439,256 @@ class ColorInputDialog(QDialog):
         return tuple(self.spins[key].value() for key in "rgb")
 
 
-class ColorPickerPage(QWidget):
-    """Embedded V-HSV page; it never detaches or forces itself above the app."""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        root = QVBoxLayout(self)
-        title = QLabel("V-HSV 取色")
-        title.setObjectName("title")
-        root.addWidget(title)
-        hint = QLabel("取色器已嵌入 Brush Bridge 界面；点击左下双色板输入 RGB 或 HEX。")
-        hint.setObjectName("hint")
-        root.addWidget(hint)
-        self.picker = ColorPickerDialog(self, embedded=True)
-        self.picker.setWindowFlags(Qt.Widget)
-        root.addWidget(self.picker, 1)
 class ColorPickerDialog(QDialog):
-    """Independent SAI-like V-HSV picker MVP. CSP synchronization is later."""
+    """Independent SAI-like V-HSV picker with CSP foreground synchronization."""
 
     def __init__(self, parent=None, embedded=False):
         super().__init__(parent)
         self.embedded = embedded
-        self.setWindowTitle("独立取色器 · V-HSV")
-        self.setWindowFlag(Qt.Tool, True)
-        self.setMinimumSize(300, 380)
-        self.resize(420, 500)
+        self.settings = QSettings("BrushBridge", "BrushBridge")
+        self.setWindowTitle("V-HSV 色轮 · CSP 联动")
+        self.setStyleSheet(PICKER_STYLE)
+        if not embedded:
+            self.setWindowFlag(Qt.Tool, True)
+            self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        self.setMinimumSize(250, 340)
+        self.resize(310, 420)
+
+        # Two independent V-HSV slots for Main Color (0) and Sub Color (1)
+        self._slot_hsv: list[list[float]] = [[0.0, 1.0, 1.0], [0.0, 0.0, 1.0]]
         self.hue, self.saturation, self.value = 0.0, 1.0, 1.0
-        self._last_color = None
+        self._last_color = QColor("#FF0000")
         self.previous_color = QColor("#FFFFFF")
         self._input_dialog = None
         self._updating = False
         self._pending_fields = {}
         self._field_commit_scheduled = False
+
+        saved_sc = str(self.settings.value("picker/csp_shortcut", "")).strip()
+        self.csp_shortcut = parse_shortcut_text(saved_sc) if saved_sc else read_csp_screen_picker_shortcut()
+
         root = QVBoxLayout(self)
-        self.wheel = ColorWheelWidget()
-        self.wheel.setMinimumSize(180, 180)
+        root.setContentsMargins(8, 8, 8, 8)
+        root.setSpacing(6)
+
+        self.wheel = ColorWheelWidget(self)
         self.ring = self.wheel.ring
         self.square = self.wheel.square
         self.ring.changed.connect(self._hue_changed)
         self.square.changed.connect(self._sv_changed)
-        root.addWidget(self.wheel, 1, Qt.AlignCenter)
+        self.ring.committed.connect(self._on_pick_committed)
+        self.square.committed.connect(self._on_pick_committed)
+        root.addWidget(self.wheel, 1)
 
+        # Row 1: Dual swatch (Main / Sub) + HSV summary + inline HEX + numeric toggle
         summary = QHBoxLayout()
-        self.swatch = DualSwatch()
+        summary.setSpacing(6)
+        self.swatch = DualSwatch(self)
         self.swatch.clicked.connect(self._open_color_input)
+        self.swatch.slotChanged.connect(self._on_slot_switched)
+        self.swatch.swapped.connect(self._on_slots_swapped)
         summary.addWidget(self.swatch)
-        self.hsv_summary = QLabel("H 000°   S 100%   V 100%")
+
+        info_col = QVBoxLayout()
+        info_col.setSpacing(3)
+        self.hsv_summary = QLabel("H 000   S 100   V 100")
         self.hsv_summary.setObjectName("hint")
-        summary.addWidget(self.hsv_summary)
-        summary.addStretch(1)
+        info_col.addWidget(self.hsv_summary)
+
+        hex_row = QHBoxLayout()
+        hex_row.setSpacing(4)
+        hex_prefix = QLabel("#")
+        hex_prefix.setObjectName("hint")
+        hex_row.addWidget(hex_prefix)
+        self.hex_edit = QLineEdit("FF0000")
+        self.hex_edit.setFixedWidth(66)
+        self.hex_edit.setToolTip("不含 # 的 6 位 HEX，可直接粘贴到 CSP 颜色设置 HEX 框（输入框同时兼容带/不带 #）")
+        self.hex_edit.editingFinished.connect(self._hex_changed)
+        hex_row.addWidget(self.hex_edit)
+        self.copy_button = QPushButton("复制")
+        self.copy_button.setToolTip("复制 6 位纯 HEX（不含 #，可直接粘贴进 CSP 颜色设置）")
+        self.copy_button.clicked.connect(self._copy_hex)
+        hex_row.addWidget(self.copy_button)
+        self.toggle_fields_button = QPushButton("数值")
+        self.toggle_fields_button.setCheckable(True)
+        self.toggle_fields_button.setToolTip("展开或收起 R/G/B/H/S/V 精确输入框")
+        hex_row.addWidget(self.toggle_fields_button)
+        hex_row.addStretch(1)
+        info_col.addLayout(hex_row)
+        summary.addLayout(info_col, 1)
         root.addLayout(summary)
 
+        # Row 2: 8-slot independent color palette bar + store button
+        pal_row = QHBoxLayout()
+        pal_row.setSpacing(4)
+        self.palette_bar = SwatchPaletteBar(self, count=8)
+        saved_pal = self.settings.value("picker/palette_slots", [])
+        if isinstance(saved_pal, list):
+            self.palette_bar.load_from_list(saved_pal)
+        self.palette_bar.colorSelected.connect(self._on_palette_color_selected)
+        pal_row.addWidget(self.palette_bar, 1)
+        self.save_swatch_button = QPushButton("＋存色")
+        self.save_swatch_button.setToolTip("将当前颜色存入下方选中/空白的色板格（也可右键点击任意色格覆盖保存）")
+        self.save_swatch_button.clicked.connect(lambda: self._save_current_to_palette(None))
+        pal_row.addWidget(self.save_swatch_button)
+        root.addLayout(pal_row)
+
+        # Collapsible inline numeric grid (R/G/B/H/S/V)
         grid = QGridLayout()
+        grid.setContentsMargins(0, 2, 0, 2)
+        grid.setHorizontalSpacing(4)
+        grid.setVerticalSpacing(4)
         self.fields = {}
         for row, (label, key, maximum) in enumerate((("R", "r", 255), ("G", "g", 255), ("B", "b", 255),
                                                        ("H", "h", 359), ("S", "s", 100), ("V", "v", 100))):
             spin = QSpinBox()
             spin.setRange(0, maximum)
-            # Do not rebuild the model on every keystroke.  QSpinBox emits
-            # valueChanged while the user is still entering a multi-digit
-            # value, which used to replace "1" with a derived value before
-            # the user could finish typing.  Commit on Enter/focus loss.
             spin.editingFinished.connect(lambda key=key: self._field_changed(key))
             grid.addWidget(QLabel(label), row // 3, (row % 3) * 2)
             grid.addWidget(spin, row // 3, (row % 3) * 2 + 1)
             self.fields[key] = spin
-        grid.addWidget(QLabel("HEX"), 2, 0)
-        self.hex_edit = QLineEdit("#FF0000")
-        self.hex_edit.editingFinished.connect(self._hex_changed)
-        grid.addWidget(self.hex_edit, 2, 1, 1, 3)
-        grid_container = QWidget()
-        grid_container.setLayout(grid)
-        grid_container.setVisible(False)
-        root.addWidget(grid_container)
+        self.grid_container = QWidget(self)
+        self.grid_container.setLayout(grid)
+        self.grid_container.setVisible(False)
+        self.toggle_fields_button.toggled.connect(self._toggle_numeric_fields)
+        root.addWidget(self.grid_container)
 
+        # Row 3: CSP synchronization & window controls (compact, never truncated)
         controls = QHBoxLayout()
-        controls.addWidget(QLabel("同步模式"))
-        mode = QComboBox()
-        mode.addItems(["手动同步", "自动同步", "仅复制 HEX"])
-        mode.setToolTip("CSP 联动接口确认后启用同步；当前 MVP 可复制 HEX。")
-        controls.addWidget(mode)
-        top = QCheckBox("窗口置顶")
-        top.setChecked(True)
-        top.toggled.connect(self._set_topmost)
-        controls.addWidget(top)
-        copy_button = QPushButton("复制 HEX")
-        copy_button.clicked.connect(lambda: QApplication.clipboard().setText(self.hex_edit.text()))
-        controls.addWidget(copy_button)
-        hide_button = QPushButton("隐藏")
-        hide_button.clicked.connect(self.hide)
-        controls.addWidget(hide_button)
-        controls.addStretch(1)
-        controls_container = QWidget()
-        controls_container.setLayout(controls)
-        root.addWidget(controls_container)
-        self._sync_from_hsv()
-        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        controls.setSpacing(4)
+        self.mode_combo = QComboBox()
+        self.mode_combo.addItems(["自动同步", "手动同步", "仅复制"])
+        saved_mode = int(self.settings.value("picker/sync_mode", 0) or 0)
+        if 0 <= saved_mode < self.mode_combo.count():
+            self.mode_combo.setCurrentIndex(saved_mode)
+        self.mode_combo.currentIndexChanged.connect(
+            lambda idx: self.settings.setValue("picker/sync_mode", idx)
+        )
+        controls.addWidget(self.mode_combo, 1)
 
-    def _set_topmost(self, checked):
+        self.sync_button = QPushButton("同步")
+        self.sync_button.setToolTip("立即将当前颜色传给正在运行的 Clip Studio Paint")
+        self.sync_button.clicked.connect(lambda: self.sync_to_csp(force=True))
+        controls.addWidget(self.sync_button)
+
+        self.shortcut_button = QPushButton(f"键:{format_shortcut(self.csp_shortcut)}")
+        self.shortcut_button.setToolTip(
+            "CSP「编辑 → 获得屏幕颜色」快捷键（已自动从 CSP 配置读取，点击可手动修改）"
+        )
+        self.shortcut_button.clicked.connect(self._configure_csp_shortcut)
+        controls.addWidget(self.shortcut_button)
+
+        self.top_check = QCheckBox("置顶")
+        self.top_check.setChecked(True)
+        self.top_check.toggled.connect(self._set_topmost)
+        controls.addWidget(self.top_check)
+        root.addLayout(controls)
+
+        self.status_label = QLabel(
+            f"CSP 屏幕取色键：{format_shortcut(self.csp_shortcut)}（松开鼠标自动传色至 CSP）"
+        )
+        self.status_label.setObjectName("status")
+        root.addWidget(self.status_label)
+
+        self._sync_from_hsv()
+
+    def _toggle_numeric_fields(self, checked: bool):
+        self.grid_container.setVisible(checked)
+        self.toggle_fields_button.setText("收起" if checked else "数值")
+        delta = 64
+        if checked:
+            self.setMinimumHeight(404)
+            self.resize(self.width(), self.height() + delta)
+        else:
+            self.setMinimumHeight(340)
+            self.resize(self.width(), max(340, self.height() - delta))
+
+    def _set_topmost(self, checked: bool):
         self.setWindowFlag(Qt.WindowStaysOnTopHint, checked)
         self.show()
+
+    def _copy_hex(self):
+        raw_hex = self.hex_edit.text().strip().lstrip("#").upper()
+        QApplication.clipboard().setText(raw_hex)
+        self.status_label.setText(f"已复制 {raw_hex}（可直接粘贴到 CSP）")
+
+    def _save_current_to_palette(self, index: Optional[int] = None):
+        slot = self.palette_bar.save_to_slot((self.hue, self.saturation, self.value), index)
+        self.settings.setValue("picker/palette_slots", self.palette_bar.to_list())
+        self.status_label.setText(f"已存入色格 #{slot + 1}（{self.hex_edit.text()}）")
+
+    def _on_palette_color_selected(self, hue: float, saturation: float, value: float):
+        self.hue, self.saturation, self.value = hue, saturation, value
+        self._sync_from_hsv()
+        self._on_pick_committed()
+
+    def _on_slot_switched(self, slot_index: int):
+        h, s, v = self._slot_hsv[slot_index]
+        self.hue, self.saturation, self.value = h, s, v
+        self._sync_from_hsv()
+        self.status_label.setText(f"已切换到{'主色' if slot_index == 0 else '副色'}槽位")
+        self._on_pick_committed()
+
+    def _on_slots_swapped(self):
+        self._slot_hsv[0], self._slot_hsv[1] = self._slot_hsv[1], self._slot_hsv[0]
+        h, s, v = self._slot_hsv[self.swatch.active_slot]
+        self.hue, self.saturation, self.value = h, s, v
+        self._sync_from_hsv()
+        self.status_label.setText("已互换主色与副色")
+        self._on_pick_committed()
+
+    def _configure_csp_shortcut(self):
+        cur = format_shortcut(self.csp_shortcut)
+        text, ok = QInputDialog.getText(
+            self,
+            "设置 CSP 屏幕取色快捷键",
+            "请输入 CSP「编辑 → 获得屏幕颜色」对应的快捷键（例如 Ctrl+F）：",
+            text="" if cur == "未设置" else cur,
+        )
+        if not ok:
+            return
+        parsed = parse_shortcut_text(text) or read_csp_screen_picker_shortcut()
+        self.csp_shortcut = parsed
+        self.settings.setValue("picker/csp_shortcut", format_shortcut(parsed) if parsed else "")
+        self.shortcut_button.setText(f"键:{format_shortcut(self.csp_shortcut)}")
+        self.status_label.setText(f"CSP 屏幕取色键已更新为：{format_shortcut(self.csp_shortcut)}")
+
+    def _on_pick_committed(self):
+        raw_hex = self.hex_edit.text().strip().lstrip("#").upper()
+        QApplication.clipboard().setText(raw_hex)
+        if self.mode_combo.currentIndex() == 0:  # 自动同步 CSP
+            QTimer.singleShot(15, lambda: self.sync_to_csp(force=False))
+
+    def sync_to_csp(self, force: bool = False) -> bool:
+        raw_hex = self.hex_edit.text().strip().lstrip("#").upper()
+        QApplication.clipboard().setText(raw_hex)
+        if not force and self.mode_combo.currentIndex() == 2:
+            self.status_label.setText(f"已复制 {raw_hex}")
+            return False
+        if not self.isVisible():
+            return False
+        self.swatch.repaint()
+        QApplication.processEvents()
+        # Convert the active swatch's client-area center into physical Win32
+        # screen coordinates so HiDPI scaling (125%, 150%, etc.) clicks the
+        # exact center of the solid color block instead of the background.
+        local_pt = self.swatch.mapTo(self, self.swatch.slot_rect(self.swatch.active_slot).center())
+        phys_x, phys_y = client_to_physical_screen(
+            int(self.winId()),
+            local_pt.x(),
+            local_pt.y(),
+            self.devicePixelRatioF(),
+        )
+        cur = self.swatch.current
+        ok, msg = sync_color_to_csp(
+            phys_x,
+            phys_y,
+            shortcut=self.csp_shortcut,
+            exclude_hwnd=int(self.winId()) if self.isVisible() else 0,
+            expected_rgb=(cur.red(), cur.green(), cur.blue()),
+        )
+        self.status_label.setText(msg)
+        return ok
 
     def _hue_changed(self, hue):
         self.hue = hue
@@ -1162,19 +1702,19 @@ class ColorPickerDialog(QDialog):
         if self._updating:
             return
         self._updating = True
+        self._slot_hsv[self.swatch.active_slot] = [self.hue, self.saturation, self.value]
         r, g, b = vhsv_to_rgb8(self.hue, self.saturation, self.value)
         color = QColor(r, g, b)
-        if self._last_color is not None and self._last_color != color:
-            self.previous_color = QColor(self._last_color)
         self._last_color = QColor(color)
+        self.swatch.set_active_color(color)
+        self.previous_color = QColor(self.swatch.previous)
         self.fields["r"].setValue(r)
         self.fields["g"].setValue(g)
         self.fields["b"].setValue(b)
         self.fields["h"].setValue(round(self.hue) % 360)
         self.fields["s"].setValue(round(self.saturation * 100))
         self.fields["v"].setValue(round(self.value * 100))
-        self.hex_edit.setText(color.name().upper())
-        self.swatch.set_colors(color, self.previous_color)
+        self.hex_edit.setText(_format_csp_hex(color))
         self.hsv_summary.setText(f"H {round(self.hue) % 360:03d}   S {round(self.saturation * 100):03d}   V {round(self.value * 100):03d}")
         self.square.set_hue(self.hue)
         self.square.saturation, self.square.value = self.saturation, self.value
@@ -1192,8 +1732,9 @@ class ColorPickerDialog(QDialog):
 
         def finished(result):
             if result == QDialog.Accepted:
-                self.hue, self.saturation, self.value = rgb8_to_vhsv(*dialog.rgb())
+                self.hue, self.saturation, self.value = rgb8_to_vhsv(*dialog.rgb(), preferred_hue=self.hue)
                 self._sync_from_hsv()
+                self._on_pick_committed()
             if self._input_dialog is dialog:
                 self._input_dialog = None
             dialog.deleteLater()
@@ -1235,32 +1776,35 @@ class ColorPickerDialog(QDialog):
         if any(key in pending for key in "rgb"):
             rgb = tuple(pending.get(key, int(self.fields[key].lineEdit().text() or 0)) for key in "rgb")
             committed_rgb = rgb
-            self.hue, self.saturation, self.value = rgb8_to_vhsv(*rgb)
+            self.hue, self.saturation, self.value = rgb8_to_vhsv(*rgb, preferred_hue=self.hue)
         else:
             self.hue = pending.get("h", int(self.fields["h"].lineEdit().text() or 0))
             self.saturation = pending.get("s", int(self.fields["s"].lineEdit().text() or 0)) / 100
             self.value = pending.get("v", int(self.fields["v"].lineEdit().text() or 0)) / 100
         self._sync_from_hsv()
         if committed_rgb is not None:
-            # Preserve the exact integers the user entered.  The V-HSV
-            # inverse is intentionally tolerant because 8-bit quantization
-            # is many-to-one; re-rendering immediately would turn e.g. 12
-            # into 13 and make the field appear to reject the input.
+            # Preserve the exact integers the user entered.
             self._updating = True
             for key, value in zip("rgb", committed_rgb):
                 self.fields[key].setValue(value)
-            self.hex_edit.setText(QColor(*committed_rgb).name().upper())
+            color = QColor(*committed_rgb)
+            self.hex_edit.setText(_format_csp_hex(color))
+            self.swatch.set_active_color(color)
             self._updating = False
+        self._on_pick_committed()
 
     def _hex_changed(self):
         if self._updating:
             return
-        color = QColor(self.hex_edit.text().strip())
+        color = _parse_hex_color(self.hex_edit.text())
         if not color.isValid():
             self._sync_from_hsv()
             return
-        self.hue, self.saturation, self.value = rgb8_to_vhsv(color.red(), color.green(), color.blue())
+        self.hue, self.saturation, self.value = rgb8_to_vhsv(
+            color.red(), color.green(), color.blue(), preferred_hue=self.hue
+        )
         self._sync_from_hsv()
+        self._on_pick_committed()
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1296,6 +1840,8 @@ class MainWindow(QMainWindow):
     def closeEvent(self, e):
         self.transfer.cancel_event.set()
         self.transfer.thumb_loader.shutdown()  # don't make the app wait for queued thumbnails
+        if getattr(self.tools, "_picker_dialog", None) is not None:
+            self.tools._picker_dialog.close()
         super().closeEvent(e)
 
     def dragEnterEvent(self, e):

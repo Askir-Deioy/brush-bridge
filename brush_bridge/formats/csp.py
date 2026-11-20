@@ -38,10 +38,17 @@ COMPOSITE_TO_BLEND = {
 BLEND_TO_COMPOSITE = {v: k for k, v in COMPOSITE_TO_BLEND.items() if k not in (9, 11)}
 BLEND_TO_COMPOSITE.update({"luminosity": 0, "behind": 0, "linear_dodge": 10})
 COMPOSITE_ERASER = 27
-# TextureCompositeMode / DualTextureCompositeMode: 0 multiply, 1 subtract (inferred from the UI order).
-TEXTURE_MODES = {0: "multiply", 1: "subtract"}
+# Texture and dual-brush compositing each use their own CSP mode IDs.
+TEXTURE_MODES = dict(enumerate((
+    "normal", "multiply", "subtract", "compare", "outline", "overlay", "color_dodge",
+    "color_burn", "hard_mix", "height",
+)))
 TEXTURE_MODE_IDS = {v: k for k, v in TEXTURE_MODES.items()}
-# DualBrushCompositeMode uses the CompositeMode list.
+DUAL_MODES = dict(enumerate((
+    "normal", "multiply", "add", "subtract", "darken", "lighten", "screen", "overlay",
+    "color_dodge", "color_burn", "linear_burn", "hard_mix", "height",
+)))
+DUAL_MODE_IDS = {v: k for k, v in DUAL_MODES.items()}
 MAX_GENERATED_TIPS = 16
 MAX_BRUSH_SIZE_PX = 2000  # largest value of CSP's brush size slider
 
@@ -50,6 +57,7 @@ MAX_BRUSH_SIZE_PX = 2000  # largest value of CSP's brush size slider
 _DPI = 350.0
 _UNIT_TO_PX = {0: 1.0, 1: _DPI / 2.54, 2: _DPI / 25.4, 3: _DPI, 4: _DPI / 72.0}
 ORDER_RANDOM = 3
+FLIP_RANDOM = 2
 
 
 def to_px(value, unit) -> float:
@@ -157,6 +165,26 @@ def _hash_opt(im: Optional[Image.Image]) -> str:
 ImageResolver = Callable[[MaterialRef], Optional[Image.Image]]
 
 
+def _read_texture(v: dict, b: Brush, resolve: ImageResolver, *, dual: bool = False) -> Optional[Texture]:
+    stem = "DualTexture" if dual else "Texture"
+    refs = decode_material_refs(v.get(stem + "Image"))
+    if not refs:
+        return None
+    im = resolve(refs[0])
+    if im is None:
+        b.warn(f"纹理素材“{refs[0].name}”未找到，已忽略纹理。")
+        return None
+    return Texture(image=thumbnail_to_texture(im), name=refs[0].name,
+                   scale=max(0.01, _num(v.get("DualTextureScale" if dual else "TextureScale2"), 100) / 100),
+                   depth=_clamp(_num(v.get(stem + "Density"), 50) / 100),
+                   invert=bool(v.get(stem + "ReverseDensity")),
+                   mode=TEXTURE_MODES.get(int(v.get(stem + "CompositeMode") or 0), "normal"),
+                   brightness=_clamp(_num(v.get(stem + "Brightness")) / 100, -1),
+                   contrast=_clamp(_num(v.get(stem + "Contrast")) / 100, -1),
+                   per_tip=bool(v.get(stem + "ForPlot")),
+                   depth_dynamic=_dyn(v.get(stem + "DensityEffector")))
+
+
 def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = "") -> Brush:
     b = Brush(name=name or node.get("NodeName") or "CSP brush")
     size = to_px(v.get("BrushSize"), v.get("BrushSizeUnit"))
@@ -187,7 +215,9 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
     b.angle_follow_stroke = bool(rot & ROT_DIRECTION)
     if rot & ROT_RANDOM:
         b.angle_jitter = _clamp(_num(v.get("BrushRotationRandomScale"), 100) / 100)
-    b.roundness_jitter = _dyn(v.get("BrushThicknessEffector")).jitter
+    thickness = _dyn(v.get("BrushThicknessEffector"))
+    b.roundness_jitter = thickness.jitter
+    b.roundness_pressure = thickness.pressure
 
     comp = int(v.get("CompositeMode") or 0)
     if comp == COMPOSITE_ERASER or node.get("NodeInputOp") == S.OP_ERASER:
@@ -210,13 +240,14 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
             b.warn(f"笔尖素材“{r.name or r.path}”未找到，已使用圆形笔尖代替。")
     b.flip_x = bool(v.get("BrushPatternReverseHorizontal"))
     b.flip_y = bool(v.get("BrushPatternReverseVertical"))
+    b.flip_x_random = v.get("BrushPatternReverseHorizontal") == FLIP_RANDOM
+    b.flip_y_random = v.get("BrushPatternReverseVertical") == FLIP_RANDOM
     b.tip_order = "random" if int(v.get("BrushPatternOrderType") or 0) == ORDER_RANDOM else "sequential"
 
     # Spray: BrushSize becomes the spray *area* and BrushSpraySize the *particle* size
     if int(v.get("BrushUseSpray") or 0):
-        sp = _num(v.get("BrushSpraySize"))
         area = b.size_px
-        particle = area * sp / 100 if int(v.get("BrushSpraySizeSyncBrushSize") or 0) else to_px(sp, v.get("BrushSpraySizeUnit"))
+        particle = to_px(v.get("BrushSpraySize"), v.get("BrushSpraySizeUnit"))
         particle = max(0.1, particle or area)
         b.size_px = particle
         b.spacing = max(0.01, b.spacing * area / particle)
@@ -236,24 +267,19 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
             ln = _num(v.get(f"Brush{side}Length"))
             val = ln / 100 if in_pct else to_px(ln, v.get(f"Brush{side}LengthUnit")) / 100
             setattr(b, "taper_start" if side == "In" else "taper_end", _clamp(val))
+    target = v.get("BrushInOutTarget")
+    if (b.taper_start or b.taper_end) and isinstance(target, bytes) and len(target) >= 12:
+        header, count, stride = struct.unpack_from(">III", target)
+        if header == stride == 12 and len(target) >= 12 * (1 + count):
+            for index in range(count):
+                target_id, active, minimum = struct.unpack_from(">III", target, 12 * (1 + index))
+                if target_id == 1001:
+                    b.taper_size = _clamp(1 - minimum / 100) if active else 0.0
+                elif target_id == 1021:
+                    # CSP tapers per-dab brush density, the closest target to source opacity.
+                    b.taper_opacity = _clamp(1 - minimum / 100) if active else 0.0
 
-    # Texture
-    tex_refs = decode_material_refs(v.get("TextureImage"))
-    if tex_refs:
-        im = resolve(tex_refs[0])
-        if im is not None:
-            b.texture = Texture(
-                image=thumbnail_to_texture(im), name=tex_refs[0].name,
-                scale=max(0.01, _num(v.get("TextureScale2"), 100) / 100),
-                depth=_clamp(_num(v.get("TextureDensity"), 50) / 100),
-                invert=bool(v.get("TextureReverseDensity")),
-                mode=TEXTURE_MODES.get(int(v.get("TextureCompositeMode") or 0), "multiply"),
-                brightness=_clamp(_num(v.get("TextureBrightness")) / 100, -1),
-                contrast=_clamp(_num(v.get("TextureContrast")) / 100, -1),
-                per_tip=bool(v.get("TextureForPlot")),
-                depth_dynamic=_dyn(v.get("TextureDensityEffector")))
-        else:
-            b.warn(f"纹理素材“{tex_refs[0].name}”未找到，已忽略纹理。")
+    b.texture = _read_texture(v, b, resolve)
 
     # Dual brush.  Older CSP exports sometimes leave UseDualBrush at zero while
     # DualUsePatternImage still carries the active setting.  Treat either field
@@ -262,17 +288,30 @@ def variant_to_brush(v: dict, node: dict, resolve: ImageResolver, name: str = ""
     if dual_enabled:
         drefs = decode_material_refs(v.get("DualPatternImageArray")) if int(v.get("DualUsePatternImage") or 0) else []
         dim = resolve(drefs[0]) if drefs else None
-        dsize = to_px(v.get("DualSize"), v.get("DualSizeUnit"))
-        if int(v.get("SyncDualBrushSize") or 0):
-            dsize = b.size_px * _num(v.get("DualSize"), 100) / 100
+        area = max(1.0, to_px(v.get("DualSize"), v.get("DualSizeUnit")))
+        spray = bool(v.get("DualUseSpray"))
+        dsize = max(1.0, to_px(v.get("DualSpraySize"), v.get("DualSpraySizeUnit")) or area) if spray else area
+        drot = int(v.get("DualRotationEffectorInSpray" if spray else "DualRotationEffector") or ROT_BASE)
+        random_scale = _num(v.get("DualRotationRandomInSpray" if spray else "DualRotationRandomScale"), 100)
         from ..core.imaging import round_tip
 
         b.dual = DualTip(
             image=thumbnail_to_tip(dim) if dim is not None else round_tip(64, _num(v.get("DualHardness"), 100) / 100),
-            size_px=max(1.0, dsize), spacing=max(0.01, _num(v.get("DualInterval"), 10) / 100),
-            count=max(1, int(_num(v.get("DualSprayDensity"), 1))) if int(v.get("DualUseSpray") or 0) else 1,
-            mode=COMPOSITE_TO_BLEND.get(int(v.get("DualBrushCompositeMode") or 0), "multiply"),
-            name=drefs[0].name if drefs else "")
+            size_px=dsize, spacing=max(0.01, _num(v.get("DualInterval"), 10) / 100 * area / dsize),
+            scatter=area / (2 * dsize) if spray else 0.0,
+            count=max(1, int(_num(v.get("DualSprayDensity"), 1))) if spray else 1,
+            mode=DUAL_MODES.get(int(v.get("DualBrushCompositeMode") or 0), "multiply"),
+            name=drefs[0].name if drefs else "",
+            angle=_num(v.get("DualRotationInSpray" if spray else "DualRotation")),
+            angle_follow_stroke=bool(drot & ROT_DIRECTION),
+            angle_jitter=_clamp(random_scale / 100) if drot & ROT_RANDOM else 0.0,
+            flip_x_random=v.get("DualPatternReverseHorizontal") == FLIP_RANDOM,
+            flip_y_random=v.get("DualPatternReverseVertical") == FLIP_RANDOM,
+            link_size=bool(v.get("SyncDualBrushSize")),
+            size_dynamic=_dyn(v.get("DualSizeEffector")),
+            flow=_clamp(_num(v.get("DualFlow"), 100) / 100),
+            flow_dynamic=_dyn(v.get("DualFlowEffector")),
+            texture=_read_texture(v, b, resolve, dual=True))
         if not int(v.get("UseDualBrush") or 0):
             b.warn("该 CSP 文件使用了旧版双重笔刷启用字段，已按 DualUsePatternImage 兼容读取。")
 
@@ -332,21 +371,22 @@ SPRAY_MIN_SCATTER = 0.1  # below this, positional scatter is invisible and spray
 
 
 def spray_layout(size_px: float, spacing: float, scatter: float, count: int) -> tuple[bool, float, float, float]:
-    """Neutral tip size/spacing/scatter/count -> (use spray, BrushSize, BrushSpraySize %, BrushInterval).
+    """Neutral tip size/spacing/scatter/count -> (use spray, area px, particle px, interval %).
 
     With spray on, CSP treats BrushSize as the spray *area* (particle centres land inside it) and
-    BrushSpraySize as the particle size; synced to the brush size so pressure still scales both.
+    BrushSpraySize as the particle size. CSP stores both as lengths even when linked in the UI.
     Without scatter, extra tips per dab land on the same spot. Continuous strokes approximate them with a
     proportionally denser interval; separated stamps (spacing >= 50%) keep their spacing and the caller
     raises the flow instead (see ``stacked_flow``).
     """
     size_px = max(0.1, size_px)
+    particle = min(size_px, MAX_BRUSH_SIZE_PX)
     if scatter >= SPRAY_MIN_SCATTER:
-        area = 2 * scatter * size_px
-        return True, area, round(100 / (2 * scatter), 2), round(max(0.01, spacing * size_px / area) * 100, 2)
+        area = min(2 * scatter * size_px, MAX_BRUSH_SIZE_PX)
+        return True, area, round(particle, 2), round(max(0.01, spacing * particle / area) * 100, 2)
     if spacing >= STAMP_SPACING:
-        return False, size_px, 100.0, round(spacing * 100, 2)
-    return False, size_px, 100.0, round(max(0.01, spacing / max(1, count)) * 100, 2)
+        return False, particle, 100.0, round(spacing * 100, 2)
+    return False, particle, 100.0, round(max(0.01, spacing / max(1, count)) * 100, 2)
 
 
 STAMP_SPACING = 0.5
@@ -357,14 +397,28 @@ def stacked_flow(flow: float, count: int) -> float:
     return 1 - (1 - _clamp(flow)) ** max(1, count)
 
 
+def _texture_columns(t: Texture, *, dual: bool = False) -> dict[str, object]:
+    stem = "DualTexture" if dual else "Texture"
+    return {
+        ("DualTextureScale" if dual else "TextureScale2"): round(t.scale * 100, 2),
+        stem + "Density": int(round(_clamp(t.depth) * 100)),
+        stem + "ReverseDensity": int(t.invert),
+        stem + "Brightness": int(round(t.brightness * 100)),
+        stem + "Contrast": int(round(t.contrast * 100)),
+        stem + "ForPlot": int(t.per_tip),
+        stem + "CompositeMode": TEXTURE_MODE_IDS.get(t.mode, 0),
+        stem + "DensityEffector": _enc(t.depth_dynamic),
+    }
+
+
 def brush_columns(b: Brush) -> dict[str, object]:
     """Neutral Brush -> Variant column values (only the columns we understand)."""
     comp = COMPOSITE_ERASER if b.is_eraser else BLEND_TO_COMPOSITE.get(b.blend_mode, 0)
     rot = ROT_BASE | (ROT_DIRECTION if b.angle_follow_stroke else 0) | (ROT_RANDOM if b.angle_jitter > 0 else 0)
-    spray, area, particle_pct, interval = spray_layout(b.size_px, b.spacing, b.scatter, b.count)
-    if area > MAX_BRUSH_SIZE_PX:
-        b.warn(f"笔刷尺寸约 {int(area)} px，超过 Clip Studio Paint 的上限 {MAX_BRUSH_SIZE_PX} px，已设为上限。")
-        area = MAX_BRUSH_SIZE_PX
+    spray, area, particle_px, interval = spray_layout(b.size_px, b.spacing, b.scatter, b.count)
+    extent = b.size_px * max(1.0, 2 * b.scatter) if spray else b.size_px
+    if extent > MAX_BRUSH_SIZE_PX:
+        b.warn(f"笔刷尺寸约 {int(extent)} px，超过 Clip Studio Paint 的上限 {MAX_BRUSH_SIZE_PX} px，已设为上限。")
     if not spray and b.count > 1:
         how = "提高流量" if b.spacing >= STAMP_SPACING else "更密的间隔"
         b.warn(f"每次落笔 {b.count} 个笔尖且没有位置散布，Clip Studio Paint 中已改为用{how}来近似叠加效果。")
@@ -384,16 +438,16 @@ def brush_columns(b: Brush) -> dict[str, object]:
         "BrushInterval": interval,
         "BrushAutoIntervalType": 0,
         "BrushThickness": max(1, int(round(_clamp(b.roundness) * 100))),
-        "BrushThicknessEffector": encode_effector(jitter=b.roundness_jitter),
+        "BrushThicknessEffector": encode_effector(pressure=b.roundness_pressure, jitter=b.roundness_jitter),
         "BrushVerticalThicknes": 0,
         "BrushRotation": round(float(b.angle) % 360, 2),
         "BrushRotationEffector": rot,
         "BrushRotationRandomScale": int(round(_clamp(b.angle_jitter) * 100)) if b.angle_jitter > 0 else 100,
-        "BrushPatternReverseHorizontal": int(b.flip_x),
-        "BrushPatternReverseVertical": int(b.flip_y),
+        "BrushPatternReverseHorizontal": FLIP_RANDOM if b.flip_x_random else int(b.flip_x),
+        "BrushPatternReverseVertical": FLIP_RANDOM if b.flip_y_random else int(b.flip_y),
         "BrushPatternOrderType": ORDER_RANDOM if b.tip_order == "random" else 0,
         "BrushUseSpray": int(spray),
-        "BrushSpraySize": particle_pct,
+        "BrushSpraySize": particle_px,
         "BrushSpraySizeUnit": 0,
         "BrushSpraySizeSyncBrushSize": 1,
         "BrushSprayDensity": max(1, int(b.count)),
@@ -414,6 +468,8 @@ def brush_columns(b: Brush) -> dict[str, object]:
         "BrushMixAlpha": int(round((1 - _clamp(b.wet.wetness)) * 100)),
         "BrushMixColorExtension": int(round(_clamp(b.wet.color_stretch) * 100)),
     }
+    if b.taper_start or b.taper_end:
+        c["BrushInOutTarget"] = S.in_out_target(_clamp(b.taper_size), _clamp(b.taper_opacity))
     col = b.color
     tip_jitter = col.has_jitter() and col.per_tip
     stroke_jitter = col.has_jitter() and not col.per_tip
@@ -454,29 +510,43 @@ def brush_columns(b: Brush) -> dict[str, object]:
                   "BrushStrokeValueChange": int(round(_clamp(col.brightness_jitter) * 100)),
                   "BrushStrokeSubColor": int(round(_clamp(col.fg_bg_jitter) * 100))})
     e = b.edge
-    c["BrushUseWaterEdge"] = int(e.is_active())
-    if e.is_active():
+    edge_alpha = int(round(_clamp(e.opacity) * 100))
+    edge_darken = int(round(_clamp(e.darken) * 100))
+    c["BrushUseWaterEdge"] = int(bool(edge_alpha or edge_darken))
+    if edge_alpha or edge_darken:
         width = e.width_px if e.width_px > 0 else max(1.0, min(20.0, b.size_px * 0.05))
         c.update({"BrushWaterEdgeRadius": round(width, 2), "BrushWaterEdgeRadiusUnit": 0,
-                  "BrushWaterEdgeAlphaPower": int(round(_clamp(e.opacity) * 100)),
-                  "BrushWaterEdgeValuePower": int(round(_clamp(e.darken) * 100)),
+                  "BrushWaterEdgeAlphaPower": edge_alpha,
+                  "BrushWaterEdgeValuePower": edge_darken,
                   "BrushWaterEdgeBlur": round(max(0.0, e.blur_px), 2), "BrushWaterEdgeBlurUnit": 0,
                   "BrushWaterEdgeAfterDrag": int(e.after_stroke)})
-    t = b.texture
-    if t is not None:
-        c.update({"TextureScale2": round(t.scale * 100, 2), "TextureDensity": int(round(_clamp(t.depth) * 100)),
-                  "TextureReverseDensity": int(t.invert), "TextureBrightness": int(round(t.brightness * 100)),
-                  "TextureContrast": int(round(t.contrast * 100)), "TextureForPlot": int(t.per_tip),
-                  "TextureCompositeMode": TEXTURE_MODE_IDS.get(t.mode, 0),
-                  "TextureDensityEffector": _enc(t.depth_dynamic)})
+    if b.texture is not None:
+        c.update(_texture_columns(b.texture))
     d = b.dual
     if d is not None:
-        dspray, darea, dpct, dint = spray_layout(max(1.0, d.size_px), d.spacing, d.scatter, d.count)
-        c.update({"DualBrushCompositeMode": BLEND_TO_COMPOSITE.get(d.mode, 2), "SyncDualBrushSize": 0,
-                  "DualSize": round(min(max(1.0, darea), MAX_BRUSH_SIZE_PX), 2), "DualSizeUnit": 0,
+        dspray, darea, dparticle, dint = spray_layout(max(1.0, d.size_px), d.spacing, d.scatter, d.count)
+        angle = round(d.angle % 360, 2)
+        drot = ROT_BASE | (ROT_DIRECTION if d.angle_follow_stroke else 0) | (ROT_RANDOM if d.angle_jitter > 0 else 0)
+        random_scale = round(_clamp(d.angle_jitter) * 100) if d.angle_jitter > 0 else 100
+        if d.mode not in DUAL_MODE_IDS:
+            b.warn(f"Clip Studio Paint 的双重笔刷不支持“{d.mode}”组合模式，已按正片叠底处理。")
+        c.update({"DualBrushCompositeMode": DUAL_MODE_IDS.get(d.mode, 1), "SyncDualBrushSize": int(d.link_size),
+                  "DualSize": round(darea, 2), "DualSizeUnit": 0,
+                  "DualSizeEffector": _enc(d.size_dynamic),
+                  "DualFlow": round(_clamp(d.flow) * 100), "DualFlowEffector": _enc(d.flow_dynamic),
+                  "DualRotation": angle, "DualRotationEffector": drot, "DualRotationRandomScale": random_scale,
+                  "DualRotationInSpray": angle, "DualRotationEffectorInSpray": drot,
+                  "DualRotationRandomInSpray": random_scale,
+                  "DualPatternReverseHorizontal": FLIP_RANDOM if d.flip_x_random else 0,
+                  "DualPatternReverseVertical": FLIP_RANDOM if d.flip_y_random else 0,
                   "DualInterval": dint, "DualAutoIntervalType": 0,
                   "DualUseSpray": int(dspray), "DualSprayDensity": max(1, int(d.count)),
-                  "DualSpraySize": dpct, "DualSpraySizeUnit": 0, "DualSpraySizeSyncBrushSize": 1})
+                  "DualSpraySize": dparticle,
+                  "DualSpraySizeUnit": 0, "DualSpraySizeSyncBrushSize": 1})
+        if dspray:
+            c["DualSpraySizeEffector"] = _enc(d.size_dynamic)
+        if d.texture is not None:
+            c.update(_texture_columns(d.texture, dual=True))
     return c
 
 
@@ -486,6 +556,7 @@ def _fingerprint(b: Brush) -> dict[str, object]:
     fp["__tip_colors"] = _img_hash(b.tip_colors)
     fp["__texture"] = _hash_opt(b.texture.image if b.texture else None)
     fp["__dual"] = _hash_opt(b.dual.image if b.dual else None)
+    fp["__dual_texture"] = _hash_opt(b.dual.texture.image if b.dual and b.dual.texture else None)
     fp["__eraser"] = b.is_eraser
     return fp
 
@@ -497,7 +568,8 @@ def loses_images(b: Brush) -> bool:
     new = _fingerprint(b)
     return ((bool(b.tips) and (old.get("__tips") != new["__tips"] or old.get("__tip_colors") != new["__tip_colors"]))
             or (b.texture is not None and old.get("__texture") != new["__texture"])
-            or (b.dual is not None and old.get("__dual") != new["__dual"]))
+            or (b.dual is not None and old.get("__dual") != new["__dual"])
+            or (new["__dual_texture"] != "" and old.get("__dual_texture") != new["__dual_texture"]))
 
 
 # ---------------------------------------------------------------------------------------------
@@ -735,7 +807,7 @@ def build_variant(b: Brush) -> tuple[dict, list[tuple[str, str]], list[dict], di
         fp_old, mats = {}, []
     fp_new = _fingerprint(b)
     for k, val in brush_columns(b).items():
-        if not fp_old or fp_old.get(k) != val:
+        if not fp_old or (k in fp_old and fp_old[k] != val) or k not in row:
             row[k] = val
     if fp_old and fp_old.get("__eraser") and not b.is_eraser and row.get("CompositeMode") == COMPOSITE_ERASER:
         row["CompositeMode"] = BLEND_TO_COMPOSITE.get(b.blend_mode, 0)
@@ -773,6 +845,9 @@ def build_variant(b: Brush) -> tuple[dict, list[tuple[str, str]], list[dict], di
         else:
             row["UseDualBrush"] = 0
             row["DualPatternImageArray"] = None
+    if fp_old.get("__dual_texture", "") != fp_new["__dual_texture"]:
+        texture = b.dual.texture if b.dual else None
+        row["DualTextureImage"] = gen([texture.image], KIND_TEXTURE, "双重纹理") if texture else None
     used = set()
     for col in ("BrushPatternImageArray", "TextureImage", "DualPatternImageArray", "DualTextureImage"):
         for r in decode_material_refs(row.get(col)):

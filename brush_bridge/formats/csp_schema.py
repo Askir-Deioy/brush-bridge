@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 import shutil
 import sqlite3
+import struct
 import tempfile
 import uuid as _uuid
 from dataclasses import dataclass, field
@@ -281,6 +282,18 @@ VARIANT_COLUMNS: list[tuple[str, str, object]] = [
     ('FillExpandType', 'INTEGER', 2),
     ('FillColorMargin', 'REAL', 10.0),
 ]
+
+
+def in_out_target(size: float, density: float) -> bytes:
+    """Set the size and brush density minimums in the standard CSP taper targets."""
+    targets = bytearray(_IN_OUT_TARGET)
+    for offset in range(12, len(targets), 12):
+        target_id = struct.unpack_from(">I", targets, offset)[0]
+        if target_id in (1001, 1021):
+            strength = size if target_id == 1001 else density
+            minimum = 100 - round(100 * strength)
+            struct.pack_into(">II", targets, offset + 4, int(minimum < 100), minimum if minimum < 100 else 0)
+    return bytes(targets)
 
 
 def variant_defaults() -> dict[str, object]:
