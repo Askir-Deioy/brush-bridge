@@ -913,7 +913,14 @@ def brush_to_preset(br: Brush, sample_id: Optional[str], dual_id: Optional[str],
 
     dual = Desc("dualBrush").add("useDualBrush", "bool", bool(br.dual and dual_id))
     if br.dual and dual_id:
-        dt = Desc("sampledBrush").add("Dmtr", "UntF", ("#Pxl", float(br.dual.size_px)))
+        # Photoshop does not expose Procreate's linked dual-brush size.  Its
+        # dual brush stores a second absolute diameter, so using Procreate's
+        # internal linked value directly can turn a small outline brush into a
+        # large filled circle.  Match the primary diameter when the source
+        # explicitly links both sizes.  Unlinked dual tips retain their own
+        # absolute diameter.
+        dual_size = br.size_px if br.dual.link_size else br.dual.size_px
+        dt = Desc("sampledBrush").add("Dmtr", "UntF", ("#Pxl", float(dual_size)))
         dt.add("Angl", "UntF", ("#Ang", 0.0)).add("Rndn", "UntF", ("#Prc", 100.0))
         dt.add("Nm  ", "TEXT", br.dual.name or "Dual").add("Spcn", "UntF", ("#Prc", max(1.0, br.dual.spacing * 100)))
         dt.add("Intr", "bool", True).add("flipX", "bool", False).add("flipY", "bool", False)

@@ -60,6 +60,21 @@ def test_write_read_roundtrip(tmp_path):
     assert r[1].tips == [] and abs(r[1].hardness - 0.5) < 1e-9
 
 
+def test_linked_dual_tip_uses_primary_diameter_in_photoshop(tmp_path):
+    brush = Brush(name="描边", tips=[_tip()], size_px=80,
+                  dual=DualTip(image=_tip(30, 30), size_px=640, link_size=True, mode="difference"))
+    out = codec("abr").write([brush], tmp_path / "linked.abr", prefer_native=False)[0]
+    af = abr.parse(out)
+    try:
+        preset = af.presets[0][0]
+        primary = preset.sub("Brsh")
+        dual = preset.sub("dualBrush").sub("Brsh")
+        assert dual.num("Dmtr") == pytest.approx(primary.num("Dmtr"))
+        assert preset.sub("dualBrush").enum("BlnM") == "Dfrn"
+    finally:
+        af.close()
+
+
 def test_ungrouped_export_uses_empty_phry_hierarchy(tmp_path):
     out = tmp_path / "ungrouped.abr"
     codec("abr").write([Brush(name="一", tips=[_tip()]), Brush(name="二", tips=[_tip()])], out,

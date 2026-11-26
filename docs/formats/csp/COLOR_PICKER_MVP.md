@@ -1,6 +1,6 @@
 # CSP 仿 SAI2 取色器与自动联动
 
-版本：0.5.15 开发版。
+版本：0.5.18 开发版。
 
 当前是独立置顶的 CSP 暗色 Mod 风格悬浮取色器，二维区域使用已对齐 SAI2 Ver.2 像素级精度的 V-HSV 模型：
 
@@ -14,5 +14,7 @@
 - **CSP 4.2 自动传色联动（`brush_bridge/apps/csp_sync.py`）**：
   - 自动从本机 `%APPDATA%\CELSYSUserData\CELSYS\CLIPStudioPaintVer*\Shortcut\default.khc` 读取 CSP「编辑 → 获得屏幕颜色（`applicationscreeneyecolorpicker`）」快捷键（本机已自动识别为 `Ctrl+F`）。
   - 在「自动同步」模式下，松开色轮鼠标或点击色板格时，自动唤醒运行中的 `CLIP STUDIO PAINT` 窗口、触发屏幕取色键并采样当前活动色块中心像素，随后将鼠标归还原位并把焦点留在 CSP 画布，实现接近内部插件的无缝绘画体验。
+  - 同步期间可以把鼠标/数位笔指针冻结在色块中心，避免手持数位笔点击时的轻微位移导致屏幕取色偏离。冻结时长可在取色器中选择关闭、0.3、0.6、1.0 或 2.0 秒。
+  - 新增 Photoshop 自动同步模式。它使用 Photoshop 的 `I` 屏幕取色工具取样，并在取样后切回画笔工具。
 
 模型与截图证据见 [2026-11-07 V-HSV 截图差分记录](../../feedback/2026-11-07-VHSV-screenshot-probe.md)。

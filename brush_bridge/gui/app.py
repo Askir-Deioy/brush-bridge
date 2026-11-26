@@ -27,6 +27,7 @@ from ..apps.csp_sync import (
     parse_shortcut_text,
     read_csp_screen_picker_shortcut,
     sync_color_to_csp,
+    sync_color_to_photoshop,
 )
 from ..apps.sai2 import app_install_from_exe
 from ..core import convert
@@ -1557,7 +1558,7 @@ class ColorPickerDialog(QDialog):
         controls = QHBoxLayout()
         controls.setSpacing(4)
         self.mode_combo = QComboBox()
-        self.mode_combo.addItems(["自动同步", "手动同步", "仅复制"])
+        self.mode_combo.addItems(["自动同步 CSP", "自动同步 Photoshop", "手动同步", "仅复制"])
         saved_mode = int(self.settings.value("picker/sync_mode", 0) or 0)
         if 0 <= saved_mode < self.mode_combo.count():
             self.mode_combo.setCurrentIndex(saved_mode)
@@ -1567,8 +1568,8 @@ class ColorPickerDialog(QDialog):
         controls.addWidget(self.mode_combo, 1)
 
         self.sync_button = QPushButton("同步")
-        self.sync_button.setToolTip("立即将当前颜色传给正在运行的 Clip Studio Paint")
-        self.sync_button.clicked.connect(lambda: self.sync_to_csp(force=True))
+        self.sync_button.setToolTip("立即将当前颜色传给选中的 CSP 或 Photoshop")
+        self.sync_button.clicked.connect(lambda: self.sync_to_target(force=True))
         controls.addWidget(self.sync_button)
 
         self.shortcut_button = QPushButton(f"键:{format_shortcut(self.csp_shortcut)}")
@@ -1578,6 +1579,17 @@ class ColorPickerDialog(QDialog):
         self.shortcut_button.clicked.connect(self._configure_csp_shortcut)
         controls.addWidget(self.shortcut_button)
 
+        controls.addWidget(QLabel("冻结"))
+        self.freeze_combo = QComboBox()
+        self.freeze_combo.addItems(["关闭", "0.3 秒", "0.6 秒", "1.0 秒", "2.0 秒"])
+        saved_freeze = int(self.settings.value("picker/freeze_index", 2) or 2)
+        self.freeze_combo.setCurrentIndex(max(0, min(saved_freeze, self.freeze_combo.count() - 1)))
+        self.freeze_combo.setToolTip("同步取色时把鼠标/数位笔指针锁在色块上，避免手抖导致取到别处")
+        self.freeze_combo.currentIndexChanged.connect(
+            lambda idx: self.settings.setValue("picker/freeze_index", idx)
+        )
+        controls.addWidget(self.freeze_combo)
+
         self.top_check = QCheckBox("置顶")
         self.top_check.setChecked(True)
         self.top_check.toggled.connect(self._set_topmost)
@@ -1585,7 +1597,7 @@ class ColorPickerDialog(QDialog):
         root.addLayout(controls)
 
         self.status_label = QLabel(
-            f"CSP 屏幕取色键：{format_shortcut(self.csp_shortcut)}（松开鼠标自动传色至 CSP）"
+            f"CSP 屏幕取色键：{format_shortcut(self.csp_shortcut)}（自动同步时会短暂冻结指针）"
         )
         self.status_label.setObjectName("status")
         root.addWidget(self.status_label)
@@ -1656,13 +1668,16 @@ class ColorPickerDialog(QDialog):
     def _on_pick_committed(self):
         raw_hex = self.hex_edit.text().strip().lstrip("#").upper()
         QApplication.clipboard().setText(raw_hex)
-        if self.mode_combo.currentIndex() == 0:  # 自动同步 CSP
-            QTimer.singleShot(15, lambda: self.sync_to_csp(force=False))
+        if self.mode_combo.currentIndex() in (0, 1):
+            QTimer.singleShot(15, lambda: self.sync_to_target(force=False))
 
-    def sync_to_csp(self, force: bool = False) -> bool:
+    def _freeze_seconds(self) -> float:
+        return (0.0, 0.3, 0.6, 1.0, 2.0)[self.freeze_combo.currentIndex()]
+
+    def sync_to_target(self, force: bool = False) -> bool:
         raw_hex = self.hex_edit.text().strip().lstrip("#").upper()
         QApplication.clipboard().setText(raw_hex)
-        if not force and self.mode_combo.currentIndex() == 2:
+        if not force and self.mode_combo.currentIndex() == 3:
             self.status_label.setText(f"已复制 {raw_hex}")
             return False
         if not self.isVisible():
@@ -1680,15 +1695,24 @@ class ColorPickerDialog(QDialog):
             self.devicePixelRatioF(),
         )
         cur = self.swatch.current
-        ok, msg = sync_color_to_csp(
-            phys_x,
-            phys_y,
-            shortcut=self.csp_shortcut,
-            exclude_hwnd=int(self.winId()) if self.isVisible() else 0,
-            expected_rgb=(cur.red(), cur.green(), cur.blue()),
-        )
+        kwargs = dict(exclude_hwnd=int(self.winId()) if self.isVisible() else 0,
+                      expected_rgb=(cur.red(), cur.green(), cur.blue()),
+                      freeze_seconds=self._freeze_seconds())
+        if self.mode_combo.currentIndex() == 1:
+            ok, msg = sync_color_to_photoshop(phys_x, phys_y, **kwargs)
+        else:
+            ok, msg = sync_color_to_csp(phys_x, phys_y, shortcut=self.csp_shortcut, **kwargs)
         self.status_label.setText(msg)
         return ok
+
+    def sync_to_csp(self, force: bool = False) -> bool:
+        """Compatibility wrapper for callers that explicitly target CSP."""
+        current = self.mode_combo.currentIndex()
+        self.mode_combo.setCurrentIndex(0)
+        try:
+            return self.sync_to_target(force=force)
+        finally:
+            self.mode_combo.setCurrentIndex(current)
 
     def _hue_changed(self, hue):
         self.hue = hue

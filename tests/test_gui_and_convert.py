@@ -92,6 +92,7 @@ def test_vhsv_picker_nested_layout_and_numeric_commit(qapp, tmp_path):
         format_shortcut,
         parse_shortcut_text,
         read_csp_screen_picker_shortcut,
+        sync_color_to_photoshop,
     )
     from brush_bridge.gui.app import ColorPickerDialog, HueRingWidget
 
@@ -100,6 +101,11 @@ def test_vhsv_picker_nested_layout_and_numeric_commit(qapp, tmp_path):
     d.mode_combo.setCurrentIndex(2)
     d.show()
     qapp.processEvents()
+    assert [d.mode_combo.itemText(i) for i in range(d.mode_combo.count())] == [
+        "自动同步 CSP", "自动同步 Photoshop", "手动同步", "仅复制"
+    ]
+    d.freeze_combo.setCurrentIndex(2)
+    assert d.freeze_combo.currentText() == "0.6 秒"
     side = min(d.wheel.width(), d.wheel.height())
     _, _, inner_d = HueRingWidget.ring_geometry(side)
     assert d.square.width() * 1.41421356237 <= inner_d
@@ -187,6 +193,7 @@ def test_vhsv_picker_nested_layout_and_numeric_commit(qapp, tmp_path):
     sc = read_csp_screen_picker_shortcut(khc)
     assert sc == ("F", 4) and format_shortcut(sc) == "Ctrl+F"
     assert parse_shortcut_text("Ctrl+Shift+X") == ("X", 6)
+    assert sync_color_to_photoshop(10, 10)[0] is False
 
 
 def test_grid_checking_updates_count(qapp, win):

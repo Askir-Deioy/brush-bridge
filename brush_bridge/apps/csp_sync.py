@@ -1,4 +1,4 @@
-"""Windows helper for synchronizing the standalone V-HSV color picker with Clip Studio Paint.
+"""Windows helpers for synchronizing the standalone V-HSV color picker with CSP and Photoshop.
 
 Clip Studio Paint (CSP) does not expose an internal plugin SDK for setting the
 active foreground color.  However, CSP provides a built-in command
@@ -7,10 +7,9 @@ keyboard shortcut is stored in the user's CELSYS shortcut SQLite database
 (``Shortcut/default.khc``).
 
 When CSP is running on Windows, triggering that shortcut while CSP is active
-arms CSP's screen eyedropper; a single click at the physical Win32 screen
-coordinate of our always-on-top active color swatch transfers the exact RGB
-pixel into CSP and leaves keyboard/pen focus inside CSP so the artist can
-immediately paint.
+arms CSP's screen eyedropper. Photoshop uses its built-in ``I`` eyedropper
+tool. Both paths click the physical Win32 screen coordinate of our active
+color swatch and leave focus inside the target application.
 """
 
 from __future__ import annotations
@@ -209,6 +208,32 @@ def find_csp_window(exclude_hwnd: int = 0) -> Optional[int]:
     return found[0] if found else None
 
 
+def find_photoshop_window(exclude_hwnd: int = 0) -> Optional[int]:
+    """Return the top-level HWND of a running Photoshop window on Windows."""
+    if sys.platform != "win32":
+        return None
+    user32 = ctypes.windll.user32
+    found: list[int] = []
+
+    @ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+    def enum_proc(hwnd, _lparam):
+        if hwnd == exclude_hwnd or not user32.IsWindowVisible(hwnd):
+            return True
+        length = user32.GetWindowTextLengthW(hwnd)
+        if length <= 0:
+            return True
+        buf = ctypes.create_unicode_buffer(length + 1)
+        user32.GetWindowTextW(hwnd, buf, length + 1)
+        title = buf.value.upper()
+        if "PHOTOSHOP" in title:
+            found.append(int(hwnd))
+            return False
+        return True
+
+    user32.EnumWindows(enum_proc, 0)
+    return found[0] if found else None
+
+
 def return_focus_to_csp(exclude_hwnd: int = 0) -> bool:
     """Bring the running CSP window to foreground without clicking."""
     if sys.platform != "win32":
@@ -228,6 +253,7 @@ def sync_color_to_csp(
     shortcut: Optional[tuple[str, int]] = None,
     exclude_hwnd: int = 0,
     expected_rgb: Optional[tuple[int, int, int]] = None,
+    freeze_seconds: float = 0.6,
 ) -> tuple[bool, str]:
     """Trigger CSP's screen eyedropper shortcut and sample ``(swatch_x, swatch_y)``.
 
@@ -266,11 +292,53 @@ def sync_color_to_csp(
                     continue
                 break
 
-    user32 = ctypes.windll.user32
+    return _sync_screen_picker(
+        hwnd, target_x, target_y, shortcut=sc, expected_rgb=expected_rgb,
+        freeze_seconds=freeze_seconds, restore_key=None, label="CSP",
+    )
 
-    # Save current cursor position so the artist's pen/mouse returns seamlessly.
+
+def sync_color_to_photoshop(
+    swatch_x: int,
+    swatch_y: int,
+    exclude_hwnd: int = 0,
+    expected_rgb: Optional[tuple[int, int, int]] = None,
+    freeze_seconds: float = 0.6,
+) -> tuple[bool, str]:
+    """Use Photoshop's ``I`` eyedropper and click the active color swatch."""
+    if sys.platform != "win32":
+        return False, "当前系统不支持 Win32 联动（已复制 HEX）"
+    hwnd = find_photoshop_window(exclude_hwnd=exclude_hwnd)
+    if not hwnd:
+        return False, "未检测到运行中的 Photoshop（已复制 HEX）"
+    return _sync_screen_picker(
+        hwnd, int(swatch_x), int(swatch_y), shortcut=("I", 0), expected_rgb=expected_rgb,
+        freeze_seconds=freeze_seconds, restore_key="B", label="Photoshop",
+    )
+
+
+def _sync_screen_picker(
+    hwnd: int,
+    target_x: int,
+    target_y: int,
+    *,
+    shortcut: tuple[str, int],
+    expected_rgb: Optional[tuple[int, int, int]],
+    freeze_seconds: float,
+    restore_key: Optional[str],
+    label: str,
+) -> tuple[bool, str]:
+    user32 = ctypes.windll.user32
+    vk = _key_to_vk(shortcut[0])
+    if vk is None:
+        return False, f"不支持的快捷键 {format_shortcut(shortcut)}（已复制 HEX）"
+
+    # Save current cursor and clipping state so the artist's pen/mouse returns
+    # seamlessly, even when another tablet event arrives during the transfer.
     orig_pt = wintypes.POINT()
     user32.GetCursorPos(ctypes.byref(orig_pt))
+    old_clip = wintypes.RECT()
+    had_clip = bool(user32.GetClipCursor(ctypes.byref(old_clip)))
 
     user32.ReleaseCapture()
     if user32.IsIconic(hwnd):
@@ -280,7 +348,7 @@ def sync_color_to_csp(
     user32.SetForegroundWindow(hwnd)
     time.sleep(0.03)
 
-    mod = sc[1]
+    mod = shortcut[1]
     mods_down = []
     if mod & MOD_CTRL:
         mods_down.append(VK_CONTROL)
@@ -297,16 +365,30 @@ def sync_color_to_csp(
     for m_vk in reversed(mods_down):
         user32.keybd_event(m_vk, 0, KEYEVENTF_KEYUP, 0)
 
-    # Wait briefly for CSP to enter screen eyedropper mode, then move to the
-    # physical swatch pixel and click to sample it.
-    time.sleep(0.045)
-    user32.SetCursorPos(target_x, target_y)
-    time.sleep(0.015)
-    user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
-    time.sleep(0.012)
-    user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-    time.sleep(0.012)
-
-    # Restore cursor position.
-    user32.SetCursorPos(orig_pt.x, orig_pt.y)
-    return True, f"已同步到 CSP（{format_shortcut(sc)}）"
+    # Wait briefly for the target to enter screen eyedropper mode, then move to
+    # the physical swatch pixel.  ClipCursor holds a pen-generated cursor at
+    # the exact pixel while the synthetic click is delivered.
+    try:
+        time.sleep(0.045)
+        user32.SetCursorPos(target_x, target_y)
+        freeze_seconds = max(0.0, min(3.0, float(freeze_seconds)))
+        if freeze_seconds:
+            lock = wintypes.RECT(target_x, target_y, target_x + 1, target_y + 1)
+            user32.ClipCursor(ctypes.byref(lock))
+        time.sleep(0.015)
+        user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+        time.sleep(0.012)
+        user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+        time.sleep(freeze_seconds)
+        if restore_key:
+            restore_vk = _key_to_vk(restore_key)
+            if restore_vk is not None:
+                user32.keybd_event(restore_vk, 0, 0, 0)
+                user32.keybd_event(restore_vk, 0, KEYEVENTF_KEYUP, 0)
+    finally:
+        if had_clip:
+            user32.ClipCursor(ctypes.byref(old_clip))
+        else:
+            user32.ClipCursor(None)
+        user32.SetCursorPos(orig_pt.x, orig_pt.y)
+    return True, f"已同步到 {label}（冻结 {freeze_seconds:.1f} 秒）"

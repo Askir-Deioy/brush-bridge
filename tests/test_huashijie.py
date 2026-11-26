@@ -35,6 +35,16 @@ def test_huashijie_external_sample_if_available():
     assert brushes[7].tips[0].size == (200, 200)
 
 
+def test_huashijie_v8_brush_group_if_available():
+    path = Path.home() / "Downloads" / "测试笔刷组.bru"
+    if not path.is_file():
+        pytest.skip("user supplied Huashijie v8 brush group is not available")
+    info = sniff(path)
+    assert info and info.brush_count == 3
+    brushes = codec("huashijie").read(path)
+    assert [brush.name for brush in brushes] == ["舞线_1", "指笔_1", "钢笔_1"]
+
+
 def test_huashijie_rejects_non_bru(tmp_path):
     p = tmp_path / "bad.bru"
     p.write_bytes(b"not hsjbru")

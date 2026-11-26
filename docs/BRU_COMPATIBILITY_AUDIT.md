@@ -4,7 +4,7 @@
 
 ## 当前实现
 
-`brush_bridge/formats/huashijie.py` 当前使用 `hsjbru` 头部、版本字段、参数记录和成对 PNG 资源。代码会解析已观察到的 protobuf 风格字段，并把未知字段和原始记录保存到 `.brushpkg` 扩展区；写出后做结构回读检查。
+`brush_bridge/formats/huashijie.py` 当前使用 `hsjbru` 头部、版本字段、参数记录和成对 PNG 资源。代码会解析已观察到的 protobuf 风格字段，并把未知字段和原始记录保存到 `.brushpkg` 扩展区；写出后做结构回读检查。新版 v8 的单个 `.bru` 还可能在同一文件尾部串联多条参数记录，读取器会按每条记录的长度和索引前缀展开为多个笔刷。
 
 这说明文件结构路线可运行，但不能替代画世界 Pro 真实设备导入和笔迹验收。
 

@@ -175,19 +175,36 @@ def _records(path: Path) -> tuple[bytes, list[tuple[bytes, bytes, bytes, list[tu
         raise HuaShiJieFormatError("不是画世界 Pro BRU 文件（缺少 hsjbru 头部）")
     version = int.from_bytes(data[8:10], "big")
     if version >= 8:
-        # Newer BRU exports may contain a parameter record without embedded
-        # preview/tip PNGs.  The icon path is metadata only.  Keep the record
-        # and let the common model represent a computed round tip.
+        # Newer BRU exports may contain a sequence of parameter records without
+        # embedded preview/tip PNGs.  The first record length is stored in the
+        # global header.  Every following record has a 50-byte table prefix,
+        # with its metadata length at prefix offset 8.  The previous reader
+        # treated the whole tail as one protobuf record and therefore exposed
+        # only the first brush from a brush group.
+        records: list[tuple[bytes, bytes, bytes, list[tuple[int, int, Any]]]] = []
         metadata_start = HEADER_LEN
-        declared = int.from_bytes(data[0x6C:0x70], "big")
-        end = metadata_start + declared if declared else len(data)
-        if end > len(data):
-            raise HuaShiJieFormatError("新版 BRU 参数记录超出文件范围")
-        metadata = data[metadata_start:end]
-        fields = _parse_fields(metadata)
-        if not fields or _field_value(fields, 3, None) is None:
-            raise HuaShiJieFormatError("新版 BRU 缺少笔刷名称字段")
-        return data, [(metadata, b"", b"", fields)]
+        metadata_len = int.from_bytes(data[0x6C:0x70], "big")
+        if metadata_len <= 0:
+            raise HuaShiJieFormatError("新版 BRU 缺少第一条参数记录长度")
+        while metadata_start < len(data):
+            metadata_end = metadata_start + metadata_len
+            if metadata_end > len(data):
+                raise HuaShiJieFormatError("新版 BRU 参数记录超出文件范围")
+            metadata = data[metadata_start:metadata_end]
+            fields = _parse_fields(metadata)
+            if not fields or _field_value(fields, 3, None) is None:
+                raise HuaShiJieFormatError("新版 BRU 缺少笔刷名称字段")
+            records.append((metadata, b"", b"", fields))
+            if metadata_end == len(data):
+                break
+            prefix_end = metadata_end + PREFIX_LEN
+            if prefix_end > len(data):
+                raise HuaShiJieFormatError("新版 BRU 多笔刷记录的索引前缀被截断")
+            metadata_start = prefix_end
+            metadata_len = int.from_bytes(data[metadata_end + 8:metadata_end + 12], "big")
+            if metadata_len <= 0:
+                raise HuaShiJieFormatError("新版 BRU 多笔刷记录长度无效")
+        return data, records
     # Header: magic[6], reserved[2], version u16 at 0x08, total length u32 at 0x0a.
     declared = int.from_bytes(data[10:14], "big")
     if declared and declared != len(data):
