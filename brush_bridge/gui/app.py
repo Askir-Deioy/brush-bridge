@@ -1565,6 +1565,7 @@ class ColorPickerDialog(QDialog):
         self.mode_combo.currentIndexChanged.connect(
             lambda idx: self.settings.setValue("picker/sync_mode", idx)
         )
+        self.mode_combo.currentIndexChanged.connect(self._update_sync_target_ui)
         controls.addWidget(self.mode_combo, 1)
 
         self.sync_button = QPushButton("同步")
@@ -1601,6 +1602,7 @@ class ColorPickerDialog(QDialog):
         )
         self.status_label.setObjectName("status")
         root.addWidget(self.status_label)
+        self._update_sync_target_ui(self.mode_combo.currentIndex())
 
         self._sync_from_hsv()
 
@@ -1664,6 +1666,24 @@ class ColorPickerDialog(QDialog):
         self.settings.setValue("picker/csp_shortcut", format_shortcut(parsed) if parsed else "")
         self.shortcut_button.setText(f"键:{format_shortcut(self.csp_shortcut)}")
         self.status_label.setText(f"CSP 屏幕取色键已更新为：{format_shortcut(self.csp_shortcut)}")
+
+    def _update_sync_target_ui(self, index: int):
+        if not hasattr(self, "shortcut_button"):
+            return
+        photoshop = index == 1
+        self.shortcut_button.setEnabled(not photoshop)
+        self.shortcut_button.setText("PS:I" if photoshop else f"键:{format_shortcut(self.csp_shortcut)}")
+        self.shortcut_button.setToolTip(
+            "Photoshop 使用 I 工具取色，完成后自动切回画笔"
+            if photoshop else
+            "CSP「编辑 → 获得屏幕颜色」快捷键（已自动从 CSP 配置读取，点击可手动修改）"
+        )
+        if hasattr(self, "status_label"):
+            self.status_label.setText(
+                "Photoshop I 工具取色（同步时会短暂冻结指针）"
+                if photoshop else
+                f"CSP 屏幕取色键：{format_shortcut(self.csp_shortcut)}（同步时会短暂冻结指针）"
+            )
 
     def _on_pick_committed(self):
         raw_hex = self.hex_edit.text().strip().lstrip("#").upper()

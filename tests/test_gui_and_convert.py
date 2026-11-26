@@ -106,6 +106,9 @@ def test_vhsv_picker_nested_layout_and_numeric_commit(qapp, tmp_path):
     ]
     d.freeze_combo.setCurrentIndex(2)
     assert d.freeze_combo.currentText() == "0.6 秒"
+    d.mode_combo.setCurrentIndex(1)
+    assert d.shortcut_button.text() == "PS:I" and not d.shortcut_button.isEnabled()
+    d.mode_combo.setCurrentIndex(2)
     side = min(d.wheel.width(), d.wheel.height())
     _, _, inner_d = HueRingWidget.ring_geometry(side)
     assert d.square.width() * 1.41421356237 <= inner_d
